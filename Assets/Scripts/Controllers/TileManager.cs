@@ -15,9 +15,6 @@ public class TileManager : MonoBehaviour {
 	
 	void Awake(){
 		instance = this;
-	}
-	void Start(){
-		
 		if (ship_TileMap.HasTile(positionToCheck)){
 			Debug.Log(ship_TileMap.name + " has tile at " + positionToCheck);
 		}
@@ -28,6 +25,10 @@ public class TileManager : MonoBehaviour {
 		Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
 		Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
 		GenerateTileData();
+	}
+	void Start(){
+		
+		
 	}
 
 	void GenerateTileData(){

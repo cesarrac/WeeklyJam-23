@@ -9,12 +9,27 @@ public class TileData  {
 	public int X {get; protected set;}
 	public int Y {get; protected set;}
 	public Vector3Int worldPos {get; protected set;}
+	public Machine machine {get; protected set;}
 	public TileData(int gridX, int gridY, Vector3Int worldPosition, TileType tType){
 		X = gridX;
 		Y = gridY;
 		tileType = tType;
 		worldPos = worldPosition;
 	}
+
+	public bool AddMachine(Machine newMachine){
+		if (machine != null)
+			return false;
+		machine = newMachine;
+		return true;
+	}
+	public bool RemoveMachine(){
+		if (machine == null)
+			return false;
+		machine = null;
+		return true;
+	}
+
  	public TileData[] GetNeighbors(bool getDiags = true){
 		TileData[] neighbors = new TileData[8];
 		if (getDiags == true){

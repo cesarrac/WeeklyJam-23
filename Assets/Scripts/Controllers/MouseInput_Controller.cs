@@ -19,6 +19,9 @@ public class MouseInput_Controller : MonoBehaviour {
 		TileData tile = tileManager.GetTile(mousePosition);
 		if (tile != null){
 			Debug.Log("Tile at: " + tile.worldPos + " is type: " + tile.tileType);
+			if (tile.machine != null){
+				Debug.Log("The tile has a machine: " + tile.machine.machineName);
+			}
 		}
 		else{
 			Debug.Log("tile on " + mousePosition + " is NULL!");
