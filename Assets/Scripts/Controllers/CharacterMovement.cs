@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction { Left, Right}
 public class CharacterMovement : MonoBehaviour {
 
 	int minX, maxX;
@@ -11,6 +12,7 @@ public class CharacterMovement : MonoBehaviour {
 	SpriteRenderer[] spriteRenderers;
 	bool isMoving = false;
 	float speed = 3;
+	public Direction facingDirection = Direction.Left;
 	void Awake(){
 		animator = GetComponentInChildren<Animator>();
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
@@ -59,8 +61,10 @@ public class CharacterMovement : MonoBehaviour {
 	}
 	void FlipSprites(){
 		bool flip = false;
+		facingDirection = Direction.Left;
 		if (inputVector.x > 0){
 			flip = true;
+			facingDirection = Direction.Right;
 		}
 		// OFFSET the main sprite since it is pivoting from bottom left
 		if (flip == true){

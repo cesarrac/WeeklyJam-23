@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 public enum TileType {Floor, Wall}
-public class TileData  {
+public class Tile_Data  {
 
 	public TileType tileType {get; protected set;}
 	public int X {get; protected set;}
 	public int Y {get; protected set;}
 	public Vector3Int worldPos {get; protected set;}
 	public Machine_Controller machine {get; protected set;}
-	public TileData(int gridX, int gridY, Vector3Int worldPosition, TileType tType){
+	public Tile_Data(int gridX, int gridY, Vector3Int worldPosition, TileType tType){
 		X = gridX;
 		Y = gridY;
 		tileType = tType;
@@ -30,8 +30,8 @@ public class TileData  {
 		return true;
 	}
 
- 	public TileData[] GetNeighbors(bool getDiags = true){
-		TileData[] neighbors = new TileData[8];
+ 	public Tile_Data[] GetNeighbors(bool getDiags = true){
+		Tile_Data[] neighbors = new Tile_Data[8];
 		if (getDiags == true){
 			neighbors[0] = TileManager.instance.GetTile(X, Y + 1); // N
 			neighbors[1] = TileManager.instance.GetTile(X + 1, Y + 1); // NE
@@ -43,7 +43,7 @@ public class TileData  {
 			neighbors[7] = TileManager.instance.GetTile(X - 1, Y + 1);	// NW
 		}
 		else{
-			neighbors = new TileData[4];
+			neighbors = new Tile_Data[4];
 			neighbors[0] = TileManager.instance.GetTile(X, Y + 1); // N
 			neighbors[1] = TileManager.instance.GetTile(X + 1, Y); // E
 			neighbors[2] = TileManager.instance.GetTile(X, Y - 1); // S

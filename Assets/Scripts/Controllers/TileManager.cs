@@ -11,7 +11,7 @@ public class TileManager : MonoBehaviour {
 	int startingY;
 	int map_width;
 	int map_height;
-	TileData[,] tileData_Grid;
+	Tile_Data[,] tileData_Grid;
 	
 	void Awake(){
 		instance = this;
@@ -24,15 +24,15 @@ public class TileManager : MonoBehaviour {
 		map_height = ship_TileMap.size.y;
 		Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
 		Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
-		GenerateTileData();
+		//GenerateTileData();
 	}
 	void Start(){
 		
 		
 	}
 
-	void GenerateTileData(){
-		tileData_Grid = new TileData[map_width, map_height];
+	public void GenerateTileData(){
+		tileData_Grid = new Tile_Data[map_width, map_height];
 		for(int x = 0; x <map_width; x++){
 			for(int y = 0; y <map_height; y++){
 				Vector3Int nextTilePosition = new Vector3Int(startingX + x, startingY + y, 0);
@@ -40,15 +40,15 @@ public class TileManager : MonoBehaviour {
 					continue;
 				}
 				if (ship_TileMap.GetSprite(nextTilePosition).name == "Floor"){
-					tileData_Grid[x, y] = new TileData(x, y, nextTilePosition, TileType.Floor);
+					tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Floor);
 					//Debug.Log("Tile at " + nextTilePosition + " set to FLOOR!");
 					continue;
 				}
-				tileData_Grid[x, y] = new TileData(x, y, nextTilePosition, TileType.Wall);
+				tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Wall);
 			}
 		}
 	}
-	public TileData GetTile(Vector3 worldPosition){
+	public Tile_Data GetTile(Vector3 worldPosition){
 		int worldX = Mathf.FloorToInt(worldPosition.x);
 		int worldY = Mathf.FloorToInt(worldPosition.y);
 		int gridX = Mathf.Abs(worldX - startingX);
@@ -59,7 +59,7 @@ public class TileManager : MonoBehaviour {
 		}
 		return null;
 	}
-	public TileData GetTile(int x, int y){
+	public Tile_Data GetTile(int x, int y){
 		if (IsInGridBounds(x, y) == true){
 			return tileData_Grid[x, y];
 		}

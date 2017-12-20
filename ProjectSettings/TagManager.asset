@@ -13,7 +13,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Interactables
   - 
   - 
   - 
@@ -46,4 +46,7 @@ TagManager:
     locked: 0
   - name: Surface
     uniqueID: 421255781
+    locked: 0
+  - name: Top
+    uniqueID: 3714498093
     locked: 0

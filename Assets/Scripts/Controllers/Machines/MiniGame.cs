@@ -1,51 +1,67 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum MiniGameDifficulty {Easy, Slow, Average, Fast, Ace, Fire, Mindblown, Sauvant, Intergalactic, Master}
 public class MiniGame : MonoBehaviour {
-
+	public RectTransform lineTransform;
 	public GameObject moving_obj, goal_obj;
 	public float speed = 2;
 	float move_x;
-	bool isRight, isLeft;
-	GameObject successPanel, failPanel;
-	float startingGoalOffset = 0.1f;
+	public bool isRight, isLeft;
+	float startingGoalOffset = 9f;
 	float difficultyOffset = 0;
 	float target_position;
 	bool isHorizontal = true;
-	public delegate void OnTryClick();
-	public event OnTryClick onSuccess;
-	public event OnTryClick onFail;
-
-	public void Init(MiniGameDifficulty difficulty){
-		if ((int) difficulty > 0)
-			difficultyOffset = (int)difficulty / 10;
+	bool canMove = false;
+	public delegate void OnGame();
+	public event OnGame onGameSuccess;
+	public event OnGame onGameFail;
+	float left, right;
+	public void StartMiniGame(MachineCondition curMachineCondition, MiniGameDifficulty difficulty){
+		// The starting difficulty based on machine's efficiency
 		difficultyOffset = 0;
-	}
-	public void StartMiniGame(MachineCondition curMachineCondition){
+		if ((int) difficulty > 0)
+			difficultyOffset = (int)difficulty;
+		// The difficulty offset based on current condition of machine
 		int minusCondition = 2 - (int)curMachineCondition;
 		if (minusCondition > 0){
 			for(int i = 0; i < minusCondition; i++){
 				IncreaseDifficulty();
 			}
 		}
-		Sprite mainSprite = GetComponent<SpriteRenderer>().sprite;
+
+		// Set speed of moving obj according to difficulty
+		speed = (int)difficulty > 0 ? (int)difficulty * 100 : 100;
+		
 		if (isHorizontal){
-			float goalX = Random.Range(1, mainSprite.bounds.max.x - 1);
+			float lineWidth = lineTransform.sizeDelta.x * 0.5f;
+			left = -lineWidth + 2;
+			right = lineWidth - 2;
+			Debug.Log("MINIGAME: left = " + left + " right = " + right);
+			float goalX = Random.Range(left, right);
 			goal_obj.transform.localPosition = new Vector2(goalX, goal_obj.transform.localPosition.y);
 		}else{
-			float goalY = Random.Range(1, mainSprite.bounds.max.y - 1);
+			float lineHeight = lineTransform.sizeDelta.y * 0.5f;
+			float goalY = Random.Range(-lineHeight + 2, lineHeight - 2);
 			goal_obj.transform.localPosition = new Vector2(goal_obj.transform.localPosition.y,goalY);
 		}
 		move_x = moving_obj.transform.localPosition.x;
 		isLeft = true;
 		target_position = goal_obj.transform.localPosition.x;
+
+		// scale goal and moving obj to match difficulty
+		float xScale = difficultyOffset > 0 ? difficultyOffset / 10 : startingGoalOffset / 10;
+		moving_obj.transform.localScale = new Vector3(xScale, 1, 1);
+		goal_obj.transform.localScale = new Vector3(xScale, 1, 1);
+
+		canMove = true;
 	}
 	void Update(){
-		if (Input.GetMouseButtonDown(0)){
-			CheckForGoal();
-		}
+		if (canMove == false)
+			return;
+			
 		if (isLeft){
 			MoveRight();
 			
@@ -53,34 +69,28 @@ public class MiniGame : MonoBehaviour {
 			MoveLeft();
 		}
 	}
-	void CheckForGoal(){
+	public void CheckForGoal(){
 		float offset = startingGoalOffset - difficultyOffset;
 		Debug.Log("Offset at: " + offset);
 
 		if (move_x >= target_position - offset && move_x <= target_position + offset){
-			//Debug.Log("You got it!");
+			Debug.Log("You got it!");
 			IncreaseDifficulty();
-			failPanel.SetActive(false);
-			successPanel.SetActive(true);
-			if (onSuccess != null){
-				onSuccess();
-			}
+			if (onGameSuccess != null)
+				onGameSuccess();
 		}else{
-			//Debug.Log("You missed, it's at " + move_x);
-			if (onFail != null){
-				onFail();
-			}
-			successPanel.SetActive(false);
-			failPanel.SetActive(true);
+			Debug.Log("You missed, it's at " + move_x + " and goal is at " + target_position);
+			if (onGameFail != null)
+				onGameFail();
 		}
 	}
 	void IncreaseDifficulty(){
-		difficultyOffset += 0.01f;
-		difficultyOffset = Mathf.Clamp(difficultyOffset, 0, 0.1f);
+		difficultyOffset += 1f;
+		difficultyOffset = Mathf.Clamp(difficultyOffset, 0, 9f);
 		Debug.Log("Difficulty increased to " + difficultyOffset);
 	}
 	void MoveRight(){
-		if (moving_obj.transform.localPosition.x >= 1){
+		if (moving_obj.transform.localPosition.x >= right){
 				isLeft = false;
 				isRight = true;
 				return;
@@ -89,7 +99,7 @@ public class MiniGame : MonoBehaviour {
 		moving_obj.transform.localPosition = new Vector2(move_x, moving_obj.transform.localPosition.y);
 	}
 	void MoveLeft(){
-		if (moving_obj.transform.localPosition.x <= -1f){
+		if (moving_obj.transform.localPosition.x <= left){
 				isLeft = true;
 				isRight = false;
 				return;
@@ -99,8 +109,7 @@ public class MiniGame : MonoBehaviour {
 	}
 
 	public void Deactivate(){
-			successPanel.SetActive(false);
-			failPanel.SetActive(false);
+			canMove = false;
 			isLeft = true;
 			isRight = false;
 			moving_obj.transform.localPosition = new Vector2(-1, 0);

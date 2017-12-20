@@ -4,41 +4,45 @@ using UnityEngine;
 
 public enum MachineCondition {Hopeless, Down, Decayed, OK, Good, Pristine}
 public class Machine_Controller : MonoBehaviour {
-    [HideInInspector]
     public MachineCondition machineCondition {get; protected set;}
     public string machineName = "Machine";
     int tileWidth = 1;
     int tileHeight = 2;
     public ShipSystemType shipSystemsControlled {get; protected set;}
     Vector3Int worldPosition;
-    public TileData baseTile;
+    public Tile_Data baseTile;
     ShipManager ship_Controller;
-    List<TileData> neighborTiles;
+    List<Tile_Data> neighborTiles;
     float efficiencyRate = 1;
-    MiniGame machineMiniGame;
-    public void InitData(string _name, int _tileWidth, int _tileHeight,ShipSystemType _systemsControlled, float _efficiency){
+    public MiniGameDifficulty repairDifficulty {get; protected set;}
+    public BoxCollider2D collidable;
+    public SpriteRenderer shadowRenderer;
+    public void InitData(string _name, Sprite machineSprite, int _tileWidth, int _tileHeight,ShipSystemType _systemsControlled, float _efficiency, MiniGameDifficulty _repairDifficulty){
         machineName = _name;
         tileWidth = _tileWidth;
         tileHeight = _tileHeight;
         shipSystemsControlled = _systemsControlled;
         efficiencyRate = _efficiency;   
+        repairDifficulty = _repairDifficulty;
+        GetComponent<SpriteRenderer>().sprite = machineSprite;
     }
 
-    public void InitMachine(TileData tile, ShipManager ship){
+    public void InitMachine(Tile_Data tile, ShipManager ship){
         if (tile.AddMachine(this) == false)
             return;
         machineCondition = MachineCondition.OK;
+        gameObject.name = machineName;
         baseTile = tile;
         worldPosition = tile.worldPos;
         ship_Controller = ship;
-        neighborTiles = new List<TileData>();
+        neighborTiles = new List<Tile_Data>();
         if (tileWidth > 1 || tileHeight > 1){
             if (baseTile == null){
                 return;
             }
             for(int x = 0; x < tileWidth; x++){
                     for(int y = 0; y < tileHeight; y++){
-                        TileData neighbor = TileManager.instance.GetTile(baseTile.X + x, baseTile.Y + y);
+                        Tile_Data neighbor = TileManager.instance.GetTile(baseTile.X + x, baseTile.Y + y);
                         if (neighbor != null && neighbor != baseTile){
                             if (neighbor.AddMachine(this) == true){
                                 neighborTiles.Add(neighbor);
@@ -48,13 +52,11 @@ public class Machine_Controller : MonoBehaviour {
                     }
             }
 
-           BoxCollider2D collider2D = GetComponentInChildren<BoxCollider2D>();
-           collider2D.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, 0.5f);
-           collider2D.size  = new Vector2(tileWidth, 1);
-           SpriteRenderer shadowSR = transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
-           shadowSR.size = new Vector2(tileWidth, 1);
-
-           machineMiniGame = GetComponentInChildren<MiniGame>();
+           collidable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, 0.5f);
+           collidable.size  = new Vector2(tileWidth, 1);
+           /* interactable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, tileHeight > 1 ? 1 : 0.5f);
+           interactable.size  = new Vector2(tileWidth, tileHeight); */
+           shadowRenderer.size = new Vector2(tileWidth, 1);
         } 
         
     }
@@ -77,13 +79,19 @@ public class Machine_Controller : MonoBehaviour {
         DecayCondition();
     
     }
-    public void TryRepair(GameObject gameObject){
+    public void TryRepair(){
         // Start mini game ui
-        machineMiniGame.gameObject.SetActive(true);
-        machineMiniGame.StartMiniGame(machineCondition);
+        MiniGameManager.instance.StartMiniGame(this);
     }
-    void RepairCondition(){
+    public void RepairCondition(){
         // called if mini game was succesful
+        // RETURN if already at MAX condition
+        if ((int)machineCondition >= System.Enum.GetValues(typeof(MachineCondition)).Length)
+            return;
+        int curCondition = (int)machineCondition;
+        
+        machineCondition = (MachineCondition) curCondition + 1;
+        Debug.Log("MACHINE REPAIRED! " + machineCondition);
     }
     public void DecayCondition(){
         int curCondition = (int)machineCondition;
@@ -100,7 +108,7 @@ public class Machine_Controller : MonoBehaviour {
 			}
 		}
         if (neighborTiles != null && neighborTiles.Count > 0){
-            foreach(TileData tile in neighborTiles){
+            foreach(Tile_Data tile in neighborTiles){
                 tile.RemoveMachine();
             }
         }
