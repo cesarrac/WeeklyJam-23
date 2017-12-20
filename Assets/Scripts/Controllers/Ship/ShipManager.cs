@@ -6,7 +6,7 @@ public class ShipManager : MonoBehaviour {
 
 	public static ShipManager instance {get; protected set;}
 	
-	public Machine[] startingMachines;
+	public Machine_Controller[] startingMachines;
 	Dictionary<ShipSystemType, ShipSystem> ship_systems;
 	
 	void Awake(){
@@ -39,16 +39,19 @@ public class ShipManager : MonoBehaviour {
 			sSystem.StartSystem();
 		}
 	}
-	public void AddMachine(Machine newMachine){
+	public bool AddMachine(Machine_Controller newMachine){
 
-		//Debug.Log("Adding machine " + newMachine.shipSystemsControlled);
 		if (ship_systems.ContainsKey(newMachine.shipSystemsControlled) == false)
-			return;
+			return false;
+		// If there's a machine already -- give up!
+		if (ship_systems[newMachine.shipSystemsControlled].currMachine != null){
+			return false;
+		}
 		ship_systems[newMachine.shipSystemsControlled].AddMachine(newMachine);
-
+		return true;
 		//Debug.Log("Added machine " + newMachine.shipSystemsControlled);
 	}
-	public void RemoveMachine(Machine oldMachine){
+	public void RemoveMachine(Machine_Controller oldMachine){
 
 	}
 	public ShipSystem GetShipSystem(ShipSystemType sType){

@@ -9,7 +9,7 @@ public class TileData  {
 	public int X {get; protected set;}
 	public int Y {get; protected set;}
 	public Vector3Int worldPos {get; protected set;}
-	public Machine machine {get; protected set;}
+	public Machine_Controller machine {get; protected set;}
 	public TileData(int gridX, int gridY, Vector3Int worldPosition, TileType tType){
 		X = gridX;
 		Y = gridY;
@@ -17,7 +17,7 @@ public class TileData  {
 		worldPos = worldPosition;
 	}
 
-	public bool AddMachine(Machine newMachine){
+	public bool AddMachine(Machine_Controller newMachine){
 		if (machine != null)
 			return false;
 		machine = newMachine;

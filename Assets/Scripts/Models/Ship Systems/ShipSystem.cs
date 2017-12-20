@@ -6,10 +6,10 @@ using System;
 public enum ShipSystemType {None, Power, Propulsion, Weapons, Nav, LifeSupport, CargoHold}
 public abstract class ShipSystem  {
 	public ShipSystemType shipSystemType {get; protected set;}
-	public Machine currMachine;
+	public Machine_Controller currMachine;
 	public Action<int> OnShipChangedCB {get; protected set;}
 	public bool isSystemOn = false;
-	public virtual void AddMachine(Machine newMachine){
+	public virtual void AddMachine(Machine_Controller newMachine){
 		if (newMachine.shipSystemsControlled != shipSystemType)
 			return;
 		currMachine = newMachine;

@@ -16,6 +16,7 @@ public class ShipPropulsion : ShipSystem {
 		}
 		if (CanStart() == false){
 			// Show UI with machine condition
+			return;
 		}
 
 		base.StartSystem();

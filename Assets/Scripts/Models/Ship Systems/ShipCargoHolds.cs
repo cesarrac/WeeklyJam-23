@@ -5,12 +5,12 @@ using UnityEngine;
 public class ShipCargoHolds : ShipSystem {
 
 	// This system controls the main cargo (currMachine) and the other special cargos added
-	public List<Machine> secondary_holds;
+	public List<Machine_Controller> secondary_holds;
 	public ShipCargoHolds(){
 		shipSystemType = ShipSystemType.CargoHold;
-		secondary_holds = new List<Machine>();
+		secondary_holds = new List<Machine_Controller>();
 	}
-	public override void AddMachine(Machine newMachine){
+	public override void AddMachine(Machine_Controller newMachine){
 		// Set base cargo hold as currMachine
 		if (currMachine == null){
 			currMachine = newMachine;
