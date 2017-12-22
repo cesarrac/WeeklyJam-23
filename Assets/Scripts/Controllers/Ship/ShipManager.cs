@@ -5,19 +5,27 @@ using UnityEngine;
 public class ShipManager : MonoBehaviour {
 
 	public static ShipManager instance {get; protected set;}
-	
-	//public Machine_Controller[] startingMachines;
-	Dictionary<ShipSystemType, ShipSystem> ship_systems;
+	public ShipPower shipPower {get; protected set;}
+	public ShipPropulsion shipPropulsion {get; protected set;}
+	public ShipCargoHolds shipCargo {get; protected set;}
+	public ShipWeapons shipWeapons {get; protected set;}
+	public ShipNavigation shipNavigation {get; protected set;}
+	ShipSystem[] coreSystems;
 	ObjectPool pool;
 	void Awake(){
 		instance = this;
-		ship_systems = new Dictionary<ShipSystemType, ShipSystem>();
-		ship_systems.Add(ShipSystemType.Propulsion, new ShipPropulsion());
-		ship_systems.Add(ShipSystemType.Nav, new ShipNavigation());
-		ship_systems.Add(ShipSystemType.Weapons, new ShipWeapons());
-		ship_systems.Add(ShipSystemType.LifeSupport, new ShipLifeSupport());
-		ship_systems.Add(ShipSystemType.CargoHold, new ShipCargoHolds());
-		ship_systems.Add(ShipSystemType.Power, new ShipPower());
+		coreSystems = new ShipSystem[5];
+		shipPower = new ShipPower();
+		coreSystems[0] = shipPower;
+		shipPropulsion = new ShipPropulsion();
+		coreSystems[1] = shipPropulsion;
+		shipCargo = new ShipCargoHolds();
+		coreSystems[2] = shipCargo;
+		shipWeapons = new ShipWeapons();
+		coreSystems[3] = shipWeapons;
+		shipNavigation = new ShipNavigation();
+		coreSystems[4] = shipNavigation;
+		Debug.Log("Systems initalized!");
 	}
 	/* void Start(){
 		InitializeCurrentMachines();
@@ -36,20 +44,6 @@ public class ShipManager : MonoBehaviour {
 			if (AddMachine(data, startPos)){
 				startPos.x += data.tileWidth;
 			}
-			/* GameObject machine = pool.GetObjectForType("Machine", true, transform.position);
-			machine.transform.SetParent(this.transform);
-			machine.transform.localPosition = startPos;
-			startPos.x += data.tileWidth;
-			data.Init(machine.GetComponent<Machine_Controller>());
-
-			if (AddMachine(machine.GetComponent<Machine_Controller>())){
-				machine.GetComponent<Machine_Controller>().InitMachine(TileManager.instance.GetTile(machine.transform.position), this);
-			}
-			else{
-				machine.transform.SetParent(null);
-				machine.name = "Machine";
-				pool.PoolObject(machine);
-			} */
 		}
 	}
 	
@@ -57,8 +51,8 @@ public class ShipManager : MonoBehaviour {
 		StartSystems();
 	}
 	void StartSystems(){
-		foreach(ShipSystem sSystem in ship_systems.Values){
-			sSystem.StartSystem();
+		foreach(ShipSystem system in coreSystems){
+			system.StartSystem();
 		}
 	}
 
@@ -69,8 +63,10 @@ public class ShipManager : MonoBehaviour {
 		machine.transform.SetParent(this.transform);
 		Machine_Controller mController = machine.GetComponent<Machine_Controller>();
 		data.Init(mController);
+
 		if (AddMachine(mController) == true){
 			mController.InitMachine(TileManager.instance.GetTile(machine.transform.position), this);
+			data.InitSystems(this);
 			return true;
 		}else{
 			machine.transform.SetParent(null);
@@ -82,23 +78,58 @@ public class ShipManager : MonoBehaviour {
 
 
 	public bool AddMachine(Machine_Controller newMachine){
-
-		if (ship_systems.ContainsKey(newMachine.shipSystemsControlled) == false)
-			return false;
-		// If there's a machine already -- give up!
-		if (ship_systems[newMachine.shipSystemsControlled].currMachine != null){
-			return false;
+		bool canAdd = false;
+		switch(newMachine.shipSystemsControlled){
+			case ShipSystemType.CargoHold:
+					canAdd = shipCargo.AddMachine(newMachine);
+					break;
+			case ShipSystemType.Nav:
+					canAdd = shipNavigation.AddMachine(newMachine);
+					break;
+			case ShipSystemType.Propulsion:
+					canAdd = shipPropulsion.AddMachine(newMachine);
+					break;
+			case ShipSystemType.Power:
+					canAdd = shipPower.AddMachine(newMachine);
+					break;
+			case ShipSystemType.Weapons:
+					canAdd = shipWeapons.AddMachine(newMachine);
+					break;
+			
 		}
-		ship_systems[newMachine.shipSystemsControlled].AddMachine(newMachine);
-		return true;
-		//Debug.Log("Added machine " + newMachine.shipSystemsControlled);
+		return canAdd;
 	}
-	public void RemoveMachine(Machine_Controller oldMachine){
+	public bool RemoveMachine(Machine_Controller oldMachine){
+		bool canAdd = false;
+		switch(oldMachine.shipSystemsControlled){
+			case ShipSystemType.CargoHold:
+					canAdd = shipCargo.AddMachine(oldMachine);
+					break;
+			case ShipSystemType.Nav:
+					canAdd = shipNavigation.AddMachine(oldMachine);
+					break;
+			case ShipSystemType.Propulsion:
+					canAdd = shipPropulsion.AddMachine(oldMachine);
+					break;
+			case ShipSystemType.Power:
+					canAdd = shipPower.AddMachine(oldMachine);
+					break;
+			case ShipSystemType.Weapons:
+					canAdd = shipWeapons.AddMachine(oldMachine);
+					break;
+			
+		}
+		return canAdd;
+	}
 
+	public bool SystemInteract(ShipSystemType sType, GameObject user){
+		foreach(ShipSystem system in coreSystems){
+			if (system.shipSystemType == sType){
+				system.Interact(user);
+				return true;
+			}
+		}
+		return false;
 	}
-	public ShipSystem GetShipSystem(ShipSystemType sType){
-		if (ship_systems.ContainsKey(sType) == false)
-			return null;
-		return ship_systems[sType];
-	}
+	
 }

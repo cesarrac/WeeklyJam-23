@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(fileName = "New Machine", menuName = "Machines/New Machine")]
-public class Machine_Data : ScriptableObject {
+
+public abstract class Machine_Data : ScriptableObject {
 
 	public string machineName = "New Machine";
 	public Sprite machineSprite;
@@ -15,9 +15,7 @@ public class Machine_Data : ScriptableObject {
 	[HideInInspector]
 	public Machine_Controller machine_Controller;
 	public MiniGameDifficulty repairDifficulty;
-	public void Init(Machine_Controller controller)
-	{
-        machine_Controller = controller;
-        machine_Controller.InitData(machineName, machineSprite, tileWidth, tileHeight, systemControlled, efficiencyRate, repairDifficulty);
-    }
+	public abstract void Init(Machine_Controller controller);
+	public abstract void InitSystems(ShipManager shipManager);
+	
 }

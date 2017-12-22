@@ -15,15 +15,15 @@ public class TileManager : MonoBehaviour {
 	
 	void Awake(){
 		instance = this;
-		if (ship_TileMap.HasTile(positionToCheck)){
+		/* if (ship_TileMap.HasTile(positionToCheck)){
 			Debug.Log(ship_TileMap.name + " has tile at " + positionToCheck);
-		}
+		} */
 		startingX = ship_TileMap.origin.x;
 		startingY = ship_TileMap.origin.y;
 		map_width = ship_TileMap.size.x;
 		map_height = ship_TileMap.size.y;
-		Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
-		Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
+		//Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
+		//Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
 		//GenerateTileData();
 	}
 	void Start(){
@@ -53,7 +53,7 @@ public class TileManager : MonoBehaviour {
 		int worldY = Mathf.FloorToInt(worldPosition.y);
 		int gridX = Mathf.Abs(worldX - startingX);
 		int gridY = Mathf.Abs(worldY - startingY);
-		Debug.Log("World position: " + worldPosition + " is grid position: " + gridX + ", " + gridY);
+		//Debug.Log("World position: " + worldPosition + " is grid position: " + gridX + ", " + gridY);
 		if (IsInGridBounds(gridX, gridY) == true){
 			return tileData_Grid[gridX, gridY];
 		}

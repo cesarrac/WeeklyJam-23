@@ -12,13 +12,14 @@ public class CharacterMovement : MonoBehaviour {
 	SpriteRenderer[] spriteRenderers;
 	bool isMoving = false;
 	float speed = 3;
-	public Direction facingDirection = Direction.Left;
+	public Direction facingDirection {get; protected set;}
 	void Awake(){
 		animator = GetComponentInChildren<Animator>();
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 		minX = minY = -8;
 		maxX = 7;
 		maxY = 3;
+		facingDirection = Direction.Left;
 	}
 
 	void Update(){

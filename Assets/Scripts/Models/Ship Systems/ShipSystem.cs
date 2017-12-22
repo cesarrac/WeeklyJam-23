@@ -9,10 +9,18 @@ public abstract class ShipSystem  {
 	public Machine_Controller currMachine;
 	public Action<int> OnShipChangedCB {get; protected set;}
 	public bool isSystemOn = false;
-	public virtual void AddMachine(Machine_Controller newMachine){
+	public virtual bool CanAddMachine(Machine_Controller newMachine){
 		if (newMachine.shipSystemsControlled != shipSystemType)
-			return;
+			return false;
+		if (currMachine != null)
+			return false;
+		return true;
+	}
+	public virtual bool AddMachine(Machine_Controller newMachine){
+		if (CanAddMachine(newMachine) == false)
+			return false;
 		currMachine = newMachine;
+		return true;
 	}
 	public virtual bool CanStart(){
 		if (currMachine != null && currMachine.CanUse() == true){
@@ -44,6 +52,12 @@ public abstract class ShipSystem  {
 		if (OnShipChangedCB != null){
 			OnShipChangedCB(0);
 		}
+	}
+	public virtual bool Interact(GameObject user){
+		if (user == null)
+			return false;
+		Debug.Log(user.name + " interacting with system " + shipSystemType);
+		return true;
 	}
 	public void RegisterCB(Action<int> cb){
 		OnShipChangedCB += cb;

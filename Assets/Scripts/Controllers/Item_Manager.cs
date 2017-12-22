@@ -5,7 +5,9 @@ using UnityEngine;
 public class Item_Manager : MonoBehaviour {
 
 	public static Item_Manager instance {get; protected set;}
+	public ItemPrototype[] testPrototypes;
 	Machine_Data[] available_Machines;
+	ObjectPool pool;
 	void Awake(){
 		instance = this;
 		available_Machines = Resources.LoadAll<Machine_Data>("ScriptableObjects/MachineData");
@@ -13,7 +15,11 @@ public class Item_Manager : MonoBehaviour {
 			Debug.LogError("Machine data was not loaded by Item_Manager!");
 	}	
 	void Start(){
-
+		pool = ObjectPool.instance;
+		GameObject testObj = pool.GetObjectForType("Item", true, new Vector2(0, -3f));
+		testObj.GetComponent<Item_Controller>().Initialize(CreateInstance(testPrototypes[0]));
+		GameObject testObj2 = pool.GetObjectForType("Item", true, new Vector2(1, -3f));
+		testObj2.GetComponent<Item_Controller>().Initialize(CreateInstance(testPrototypes[1]));
 	}
 	public Item CreateInstance(ItemPrototype prototype){
         return Item.CreateInstance(prototype);

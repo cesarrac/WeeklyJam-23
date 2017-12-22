@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 public class ShipPropulsion : ShipSystem {
 
-
 	public ShipPropulsion(){
 		shipSystemType = ShipSystemType.Propulsion;
 	}
@@ -21,5 +20,4 @@ public class ShipPropulsion : ShipSystem {
 
 		base.StartSystem();
 	}
-
 }

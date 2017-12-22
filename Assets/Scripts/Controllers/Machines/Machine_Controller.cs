@@ -11,7 +11,7 @@ public class Machine_Controller : MonoBehaviour {
     public ShipSystemType shipSystemsControlled {get; protected set;}
     Vector3Int worldPosition;
     public Tile_Data baseTile;
-    ShipManager ship_Controller;
+    ShipManager shipManager;
     List<Tile_Data> neighborTiles;
     float efficiencyRate = 1;
     public MiniGameDifficulty repairDifficulty {get; protected set;}
@@ -34,7 +34,7 @@ public class Machine_Controller : MonoBehaviour {
         gameObject.name = machineName;
         baseTile = tile;
         worldPosition = tile.worldPos;
-        ship_Controller = ship;
+        shipManager = ship;
         neighborTiles = new List<Tile_Data>();
         if (tileWidth > 1 || tileHeight > 1){
             if (baseTile == null){
@@ -46,7 +46,7 @@ public class Machine_Controller : MonoBehaviour {
                         if (neighbor != null && neighbor != baseTile){
                             if (neighbor.AddMachine(this) == true){
                                 neighborTiles.Add(neighbor);
-                                Debug.Log("machine added to neighbor at " + neighbor.worldPos);
+                                //Debug.Log("machine added to neighbor at " + neighbor.worldPos);
                             }
                         }
                     }
@@ -78,6 +78,13 @@ public class Machine_Controller : MonoBehaviour {
 
         DecayCondition();
     
+    }
+    public bool Interact(GameObject user){
+        if (shipManager.SystemInteract(shipSystemsControlled, user) == true){
+            // animate machine to show it being interfaced
+            return true;
+        }
+        return false;
     }
     public void TryRepair(){
         // Start mini game ui

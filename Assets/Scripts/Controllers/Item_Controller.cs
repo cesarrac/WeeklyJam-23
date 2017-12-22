@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class Item_Controller : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
+	public Item item {get; protected set;}
+	SpriteRenderer spriteRenderer;
+	void OnEnable(){
+		spriteRenderer = GetComponent<SpriteRenderer>();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+	public void Initialize(Item _item){
+		item = _item;
+		spriteRenderer.sprite = item.sprite;
+	}
+	public void Pool(){
+		item = null;
+		ObjectPool.instance.PoolObject(this.gameObject);
 	}
 }

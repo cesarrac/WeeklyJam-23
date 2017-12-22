@@ -5,7 +5,7 @@ using UnityEngine;
 public class FX_Manager : MonoBehaviour {
 	public GameObject starParticles;
 	void Start(){
-		ShipManager.instance.GetShipSystem(ShipSystemType.Propulsion).RegisterCB(OnShipPropulsion);
+		ShipManager.instance.shipPropulsion.RegisterCB(OnShipPropulsion);
 	}
 	void OnShipPropulsion(int value){
 		if (value <= 0)
