@@ -4,21 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 public class InventoryUI : MonoBehaviour {
-	public static InventoryUI instance {get; protected set;}
 	InvUISlot[] uiSlots;
 	Inventory inventory;
 	//int currHotSlot = -1;
 	GameObject inventoryPanel;
-	public int currActiveSlot = 0;
+	int currActiveSlot = 0;
 	public ItemDrag_Controller curDragItem {get; protected set;}
 	public delegate void OnItemSelected(int itemIndex);
 	public event OnItemSelected onItemSelected;
-	void Awake(){
-		instance = this;
-		inventoryPanel = transform.GetChild(0).gameObject;
-	}
-	public void Initialize(Inventory _inventory){
-		inventoryPanel = UI_Manager.instance.playerInventoryPanel;
+	public void Initialize(Inventory _inventory, GameObject _inventoryPanel){
+		inventoryPanel = _inventoryPanel;
 		if (inventoryPanel.transform.childCount < _inventory.inventory_items.Length){
 			Debug.LogError("Inventory panel does not have enough slots!");
 			return;
@@ -71,8 +66,8 @@ public class InventoryUI : MonoBehaviour {
 		
 		if (itemIndex >= uiSlots.Length || itemIndex < 0)
 			return;
-		if (inventory.inventory_items[itemIndex].item == null)
-			return;
+		/* if (inventory.inventory_items[itemIndex].item == null)
+			return; */
 
 		if (currActiveSlot >= 0){
 			uiSlots[currActiveSlot].SetAsActive(false);
@@ -177,6 +172,8 @@ public struct InvUISlot{
 		if (itemMask == null)
 			return;
 		if (isActive){
+			if (itemSprite == null)
+				return;
 			itemMask.color = Color.green;
 		}
 		else{

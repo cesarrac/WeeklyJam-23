@@ -12,6 +12,7 @@ public class ShipManager : MonoBehaviour {
 	public ShipNavigation shipNavigation {get; protected set;}
 	ShipSystem[] coreSystems;
 	ObjectPool pool;
+
 	void Awake(){
 		instance = this;
 		coreSystems = new ShipSystem[5];
@@ -19,7 +20,7 @@ public class ShipManager : MonoBehaviour {
 		coreSystems[0] = shipPower;
 		shipPropulsion = new ShipPropulsion();
 		coreSystems[1] = shipPropulsion;
-		shipCargo = new ShipCargoHolds();
+		shipCargo = new ShipCargoHolds(GetComponent<InventoryUI>());
 		coreSystems[2] = shipCargo;
 		shipWeapons = new ShipWeapons();
 		coreSystems[3] = shipWeapons;

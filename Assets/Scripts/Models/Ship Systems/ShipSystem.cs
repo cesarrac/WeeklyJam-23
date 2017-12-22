@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 public enum ShipSystemType {None, Power, Propulsion, Weapons, Nav, LifeSupport, CargoHold}
-public abstract class ShipSystem  {
+public class ShipSystem  {
 	public ShipSystemType shipSystemType {get; protected set;}
 	public Machine_Controller currMachine;
 	public Action<int> OnShipChangedCB {get; protected set;}

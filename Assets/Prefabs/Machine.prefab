@@ -36,8 +36,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4870827754663694}
   - component: {fileID: 212086415028758666}
-  - component: {fileID: 95048238955166182}
   - component: {fileID: 114524238566336474}
+  - component: {fileID: 95930719933816616}
   m_Layer: 0
   m_Name: Machine
   m_TagString: Untagged
@@ -127,7 +127,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!95 &95048238955166182
+--- !u!95 &95930719933816616
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 1
@@ -136,7 +136,7 @@ Animator:
   m_GameObject: {fileID: 1210076449594300}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0af8e734eac262047aee92602d642f0e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -236,7 +236,7 @@ SpriteRenderer:
   m_SortingLayerID: 421255781
   m_SortingLayer: 2
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: fd11544748f7e21498ca0fd7cce6d85f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 931a012671a472046801c8d9e5aef426, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   machineName: Simple Cargohold
   machineSprite: {fileID: 21300000, guid: 931a012671a472046801c8d9e5aef426, type: 3}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: 0af8e734eac262047aee92602d642f0e, type: 2}
   tileWidth: 1
   tileHeight: 2
   efficiencyRate: 50
@@ -21,4 +21,4 @@ MonoBehaviour:
   systemControlled: 6
   machine_Controller: {fileID: 0}
   repairDifficulty: 0
-  maxJumpCapacity: 1
+  maxCargoSpace: 10

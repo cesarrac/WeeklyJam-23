@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UI_Manager : MonoBehaviour {
 
 	public static UI_Manager instance {get; protected set;}
-	public GameObject playerInventoryPanel;
+	public GameObject playerInventoryPanel, shipInventoryPanel;
 	void Awake(){
 		instance = this;
 	}

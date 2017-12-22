@@ -46,7 +46,7 @@ public class Inventory{
             return false; // no empty space found
         }
         inventory_items[emptyIndex].item = item;
-        inventory_items[emptyIndex].count += count;
+        inventory_items[emptyIndex].count = count;
 
         spacesFilled += 1;
 
@@ -118,8 +118,7 @@ public class Inventory{
         if (count == 0){
             return true;
         }
-        if (ContainsItem(itemName, count) == false)
-            return false;
+        
 
          for(int i = 0; i < inventory_items.Length; i++){
             if (inventory_items[i].item != null){

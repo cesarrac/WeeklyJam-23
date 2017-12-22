@@ -13,11 +13,12 @@ public class Courier_Controller : MonoBehaviour {
 	void Awake(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
-		playerInventory = new Inventory(5);
+		playerInventory = new Inventory(3);
 		inventoryUI = GetComponent<InventoryUI>();
-		inventoryUI.Initialize(playerInventory);
+		
 	}
 	void Start(){
+		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
 		MouseInput_Controller.instance.onInteract += TryInteract;
 		inventoryUI.onItemSelected += OnItemSelected;
 	}
@@ -78,29 +79,39 @@ public class Courier_Controller : MonoBehaviour {
 	void DropItem(){
 		if (item_held == null)
 			return;
+		if (playerInventory.RemoveItem(item_held.item.name) == false)
+			return;
 		Vector2 direction = characterMovement.facingDirection == Direction.Right ? Vector2.right : Vector2.left;
 		animator.SetTrigger("drop");
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		item_held.gameObject.SetActive(true);
 		item_held.transform.SetParent(null);
 		item_held.transform.position = ((Vector2)transform.position + direction);
-		playerInventory.RemoveItem(item_held.item.name);
 		item_held = null;
 	}
 	void DepositItem(){
+		if (playerInventory.RemoveItem(item_held.item.name) == false)
+			return;
+		
 		animator.SetTrigger("drop");
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
-		playerInventory.RemoveItem(item_held.item.name);
 		
 		item_held.Pool();
 		item_held = null;
 	}
 	void OnItemSelected(int itemIndex){
 		Item itemSelected = playerInventory.inventory_items[itemIndex].item;
-		if (itemSelected == null)
+		if (itemSelected == null){
+			PutAwayHeldItem();
 			return;
+		}
 		if (itemSelected.itemType != ItemType.Cargo)
+		{
+			PutAwayHeldItem();
+			// Activate tool here:
+			
 			return;
+		}
 		if (item_held == null){
 			GameObject itemGobj = ObjectPool.instance.GetObjectForType("Item", true, itemHolder.transform.position);
 			item_held = itemGobj.GetComponent<Item_Controller>();
@@ -113,6 +124,16 @@ public class Courier_Controller : MonoBehaviour {
 		item_held.Initialize(playerInventory.inventory_items[itemIndex].item);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = item_held.GetComponent<SpriteRenderer>().sprite;
 		item_held.gameObject.SetActive(false);
+	}
+	void PutAwayHeldItem(){
+		if (item_held == null){
+			return;
+		}
+		animator.SetTrigger("drop");
+		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
+		item_held.transform.SetParent(null);
+		item_held.Pool();
+		item_held = null;
 	}
 	void OnDisable(){
 		if (MouseInput_Controller.instance != null){

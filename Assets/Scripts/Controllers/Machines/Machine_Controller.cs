@@ -17,7 +17,11 @@ public class Machine_Controller : MonoBehaviour {
     public MiniGameDifficulty repairDifficulty {get; protected set;}
     public BoxCollider2D collidable;
     public SpriteRenderer shadowRenderer;
-    public void InitData(string _name, Sprite machineSprite, int _tileWidth, int _tileHeight,ShipSystemType _systemsControlled, float _efficiency, MiniGameDifficulty _repairDifficulty){
+    Animator animator;
+    void OnEnable(){
+        animator = GetComponent<Animator>();
+    }
+    public void InitData(string _name, Sprite machineSprite, RuntimeAnimatorController animatorController, int _tileWidth, int _tileHeight,ShipSystemType _systemsControlled, float _efficiency, MiniGameDifficulty _repairDifficulty){
         machineName = _name;
         tileWidth = _tileWidth;
         tileHeight = _tileHeight;
@@ -25,6 +29,7 @@ public class Machine_Controller : MonoBehaviour {
         efficiencyRate = _efficiency;   
         repairDifficulty = _repairDifficulty;
         GetComponent<SpriteRenderer>().sprite = machineSprite;
+        animator.runtimeAnimatorController = animatorController;
     }
 
     public void InitMachine(Tile_Data tile, ShipManager ship){
@@ -81,10 +86,14 @@ public class Machine_Controller : MonoBehaviour {
     }
     public bool Interact(GameObject user){
         if (shipManager.SystemInteract(shipSystemsControlled, user) == true){
-            // animate machine to show it being interfaced
+            AnimateOn();
             return true;
         }
         return false;
+    }
+    public void AnimateOn(){
+        // animate machine to show it being interfaced
+        animator.SetTrigger("on");
     }
     public void TryRepair(){
         // Start mini game ui
@@ -123,5 +132,7 @@ public class Machine_Controller : MonoBehaviour {
     }
     void OnDisable(){
 		DestroyMachine();
+        if (animator != null)
+            animator.runtimeAnimatorController = null;
 	}
 }

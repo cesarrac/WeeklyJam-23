@@ -7,8 +7,11 @@ public class ShipCargoHolds : ShipSystem {
 	// This system controls the main cargo (currMachine) and the other special cargos added
 	//public List<Machine_Controller> secondary_holds;
 	Inventory active_inventory;
-	public ShipCargoHolds(){
+	InventoryUI inventoryUI;
+	public ShipCargoHolds(InventoryUI _inventoryUI){
 		shipSystemType = ShipSystemType.CargoHold;
+		inventoryUI = _inventoryUI;
+		inventoryUI.onItemSelected += OnItemSelected;
 		//secondary_holds = new List<Machine_Controller>();
 		//active_inventories = new Dictionary<Machine_Controller, Inventory>();
 	}
@@ -32,7 +35,7 @@ public class ShipCargoHolds : ShipSystem {
 		if (active_inventory != null)
 			return;
 		active_inventory = new Inventory(maxSpacesInNewCargo);
-		
+		inventoryUI.Initialize(active_inventory, UI_Manager.instance.shipInventoryPanel);
 	}
 	
 	public override bool Interact(GameObject user){
@@ -45,5 +48,16 @@ public class ShipCargoHolds : ShipSystem {
 		}
 		Debug.Log("Added " + newItem.name + " to Cargo Hold");
 		return true;
+	}
+
+	void OnItemSelected(int itemIndex){
+		if (active_inventory.inventory_items[itemIndex].item == null)
+			return;
+		currMachine.AnimateOn();
+		Item item = active_inventory.inventory_items[itemIndex].item;
+		if (active_inventory.RemoveItem(item.name, 1) == false)
+			return;
+		GameObject itemGObj = ObjectPool.instance.GetObjectForType("Item", true, currMachine.transform.position + Vector3.down);
+		itemGObj.GetComponent<Item_Controller>().Initialize(item);
 	}
 }
