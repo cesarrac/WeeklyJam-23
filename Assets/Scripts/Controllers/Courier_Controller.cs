@@ -20,9 +20,26 @@ public class Courier_Controller : MonoBehaviour {
 	void Start(){
 		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
 		MouseInput_Controller.instance.onInteract += TryInteract;
+		MouseInput_Controller.instance.onUse += Use;
 		inventoryUI.onItemSelected += OnItemSelected;
 	}
+	void Use(){
+		if (item_held == null)
+			return;
+		if (item_held.item == null)
+			return;
+		if (item_held.item.itemUseType != ItemUseType.Repair)
+			return;
 
+		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		mousePosition.z = 0;
+		Tile_Data tile = TileManager.instance.GetTile(mousePosition);
+		if (tile != null){
+			if (tile.machine != null){
+				tile.machine.TryRepair();
+			}
+		}
+	}
 	void TryInteract(){
 		if (item_held != null){
 			// Check for a machine under the mouse to see if we are dropping this in a cargo hold
@@ -59,7 +76,8 @@ public class Courier_Controller : MonoBehaviour {
 		}
 	}
 	public void PickUpItem(GameObject itemGobj){
-		if (playerInventory.AddItem(itemGobj.GetComponent<Item_Controller>().item) == false)
+		Item itemToPickUp = itemGobj.GetComponent<Item_Controller>().item;
+		if (playerInventory.AddItem(itemToPickUp) == false)
 			return;
 		if (item_held != null){
 			// Item gets added to inventory but Item gobj gets pooled
@@ -67,13 +85,15 @@ public class Courier_Controller : MonoBehaviour {
 			return;
 		}
 		item_held = itemGobj.GetComponent<Item_Controller>();
+		item_held.Initialize(itemToPickUp);
 		item_held.transform.position = transform.position;
 		item_held.transform.SetParent(this.transform);
-		itemHolder.GetComponent<SpriteRenderer>().sprite = itemGobj.GetComponent<SpriteRenderer>().sprite;
 		item_held.gameObject.SetActive(false);
-		animator.SetTrigger("pickUp");
-	}
-	public void AddToInventory(Item item){
+		// If it's cargo, place it over player's head
+		if (itemGobj.GetComponent<Item_Controller>().item.itemType == ItemType.Cargo){
+			itemHolder.GetComponent<SpriteRenderer>().sprite = itemGobj.GetComponent<SpriteRenderer>().sprite;
+			animator.SetTrigger("pickUp");
+		}
 		
 	}
 	void DropItem(){
@@ -82,7 +102,9 @@ public class Courier_Controller : MonoBehaviour {
 		if (playerInventory.RemoveItem(item_held.item.name) == false)
 			return;
 		Vector2 direction = characterMovement.facingDirection == Direction.Right ? Vector2.right : Vector2.left;
-		animator.SetTrigger("drop");
+		if (item_held.item.itemType == ItemType.Cargo)
+			animator.SetTrigger("drop");
+			
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		item_held.gameObject.SetActive(true);
 		item_held.transform.SetParent(null);
@@ -105,30 +127,39 @@ public class Courier_Controller : MonoBehaviour {
 			PutAwayHeldItem();
 			return;
 		}
-		if (itemSelected.itemType != ItemType.Cargo)
+	/* 	if (itemSelected.itemType != ItemType.Cargo)
 		{
 			PutAwayHeldItem();
 			// Activate tool here:
 			
 			return;
+		} */
+		if (item_held != null){
+			if(itemSelected.itemType != ItemType.Cargo){
+				PutAwayHeldItem();
+			}
 		}
+
 		if (item_held == null){
 			GameObject itemGobj = ObjectPool.instance.GetObjectForType("Item", true, itemHolder.transform.position);
 			item_held = itemGobj.GetComponent<Item_Controller>();
 			item_held.transform.position = transform.position;
 			item_held.transform.SetParent(this.transform);
-			
-			animator.SetTrigger("pickUp");
-			
 		}
-		item_held.Initialize(playerInventory.inventory_items[itemIndex].item);
-		itemHolder.GetComponent<SpriteRenderer>().sprite = item_held.GetComponent<SpriteRenderer>().sprite;
+		item_held.Initialize(itemSelected);
 		item_held.gameObject.SetActive(false);
+
+			// If it's cargo, place it over player's head
+		if (itemSelected.itemType == ItemType.Cargo){
+			itemHolder.GetComponent<SpriteRenderer>().sprite = itemSelected.sprite;
+			animator.SetTrigger("pickUp");
+		}
 	}
 	void PutAwayHeldItem(){
 		if (item_held == null){
 			return;
 		}
+		Debug.Log("Putting away item held");
 		animator.SetTrigger("drop");
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		item_held.transform.SetParent(null);
@@ -137,6 +168,7 @@ public class Courier_Controller : MonoBehaviour {
 	}
 	void OnDisable(){
 		if (MouseInput_Controller.instance != null){
+			MouseInput_Controller.instance.onUse -= Use;
 			MouseInput_Controller.instance.onInteract -= TryInteract;
 		}
 		if (inventoryUI != null)

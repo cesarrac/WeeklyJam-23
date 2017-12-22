@@ -16,14 +16,16 @@ public class MouseInput_Controller : MonoBehaviour {
 	}
 	void Update(){
 		if (Input.GetMouseButtonDown(0)){
-			CheckTileUnderMouse();
+			//CheckTileUnderMouse();
+			if (onUse != null)
+				onUse();
 		}
 		if (Input.GetMouseButtonDown(1)){
 			if (onInteract != null)
 				onInteract();
 		}
 	}
-	void CheckTileUnderMouse(){
+/* 	void CheckTileUnderMouse(){
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.z = 0;
 		Tile_Data tile = tileManager.GetTile(mousePosition);
@@ -37,7 +39,7 @@ public class MouseInput_Controller : MonoBehaviour {
 		else{
 			Debug.Log("tile on " + mousePosition + " is NULL!");
 		}
-	}
+	} */
 	
 
 }
