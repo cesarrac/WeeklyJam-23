@@ -8,7 +8,7 @@ public class ShipWeapons : ShipSystem {
 		shipSystemType = ShipSystemType.Weapons;
 	}
 	
-	public override void StartSystem(){
+	public override void UseSystem(){
 		if (currMachine != null){
 			currMachine.UseMachine();	
 		}

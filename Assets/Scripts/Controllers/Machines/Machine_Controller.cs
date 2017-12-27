@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum MachineCondition {Hopeless, Down, Decayed, OK, Good, Pristine}
 public class Machine_Controller : MonoBehaviour {
@@ -18,6 +19,7 @@ public class Machine_Controller : MonoBehaviour {
     public BoxCollider2D collidable;
     public SpriteRenderer shadowRenderer;
     Animator animator;
+    Action onRepairDoneCB;
     void OnEnable(){
         animator = GetComponent<Animator>();
     }
@@ -75,7 +77,7 @@ public class Machine_Controller : MonoBehaviour {
         
         // Play animation of machine being used
 
-        float roll = Random.Range (1, 100);
+        float roll = UnityEngine.Random.Range (1, 100);
         if (roll <= efficiencyRate){
             // Machine does NOT decay
             return;
@@ -83,6 +85,9 @@ public class Machine_Controller : MonoBehaviour {
 
         DecayCondition();
     
+    }
+    public void DisplayMachineUI(){
+        UI_Manager.instance.ShowMachineUI(shipSystemsControlled);
     }
     public bool Interact(GameObject user){
         if (shipManager.SystemInteract(shipSystemsControlled, user) == true){
@@ -95,11 +100,24 @@ public class Machine_Controller : MonoBehaviour {
         // animate machine to show it being interfaced
         animator.SetTrigger("on");
     }
-    public void TryRepair(){
+    public void TryRepair(Action onDoneCB){
+        if (onDoneCB != null)
+            onRepairDoneCB += onDoneCB;
         // Start mini game ui
-        MiniGameManager.instance.StartMiniGame(this);
+        MiniGameManager.instance.StartRepairGame(this);
     }
-    public void RepairCondition(){
+    public void RepairSuccess(){
+        if (onRepairDoneCB != null)
+            onRepairDoneCB();
+        onRepairDoneCB = null;
+        RepairCondition();
+    }
+    public void RepairFail(){
+        if (onRepairDoneCB != null)
+            onRepairDoneCB();
+        onRepairDoneCB = null;
+    }
+    void RepairCondition(){
         // called if mini game was succesful
         // RETURN if already at MAX condition
         if ((int)machineCondition >= System.Enum.GetValues(typeof(MachineCondition)).Length)

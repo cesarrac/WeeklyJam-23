@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseInput_Controller : MonoBehaviour {
 	public static MouseInput_Controller instance {get; protected set;}
@@ -15,6 +16,9 @@ public class MouseInput_Controller : MonoBehaviour {
 		tileManager = TileManager.instance;
 	}
 	void Update(){
+		if (EventSystem.current.IsPointerOverGameObject() == true)
+			return;
+			
 		if (Input.GetMouseButtonDown(0)){
 			//CheckTileUnderMouse();
 			if (onUse != null)

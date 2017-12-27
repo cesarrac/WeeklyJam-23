@@ -20,7 +20,10 @@ public class Item  {
 		this.itemType = b.itemType;
 		this.stackCount = b.stackCount;
 		this.itemQuality = b.itemQuality;
-		this.stats = b.baseStats;
+		this.stats = new Stat[b.baseStats.Length];
+		for(int i = 0; i < this.stats.Length; i++){
+			this.stats[i] = new Stat(b.baseStats[i].statType, b.baseStats[i].minValue, b.baseStats[i].maxValue);
+		}
 		this.sprite = b.sprite;
 		this.itemUseType = b.itemUseType;
 		this.costToCreate = b.cost;
@@ -30,6 +33,18 @@ public class Item  {
 	}
 	public void RegisterUser(GameObject newUser){
 		user = newUser;
+	}
+	public int GetStat(StatType statType, int modifier = 0){
+		if (stats == null)
+			return 0;
+		if (stats.Length <= 0)
+			return 0;
+		foreach(Stat stat in stats){
+			if (stat.statType == statType)
+				return stat.GetValue(modifier);
+		}
+		
+		return 0;	
 	}
 	/* public void UseItem(){
 		if (useAction != null){

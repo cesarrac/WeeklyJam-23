@@ -47,14 +47,29 @@ public class ShipManager : MonoBehaviour {
 			}
 		}
 	}
-	
-	public void StartShip(){
-		StartSystems();
-	}
-	void StartSystems(){
-		foreach(ShipSystem system in coreSystems){
-			system.StartSystem();
+	public void EnterStation(){
+		if (shipNavigation.destinationStationIndex < 0){
+			Debug.LogError("No station destination set! index is less than 0! Must be set through nav machine");
+			return;
 		}
+		Station_Manager.instance.GetStation(shipNavigation.destinationStationIndex).EnterStation();
+		ShipOff();
+	}
+	public void ExitStation(){
+
+	}
+	public void ShipOn(){
+		foreach(ShipSystem system in coreSystems){
+			system.UseSystem();
+		}
+	}
+	public void ShipOff(){
+		foreach(ShipSystem system in coreSystems){
+			system.StopSystem();
+		}
+	}
+	void UpdateShipSystems(){
+		
 	}
 
 	public bool AddMachine(Machine_Data data, Vector2 machinePosition){
@@ -133,4 +148,9 @@ public class ShipManager : MonoBehaviour {
 		return false;
 	}
 	
+	public bool TrySetDestination(int stationIndex){
+		Debug.Log("Ship manager received station index: " + stationIndex);
+		
+		return shipNavigation.SetDestination(stationIndex);
+	}
 }

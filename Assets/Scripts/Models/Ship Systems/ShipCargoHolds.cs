@@ -25,7 +25,7 @@ public class ShipCargoHolds : ShipSystem {
 		//secondary_holds.Add(newMachine);
 		return false;
 	}
-	public override void StartSystem(){
+	public override void UseSystem(){
 		// Instead of starting systems it checks the cargo holds to see if
 		// they are putting the items in them at risk of being damaged
 	}

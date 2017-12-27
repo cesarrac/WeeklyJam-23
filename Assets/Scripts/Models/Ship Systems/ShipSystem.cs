@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
+[Serializable]
 public enum ShipSystemType {None, Power, Propulsion, Weapons, Nav, LifeSupport, CargoHold}
 public class ShipSystem  {
 	public ShipSystemType shipSystemType {get; protected set;}
@@ -22,7 +22,7 @@ public class ShipSystem  {
 		currMachine = newMachine;
 		return true;
 	}
-	public virtual bool CanStart(){
+	public virtual bool CanUse(){
 		if (currMachine != null && currMachine.CanUse() == true){
 			
 			return true;
@@ -31,8 +31,8 @@ public class ShipSystem  {
 			return false;
 		}
 	}
-	public virtual void StartSystem(){
-		if (CanStart() == true){
+	public virtual void UseSystem(){
+		if (CanUse() == true){
 			
 			currMachine.UseMachine();	
 			isSystemOn = true;

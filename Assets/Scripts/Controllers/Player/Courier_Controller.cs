@@ -10,12 +10,12 @@ public class Courier_Controller : MonoBehaviour {
 	CharacterMovement characterMovement;
 	public Inventory playerInventory {get; protected set;}
 	public InventoryUI inventoryUI {get; protected set;}
+	Animator anim;
 	void Awake(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
 		playerInventory = new Inventory(3);
 		inventoryUI = GetComponent<InventoryUI>();
-		
 	}
 	void Start(){
 		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
@@ -24,21 +24,32 @@ public class Courier_Controller : MonoBehaviour {
 		inventoryUI.onItemSelected += OnItemSelected;
 	}
 	void Use(){
-		if (item_held == null)
-			return;
-		if (item_held.item == null)
-			return;
-		if (item_held.item.itemUseType != ItemUseType.Repair)
-			return;
-
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.z = 0;
 		Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 		if (tile != null){
 			if (tile.machine != null){
-				tile.machine.TryRepair();
+				if (item_held != null && item_held.item != null){
+					if (item_held.item.itemUseType == ItemUseType.Repair){
+						TryRepairMachine(tile.machine);
+						return;
+					}
+				}
+				
+				// If player is holding nothing or not holding a tool: 
+				tile.machine.DisplayMachineUI();
 			}
 		}
+	}
+	void TryRepairMachine(Machine_Controller machine){
+		animator.SetTrigger("repair");
+		characterMovement.LockMovement(true);
+		machine.TryRepair(OnUseDone);
+	}
+	void OnUseDone(){
+		Debug.Log("OnUseDone");
+		animator.SetTrigger("repairDone");
+		characterMovement.LockMovement(false);
 	}
 	void TryInteract(){
 		if (item_held != null){
@@ -80,9 +91,10 @@ public class Courier_Controller : MonoBehaviour {
 		if (playerInventory.AddItem(itemToPickUp) == false)
 			return;
 		if (item_held != null){
-			// Item gets added to inventory but Item gobj gets pooled
+			PutAwayHeldItem();
+			/* // Item gets added to inventory but Item gobj gets pooled
 			itemGobj.GetComponent<Item_Controller>().Pool();
-			return;
+			return; */
 		}
 		item_held = itemGobj.GetComponent<Item_Controller>();
 		item_held.Initialize(itemToPickUp);
@@ -93,17 +105,20 @@ public class Courier_Controller : MonoBehaviour {
 		if (itemGobj.GetComponent<Item_Controller>().item.itemType == ItemType.Cargo){
 			itemHolder.GetComponent<SpriteRenderer>().sprite = itemGobj.GetComponent<SpriteRenderer>().sprite;
 			animator.SetTrigger("pickUp");
+			animator.SetBool("isCarrying", true);
 		}
 		
 	}
-	void DropItem(){
+	public void DropItem(){
 		if (item_held == null)
 			return;
 		if (playerInventory.RemoveItem(item_held.item.name) == false)
 			return;
 		Vector2 direction = characterMovement.facingDirection == Direction.Right ? Vector2.right : Vector2.left;
-		if (item_held.item.itemType == ItemType.Cargo)
+		if (item_held.item.itemType == ItemType.Cargo){
 			animator.SetTrigger("drop");
+			animator.SetBool("isCarrying", false);
+		}
 			
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		item_held.gameObject.SetActive(true);
@@ -116,6 +131,7 @@ public class Courier_Controller : MonoBehaviour {
 			return;
 		
 		animator.SetTrigger("drop");
+		animator.SetBool("isCarrying", false);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		
 		item_held.Pool();
@@ -127,17 +143,9 @@ public class Courier_Controller : MonoBehaviour {
 			PutAwayHeldItem();
 			return;
 		}
-	/* 	if (itemSelected.itemType != ItemType.Cargo)
-		{
-			PutAwayHeldItem();
-			// Activate tool here:
-			
-			return;
-		} */
-		if (item_held != null){
-			if(itemSelected.itemType != ItemType.Cargo){
+		// Put away held item IF we are carrying cargo and we select a NON-cargo item (like a Tool)
+		if(itemSelected.itemType != ItemType.Cargo){
 				PutAwayHeldItem();
-			}
 		}
 
 		if (item_held == null){
@@ -153,14 +161,22 @@ public class Courier_Controller : MonoBehaviour {
 		if (itemSelected.itemType == ItemType.Cargo){
 			itemHolder.GetComponent<SpriteRenderer>().sprite = itemSelected.sprite;
 			animator.SetTrigger("pickUp");
+			animator.SetBool("isCarrying", true);
 		}
 	}
 	void PutAwayHeldItem(){
 		if (item_held == null){
 			return;
 		}
+		if (item_held.item == null){
+			return;
+		}
+		if (item_held.item.itemType != ItemType.Cargo){
+			return;
+		}
 		Debug.Log("Putting away item held");
 		animator.SetTrigger("drop");
+		animator.SetBool("isCarrying", false);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
 		item_held.transform.SetParent(null);
 		item_held.Pool();

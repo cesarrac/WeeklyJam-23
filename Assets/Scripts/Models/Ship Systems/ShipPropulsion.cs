@@ -8,16 +8,5 @@ public class ShipPropulsion : ShipSystem {
 		shipSystemType = ShipSystemType.Propulsion;
 	}
 	
-	public override void StartSystem(){
-		if (currMachine == null){
-			Debug.LogError("Ship propulsion has NO machine");
-			return;
-		}
-		if (CanStart() == false){
-			// Show UI with machine condition
-			return;
-		}
-
-		base.StartSystem();
-	}
+	
 }

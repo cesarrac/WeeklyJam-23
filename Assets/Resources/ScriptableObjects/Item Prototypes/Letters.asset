@@ -18,5 +18,11 @@ MonoBehaviour:
   itemQuality: 0
   stackCount: 25
   cost: 10
-  baseStats: []
+  baseStats:
+  - statType: 0
+    minValue: 1000
+    maxValue: 0
+  - statType: 1
+    minValue: 0
+    maxValue: 0
   timeToCreate: 1

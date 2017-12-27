@@ -9,7 +9,11 @@ public class ShipManagerEditor : Editor {
 		base.OnInspectorGUI();
 		if (GUILayout.Button("Use Machines")){
 			ShipManager shipManager = (ShipManager)target;
-			shipManager.StartShip();
+			shipManager.ShipOn();
+		}
+		if (GUILayout.Button("Enter Station")){
+			ShipManager shipManager = (ShipManager)target;
+			shipManager.EnterStation();
 		}
 	}
 	

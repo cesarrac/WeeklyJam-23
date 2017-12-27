@@ -12,6 +12,6 @@ public class Interactable_Machine : Interactable {
 	}
 	public override void Interact(){
 		base.Interact();
-		machine_Controller.TryRepair();
+		machine_Controller.TryRepair(null);
 	}	
 }

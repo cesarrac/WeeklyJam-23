@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum StatType{Hitpoints, Slipperiness, Grip}
 [System.Serializable]
 public class Stat  {
-
+	public StatType statType;
 	int value;
-	public string name;
-
 	public int minValue, maxValue;
 
-	public Stat(string _name, int min, int max){
+	public Stat(StatType _statType, int min, int max){
 		value = min;
-		name = _name;
+		statType = _statType;
 		minValue = min;
 		maxValue = max;
 	}
@@ -22,10 +21,5 @@ public class Stat  {
 			return Random.Range(minValue, maxValue + 1) + modifier;
 		}
 		return value + modifier;
-	}
-	public void Modify(int minModifier, int maxModifier){
-		minValue += minModifier;
-		maxValue += maxModifier;
-		value = minValue;
 	}
 }

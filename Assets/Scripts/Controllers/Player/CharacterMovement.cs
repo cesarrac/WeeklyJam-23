@@ -11,8 +11,18 @@ public class CharacterMovement : MonoBehaviour {
 	Animator animator;
 	SpriteRenderer[] spriteRenderers;
 	bool isMoving = false;
-	float speed = 3;
+	float normalSpeed = 4;
+	public float curSpeed {get; protected set;}
+	float runSpeed;
+	float crawlSpeed;
+	bool canDash, isDashing;
+	float dashTime = 0.4f;
+	float timeToDash = 1f, timer = 0;
 	public Direction facingDirection {get; protected set;}
+	public delegate void OnMove();
+	public event OnMove onStartMove;
+	public event OnMove onStopMove;
+	bool isLocked = false;
 	void Awake(){
 		animator = GetComponentInChildren<Animator>();
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
@@ -20,26 +30,81 @@ public class CharacterMovement : MonoBehaviour {
 		maxX = 7;
 		maxY = 3;
 		facingDirection = Direction.Left;
+		curSpeed = normalSpeed;
+		runSpeed = curSpeed * 3;
+		crawlSpeed = curSpeed * 0.5f;
 	}
 
 	void Update(){
+		if (isLocked == true)
+			return;
+		
 		inputVector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (Input.GetKeyDown(KeyCode.LeftShift)){
+			if (isMoving == false)
+				return;
+			curSpeed = runSpeed;
+			animator.SetTrigger("dash");
+			isDashing = true;
+		}
+		//DashCheck();
+		Dash();
 		Move();
+	}
+	void DashCheck(){
+		if (isDashing == true){
+			return;
+		}
+		if (canDash == false){
+			return;
+		}
+		if (Input.GetKeyDown(KeyCode.LeftShift)){
+			curSpeed = runSpeed;
+			isDashing = true;
+			timer = 0;
+			animator.SetTrigger("dash");
+			return;
+		}
+		if (timer >= timeToDash){
+			canDash = false;
+			timer = 0;
+		}else{
+			timer += Time.deltaTime;
+		}
+	}
+	void Dash(){
+		if (isDashing == false)
+			return;
+		if (timer >= dashTime){
+			curSpeed = normalSpeed;
+			isDashing = false;
+			timer = 0;
+		}else{
+			timer += Time.deltaTime;
+		}
 	}
 	void StartMove(){
 		isMoving = true;
 		animator.SetBool("isWalking", isMoving);
+		if (onStartMove != null)
+			onStartMove();
 	}
 	void Move(){
-		if (isMoving == false){
-			StartMove();
-		}
-	 	if (inputVector == Vector2.zero){
-			StopMove();
+		if (inputVector == Vector2.zero){
+			if (isMoving == true){
+				StopMove();
+			}
+			
 			return;
-		} 
+		}else {
+			
+			if (isMoving == false){
+				StartMove();
+			}
+		}
+	 	
 		moveVector = transform.position;
-		moveVector += inputVector * speed * Time.deltaTime;
+		moveVector += inputVector * curSpeed * Time.deltaTime;
 		ClampMovement();
 		transform.position = moveVector;
 		FlipSprites();
@@ -59,6 +124,8 @@ public class CharacterMovement : MonoBehaviour {
 	void StopMove(){
 		isMoving = false;
 		animator.SetBool("isWalking", isMoving);
+		if (onStopMove != null)
+			onStopMove();
 	}
 	void FlipSprites(){
 		bool flip = false;
@@ -76,5 +143,10 @@ public class CharacterMovement : MonoBehaviour {
 		foreach(SpriteRenderer sr in spriteRenderers){
 			sr.flipX = flip;
 		}
+	}
+	public void LockMovement(bool locked){
+		isLocked = locked;
+		if (locked == true)
+			StopMove();
 	}
 }

@@ -18,5 +18,6 @@ public class Game_LevelManager : MonoBehaviour {
 			i++;
 		}
 		ShipManager.instance.InitStartMachines(startingItems, new Vector2(-3, 0));
+		Station_Manager.instance.Initialize();
 	}
 }

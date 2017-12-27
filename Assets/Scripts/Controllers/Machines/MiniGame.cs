@@ -19,7 +19,7 @@ public class MiniGame : MonoBehaviour {
 	public event OnGame onGameSuccess;
 	public event OnGame onGameFail;
 	float left, right;
-	public void StartMiniGame(MachineCondition curMachineCondition, MiniGameDifficulty difficulty){
+	public void Initialize(MachineCondition curMachineCondition, MiniGameDifficulty difficulty){
 		// The starting difficulty based on machine's efficiency
 		difficultyOffset = 0;
 		if ((int) difficulty > 0)
@@ -31,22 +31,46 @@ public class MiniGame : MonoBehaviour {
 				IncreaseDifficulty();
 			}
 		}
-
 		// Set speed of moving obj according to difficulty
 		speed = (int)difficulty > 0 ? (int)difficulty * 100 : 100;
-		
+		float goalPosition = 0;
 		if (isHorizontal){
 			float lineWidth = lineTransform.sizeDelta.x * 0.5f;
 			left = -lineWidth + 2;
 			right = lineWidth - 2;
 			Debug.Log("MINIGAME: left = " + left + " right = " + right);
-			float goalX = Random.Range(left, right);
-			goal_obj.transform.localPosition = new Vector2(goalX, goal_obj.transform.localPosition.y);
+			goalPosition = Random.Range(left, right);
+
+			goal_obj.transform.localPosition = new Vector2(goalPosition, goal_obj.transform.localPosition.y);
 		}else{
 			float lineHeight = lineTransform.sizeDelta.y * 0.5f;
-			float goalY = Random.Range(-lineHeight + 2, lineHeight - 2);
-			goal_obj.transform.localPosition = new Vector2(goal_obj.transform.localPosition.y,goalY);
+			goalPosition = Random.Range(-lineHeight + 2, lineHeight - 2);
+			goal_obj.transform.localPosition = new Vector2(goal_obj.transform.localPosition.y,goalPosition);
 		}
+		StartMiniGame();
+	}
+	public void Initialize(MiniGameDifficulty difficulty){
+		// The starting difficulty based on machine's efficiency
+		difficultyOffset = 0;
+		if ((int) difficulty > 0)
+			difficultyOffset = (int)difficulty;
+
+		// Set speed of moving obj according to difficulty
+		speed = (int)difficulty > 0 ? (int)difficulty * 100 : 100;
+		// Start goal in center
+		float goalPosition = 0;
+		if (isHorizontal){
+			float lineWidth = lineTransform.sizeDelta.x * 0.5f;
+			left = -lineWidth + 2;
+			right = lineWidth - 2;
+			goal_obj.transform.localPosition = new Vector2(goalPosition, goal_obj.transform.localPosition.y);
+		}else{
+			goal_obj.transform.localPosition = new Vector2(goal_obj.transform.localPosition.y,goalPosition);
+		}
+		StartMiniGame();
+	}
+	
+	void StartMiniGame(){
 		move_x = moving_obj.transform.localPosition.x;
 		isLeft = true;
 		target_position = goal_obj.transform.localPosition.x;
@@ -75,7 +99,7 @@ public class MiniGame : MonoBehaviour {
 
 		if (move_x >= target_position - offset && move_x <= target_position + offset){
 			Debug.Log("You got it!");
-			IncreaseDifficulty();
+			//IncreaseDifficulty();
 			if (onGameSuccess != null)
 				onGameSuccess();
 		}else{
