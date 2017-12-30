@@ -67,11 +67,12 @@ public class Inventory{
     public bool ContainsItem(string itemName, int count = 1){
         if (inventory_items.Length == 0)
             return false;
+        Debug.Log("Checking if inventory contains " + count + " " + itemName);
          for(int i = 0; i < inventory_items.Length; i++){
-            if (inventory_items[i].item != null){
-                if (inventory_items[i].item.name == itemName && inventory_items[i].count >= count){
+            if (inventory_items[i].item == null)
+                continue;
+            if (inventory_items[i].item.name == itemName && inventory_items[i].count >= count){
                     return true;
-                }
             }
          }
         return false;

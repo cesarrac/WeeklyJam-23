@@ -21,11 +21,15 @@ public class ShipNavigation : ShipSystem {
 	}
 	public bool SetDestination(int stationIndex){
 		// verify if max jump capacity is >= the destination jump location - current station location
-		if (Station_Manager.instance.GetStation(stationIndex) == null)
+		Station destination = Station_Manager.instance.GetStation(stationIndex);
+		if (destination == null)
+			return false;
+		if (destination.jumpLocation > maxJumpCapacity)
 			return false;
 		
 		destinationStationIndex = stationIndex;
 		Debug.Log("Destination set to index: " + destinationStationIndex);
 		return true;
 	}
+
 }

@@ -56,6 +56,8 @@ public class ShipSystem  {
 	public virtual bool Interact(GameObject user){
 		if (user == null)
 			return false;
+		if (Vector2.Distance(currMachine.transform.position, user.transform.position) > 1.5f)
+			return false;
 		Debug.Log(user.name + " interacting with system " + shipSystemType);
 		return true;
 	}

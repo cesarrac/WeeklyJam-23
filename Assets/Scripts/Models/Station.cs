@@ -9,9 +9,15 @@ public class Station   {
 	public List<Neighbor> neighbors;
 	public int neighborTotal = 1;
 	public int location;
+	public List<Mission> public_Jobs;
+	Character stationAuthority;
+
 	public Station(string _name){
 		stationName = _name;
 		neighbors = new List<Neighbor>();
+		stationAuthority = new Character();
+		stationAuthority.Initialize(stationName + " Authority");
+		public_Jobs = new List<Mission>();
 	}
 	public bool AddNeighbor(Station station){
 		if (neighbors.Count >= neighborTotal)
@@ -36,7 +42,17 @@ public class Station   {
 		jumpLocation = jumpLoc;
 	}
 	public void EnterStation(){
+		Station_Manager.instance.OnEnterStation(this);
 
+		// NOTE: Right now we only generate jobs when there are NONE left
+		// this should actually Generate jobs when x ammount of game days pass
+		if (public_Jobs.Count <= 0)
+			GeneratePublicJobs();
+	}
+	//Generates jobs for the public job board
+	void GeneratePublicJobs(){
+		// TESTING HERE! Finish this so that we generate a good random set of jobs
+		public_Jobs.Add(new Mission(stationAuthority, "For His Majesty", new MissionItem[]{new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)}, 0, 1,1));
 	}
 	public void ExitStation(){
 		

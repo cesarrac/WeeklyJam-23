@@ -52,7 +52,11 @@ public class ShipManager : MonoBehaviour {
 			Debug.LogError("No station destination set! index is less than 0! Must be set through nav machine");
 			return;
 		}
-		Station_Manager.instance.GetStation(shipNavigation.destinationStationIndex).EnterStation();
+		Station curStation = Station_Manager.instance.GetStation(shipNavigation.destinationStationIndex);
+		if (curStation == null)
+			return;
+		curStation.EnterStation();
+		shipNavigation.SetCurrentStation(shipNavigation.destinationStationIndex);
 		ShipOff();
 	}
 	public void ExitStation(){
@@ -141,8 +145,7 @@ public class ShipManager : MonoBehaviour {
 	public bool SystemInteract(ShipSystemType sType, GameObject user){
 		foreach(ShipSystem system in coreSystems){
 			if (system.shipSystemType == sType){
-				system.Interact(user);
-				return true;
+				return system.Interact(user);
 			}
 		}
 		return false;
@@ -152,5 +155,20 @@ public class ShipManager : MonoBehaviour {
 		Debug.Log("Ship manager received station index: " + stationIndex);
 		
 		return shipNavigation.SetDestination(stationIndex);
+	}
+	public void Jump(){
+		if (Station_Manager.instance.GetStation(shipNavigation.destinationStationIndex) == null){
+			Debug.LogError("Ship cannot JUMP to next station because the destination index has not been set to a legal station");
+			return;
+		}
+		if (shipNavigation.CanUse() == false){
+			Debug.LogError("Ship Manager cannot JUMP because ship NAVIGATION systems cannot be used");
+			return;
+		}
+		if (shipPropulsion.CanUse() == false){
+			Debug.LogError("Ship Manager cannot JUMP because ship PROPULSION systems cannot be used");
+			return;
+		}
+		Game_LevelManager.instance.ChangeStateTo(StateType.Jump);
 	}
 }

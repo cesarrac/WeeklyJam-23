@@ -5,7 +5,7 @@ using UnityEngine;
 public class Station_Manager : MonoBehaviour {
 	public static Station_Manager instance {get; protected set;}
 	Station[] station_map;
-	public Station destination {get; protected set;}
+	Station current_station;
 	void Awake(){
 		instance = this;
 	}
@@ -86,5 +86,12 @@ public class Station_Manager : MonoBehaviour {
 			}
 		}
 		return nearByStations.ToArray();
+	}
+	public void OnEnterStation(Station station){
+		current_station = station;
+	}
+	public void Undock(){
+		Game_LevelManager.instance.ReplaceStateWith(StateType.StationExit);
+
 	}
 }

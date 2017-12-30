@@ -15,7 +15,6 @@ public class CountdownHelper  {
 	public void UpdateCountdown(){
 		if (timer >= timeToCount){
 			timer = 0;
-			elapsedPercent = 0;
 			isDone = true;
 		}else{
 			timer += Time.deltaTime;
@@ -24,7 +23,9 @@ public class CountdownHelper  {
 				isDone = false;
 		}
 	}
-	public void Reset(){
+	public void Reset(float _timeToCount = 0){
+		if (_timeToCount > 0)
+			timeToCount = _timeToCount;
 		timer = 0;
 		elapsedPercent = 0;
 		isDone = false;

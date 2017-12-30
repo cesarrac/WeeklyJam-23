@@ -6,7 +6,7 @@ public class ShipCargoHolds : ShipSystem {
 
 	// This system controls the main cargo (currMachine) and the other special cargos added
 	//public List<Machine_Controller> secondary_holds;
-	Inventory active_inventory;
+	public Inventory active_inventory {get; protected set;}
 	InventoryUI inventoryUI;
 	public ShipCargoHolds(InventoryUI _inventoryUI){
 		shipSystemType = ShipSystemType.CargoHold;
@@ -39,6 +39,8 @@ public class ShipCargoHolds : ShipSystem {
 	}
 	
 	public override bool Interact(GameObject user){
+		if (base.Interact(user) == false)
+			return false;
 		Item newItem = user.GetComponent<Courier_Controller>().item_held.item;
 		if (newItem == null)
 			return false;

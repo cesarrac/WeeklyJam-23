@@ -59,9 +59,9 @@ public class Courier_Controller : MonoBehaviour {
 			Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 			if (tile != null){
 				if (tile.machine != null){
-					
 					if (tile.machine.Interact(this.gameObject) == true){
-						DepositItem();
+						if (tile.machine.shipSystemsControlled == ShipSystemType.CargoHold)
+							DepositItem();
 					}
 					return;
 				}
@@ -75,8 +75,6 @@ public class Courier_Controller : MonoBehaviour {
 		if (hit.collider != null){
 			Debug.Log("Hit interactable!");
 			if (hit.collider.gameObject.GetComponentInParent<Interactable>() != null){
-
-				// If already holding an item... drop it
 
 				hit.collider.gameObject.GetComponentInParent<Interactable>().TryInteract(this.gameObject);
 			}
@@ -129,7 +127,7 @@ public class Courier_Controller : MonoBehaviour {
 	void DepositItem(){
 		if (playerInventory.RemoveItem(item_held.item.name) == false)
 			return;
-		
+		Debug.Log("DepositItem");
 		animator.SetTrigger("drop");
 		animator.SetBool("isCarrying", false);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
