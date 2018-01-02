@@ -40,6 +40,7 @@ public class Station   {
 	}
 	public void SetJumpLocation(int jumpLoc){
 		jumpLocation = jumpLoc;
+		Debug.Log(stationName + " jump loc set to: " + jumpLocation);
 	}
 	public void EnterStation(){
 		Station_Manager.instance.OnEnterStation(this);
@@ -52,7 +53,26 @@ public class Station   {
 	//Generates jobs for the public job board
 	void GeneratePublicJobs(){
 		// TESTING HERE! Finish this so that we generate a good random set of jobs
-		public_Jobs.Add(new Mission(stationAuthority, "For His Majesty", new MissionItem[]{new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)}, 0, 1,1));
+		// Select a neighbor within jump distance of 1
+		Station destination = null;
+		foreach(Neighbor neighbor in neighbors){
+			if (neighbor.station.jumpLocation <= 1){
+				destination = neighbor.station;
+				break;
+			}
+		}
+		if (destination == null){
+			Debug.LogError(stationName + " could not create a job to a destination with jump location of 1 or less");
+			return;
+		}
+		public_Jobs.Add(new Mission(stationAuthority, "For His Majesty", 
+						new MissionItem[]{new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)},
+						this, destination, destination.jumpLocation));
+	}
+	public void OnMissionAccepted(Mission job){
+		if (public_Jobs.Contains(job) == false)
+			return;
+		public_Jobs.Remove(job);
 	}
 	public void ExitStation(){
 		

@@ -62,4 +62,6 @@ public class ShipCargoHolds : ShipSystem {
 		GameObject itemGObj = ObjectPool.instance.GetObjectForType("Item", true, currMachine.transform.position + Vector3.down);
 		itemGObj.GetComponent<Item_Controller>().Initialize(item);
 	}
+
+	
 }

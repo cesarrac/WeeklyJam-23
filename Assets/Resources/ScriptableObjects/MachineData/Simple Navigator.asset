@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   machineName: Simple Navigator
   machineSprite: {fileID: 21300000, guid: 837e437d14c17b44b95229ff225c09df, type: 3}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: 49875988ec0709844980d8c6575e4b1a, type: 2}
   tileWidth: 1
   tileHeight: 2
   efficiencyRate: 50

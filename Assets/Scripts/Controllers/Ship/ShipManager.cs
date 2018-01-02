@@ -63,9 +63,15 @@ public class ShipManager : MonoBehaviour {
 
 	}
 	public void ShipOn(){
+		// Try turning on Power first, if that doesn't start nothing else should
+		if (shipPower.CanUse() == false){
+			Notification_Manager.instance.AddNotification("Ship POWER cannot start so systems cannot turn on!!");
+			return;
+		}
 		foreach(ShipSystem system in coreSystems){
 			system.UseSystem();
 		}
+		Notification_Manager.instance.AddNotification("Systems check ... OK!");
 	}
 	public void ShipOff(){
 		foreach(ShipSystem system in coreSystems){
@@ -158,15 +164,15 @@ public class ShipManager : MonoBehaviour {
 	}
 	public void Jump(){
 		if (Station_Manager.instance.GetStation(shipNavigation.destinationStationIndex) == null){
-			Debug.LogError("Ship cannot JUMP to next station because the destination index has not been set to a legal station");
+			Notification_Manager.instance.AddNotification("Ship cannot JUMP to next station because the destination index has not been set to a legal station");
 			return;
 		}
 		if (shipNavigation.CanUse() == false){
-			Debug.LogError("Ship Manager cannot JUMP because ship NAVIGATION systems cannot be used");
+			Notification_Manager.instance.AddNotification("Ship Manager cannot JUMP because ship NAVIGATION systems cannot be used");
 			return;
 		}
 		if (shipPropulsion.CanUse() == false){
-			Debug.LogError("Ship Manager cannot JUMP because ship PROPULSION systems cannot be used");
+			Notification_Manager.instance.AddNotification("Ship Manager cannot JUMP because ship PROPULSION systems cannot be used");
 			return;
 		}
 		Game_LevelManager.instance.ChangeStateTo(StateType.Jump);

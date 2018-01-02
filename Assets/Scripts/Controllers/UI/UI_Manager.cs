@@ -8,7 +8,7 @@ public class UI_Manager : MonoBehaviour {
 	public GameObject playerInventoryPanel, shipInventoryPanel;
 	public GameObject navPanel, cargoInventoryPanel;
 	List<GameObject> activeWindows;
-	string[] stationNames; // this index will be initialized by the station manager, set to the same index as the station map
+	string[] stationNames; 
 	Dropdown stationDropdown;
 	Text destinationStation, jumpCapacity;
 
@@ -55,10 +55,13 @@ public class UI_Manager : MonoBehaviour {
 			Dropdown.OptionData option = new Dropdown.OptionData(stationNames[i]);
 			stationDropdown.options.Add(option);
 		}
+
+		stationDropdown.value = 0;
+		stationDropdown.captionText.text = stationNames[0];
 	}
 	public void OnDropdownChanged(){
 		int dropdownValue = stationDropdown.value;
-		if (ShipManager.instance.TrySetDestination(dropdownValue) == false){
+		if (ShipManager.instance.TrySetDestination(Station_Manager.instance.GetStationIndex(stationNames[dropdownValue])) == false){
 			stationDropdown.value = 0;
 			return;
 		}
@@ -70,3 +73,4 @@ public class UI_Manager : MonoBehaviour {
 		activeWindows.Remove(active);
 	}
 }
+

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   machineName: Simple Engines
   machineSprite: {fileID: 21300000, guid: eaf025754b68d664f81a6b9d9a37e38f, type: 3}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: cff56d6ff586f1b4a88bf90e61fc4f69, type: 2}
   tileWidth: 2
   tileHeight: 2
   efficiencyRate: 50

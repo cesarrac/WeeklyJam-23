@@ -31,6 +31,10 @@ public class Item_Manager : MonoBehaviour {
 		}
 		return null;
 	}
+	public void SpawnItem(ItemPrototype prototype, Vector2 position){
+		GameObject itemGObj = pool.GetObjectForType("Item", true, position);
+		itemGObj.GetComponent<Item_Controller>().Initialize(CreateInstance(prototype));
+	}
 	public Item CreateInstance(ItemPrototype prototype){
         return Item.CreateInstance(prototype);
     }

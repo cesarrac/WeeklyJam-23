@@ -5,7 +5,7 @@ using UnityEngine;
 public class Station_Manager : MonoBehaviour {
 	public static Station_Manager instance {get; protected set;}
 	Station[] station_map;
-	Station current_station;
+	public Station current_station {get; protected set;}
 	void Awake(){
 		instance = this;
 	}
@@ -57,20 +57,17 @@ public class Station_Manager : MonoBehaviour {
 
 		}
 
-		// Set jump locations
+		// Set jump locations:
+		// *** Make sure Centrum [0] has a neighbor that is on jump location of 1 
 		station_map[0].SetJumpLocation(1);
-		station_map[1].SetJumpLocation(1);
-		for(int i = 2; i < station_map.Length; i++){
-			station_map[i].SetJumpLocation(Random.Range(2, 11));
-		}
-		/* foreach(Neighbor neighbor in station_map[1].neighbors){
-			if (neighbor.station == null)
+		Station firstNeighbor = station_map[0].neighbors[Random.Range(0, station_map[0].neighbors.Count)].station;
+		firstNeighbor.SetJumpLocation(1);
+		for(int i = 1; i < station_map.Length; i++){
+			if (station_map[i] == firstNeighbor)
 				continue;
-			if (neighbor.station == station_map[0]){
-				neighbor.SetDistance(1);
-				break;
-			}
-		} */
+			station_map[i].SetJumpLocation(Random.Range(2, 6));
+		}
+
 
 	}
 	public Station GetStation(int stationIndex){
@@ -86,6 +83,26 @@ public class Station_Manager : MonoBehaviour {
 			}
 		}
 		return nearByStations.ToArray();
+	}
+	public int GetStationIndex(string stationName){
+		int index = 0;
+		for(int i = 0; i < station_map.Length; i++){
+			if (station_map[i].stationName == stationName){
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+	public int GetStationIndex(Station station){
+		int index = 0;
+		for(int i = 0; i < station_map.Length; i++){
+			if (station_map[i] == station){
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
 	public void OnEnterStation(Station station){
 		current_station = station;

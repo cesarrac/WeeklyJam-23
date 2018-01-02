@@ -10,23 +10,23 @@ public class Mission  {
 	// what items and how many of them to deliver
 	public MissionItem[] itemsToDeliver {get; protected set;}
 	// Where to deliver
-	public int stationDestination {get; protected set;}
+	public Station stationDestination {get; protected set;}
 	// Where the mission was generated/received
-	public int stationOrigin {get; protected set;}
+	public Station stationOrigin {get; protected set;}
 	public int jumpsRequired {get; protected set;}
-	public Mission (Character _owner, string desc, MissionItem[] deliveryItems, int originIndex, int destinationIndex, int jumpRequirement){
+	public Mission (Character _owner, string desc, MissionItem[] deliveryItems, Station _origin, Station _destination, int jumpRequirement){
 		owner = _owner;
 		description = desc;
 		itemsToDeliver = deliveryItems;
-		stationOrigin = originIndex;
-		stationDestination = destinationIndex;
+		stationOrigin = _origin;
+		stationDestination = _destination;
 		jumpsRequired = jumpRequirement;
 		Debug.Log("Mission created to deliver " +  itemsToDeliver[0].count + " " + itemsToDeliver[0].itemPrototype.name);
 	}
 
 	// Has this mission been completed?
 	public bool isCompleted() {
-		if (ShipManager.instance.shipNavigation.currStationIndex != 
+		if (Station_Manager.instance.current_station != 
 			stationDestination){
 				return false;
 			}

@@ -26,15 +26,26 @@ public class Mission_Manager : MonoBehaviour {
 		MissionItem[] deliveryItems = new MissionItem[]{
 			new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)
 		};
-		Mission testMission = new Mission(testCharacter, "A test mission!", deliveryItems, 0, 1, Station_Manager.instance.GetStation(1).jumpLocation);
+		Station origin = Station_Manager.instance.GetStation(0);
+		Station dest = origin.neighbors[0].station;
+		Mission testMission = new Mission(testCharacter, "A test mission!", deliveryItems, origin, dest, dest.jumpLocation);
 		Debug.Log(testCharacter.characterName + " generated a new Mission!");
 		Debug.Log(testMission.description + " to deliver: " + testMission.itemsToDeliver[0].count + " " + testMission.itemsToDeliver[0].itemPrototype.name);
-		Debug.Log("Deliver from " + Station_Manager.instance.GetStation(testMission.stationOrigin).stationName + " to " + Station_Manager.instance.GetStation(testMission.stationDestination).stationName);
+		Debug.Log("Deliver from " + testMission.stationOrigin.stationName + " to " + testMission.stationDestination.stationName);
 	
 		active_missions.Add(testMission);
 
 		if (ShipManager.instance.shipCargo.active_inventory.ContainsItem(deliveryItems[0].itemPrototype.name, 1) == true){
 			Debug.Log("Cargo has the cookies man!");
+		}
+	}
+	public void AcceptPublicJob(Mission newMission){
+		active_missions.Add(newMission);
+		Station_Manager.instance.current_station.OnMissionAccepted(newMission);
+		Notification_Manager.instance.AddNotification("Job " + newMission.description + " accepted!");
+		ShipManager.instance.TrySetDestination(Station_Manager.instance.GetStationIndex(newMission.stationDestination));
+		foreach(MissionItem item in newMission.itemsToDeliver){
+			Item_Manager.instance.SpawnItem(item.itemPrototype, new Vector2(-8f, -8f));
 		}
 	}
 	public void CheckMissionComplete(){

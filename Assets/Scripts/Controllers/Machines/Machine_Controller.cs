@@ -76,6 +76,7 @@ public class Machine_Controller : MonoBehaviour {
     public void UseMachine(){
         
         // Play animation of machine being used
+        animator.SetTrigger("on");
 
         float roll = UnityEngine.Random.Range (1, 100);
         if (roll <= efficiencyRate){
@@ -88,6 +89,7 @@ public class Machine_Controller : MonoBehaviour {
     }
     public void DisplayMachineUI(){
         UI_Manager.instance.ShowMachineUI(shipSystemsControlled);
+        AnimateOn();
     }
     public bool Interact(GameObject user){
         if (shipManager.SystemInteract(shipSystemsControlled, user) == true){
@@ -105,17 +107,20 @@ public class Machine_Controller : MonoBehaviour {
             onRepairDoneCB += onDoneCB;
         // Start mini game ui
         MiniGameManager.instance.StartRepairGame(this);
+        animator.SetTrigger("stay");
     }
     public void RepairSuccess(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
         onRepairDoneCB = null;
         RepairCondition();
+        animator.SetTrigger("off");
     }
     public void RepairFail(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
         onRepairDoneCB = null;
+        animator.SetTrigger("off");
     }
     void RepairCondition(){
         // called if mini game was succesful

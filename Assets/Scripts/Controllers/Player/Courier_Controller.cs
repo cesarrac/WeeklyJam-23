@@ -128,12 +128,7 @@ public class Courier_Controller : MonoBehaviour {
 		if (playerInventory.RemoveItem(item_held.item.name) == false)
 			return;
 		Debug.Log("DepositItem");
-		animator.SetTrigger("drop");
-		animator.SetBool("isCarrying", false);
-		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
-		
-		item_held.Pool();
-		item_held = null;
+		PutAwayHeldItem();
 	}
 	void OnItemSelected(int itemIndex){
 		Item itemSelected = playerInventory.inventory_items[itemIndex].item;
@@ -169,14 +164,18 @@ public class Courier_Controller : MonoBehaviour {
 		if (item_held.item == null){
 			return;
 		}
+		item_held.transform.SetParent(null);
+		
+
 		if (item_held.item.itemType != ItemType.Cargo){
+			item_held.Pool();
+			item_held = null;
 			return;
 		}
 		Debug.Log("Putting away item held");
 		animator.SetTrigger("drop");
 		animator.SetBool("isCarrying", false);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
-		item_held.transform.SetParent(null);
 		item_held.Pool();
 		item_held = null;
 	}

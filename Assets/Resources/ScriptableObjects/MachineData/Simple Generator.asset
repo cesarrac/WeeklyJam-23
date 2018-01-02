@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   machineName: Simple Generator
   machineSprite: {fileID: 21300000, guid: fd11544748f7e21498ca0fd7cce6d85f, type: 3}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: c8074c7b4df00614886bd131c14848dd, type: 2}
   tileWidth: 1
   tileHeight: 2
   efficiencyRate: 50
@@ -21,4 +21,3 @@ MonoBehaviour:
   systemControlled: 1
   machine_Controller: {fileID: 0}
   repairDifficulty: 0
-  maxJumpCapacity: 1

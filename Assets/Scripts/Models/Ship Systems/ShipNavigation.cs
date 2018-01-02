@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShipNavigation : ShipSystem {
 
 	public int maxJumpCapacity = 0;
-	public int destinationStationIndex = -1;
+	public int destinationStationIndex = 0;
 	public int currStationIndex = -1;
 	public ShipNavigation(){
 		shipSystemType = ShipSystemType.Nav;
@@ -28,7 +28,7 @@ public class ShipNavigation : ShipSystem {
 			return false;
 		
 		destinationStationIndex = stationIndex;
-		Debug.Log("Destination set to index: " + destinationStationIndex);
+		Notification_Manager.instance.AddNotification("Destination set to " + destination.stationName);
 		return true;
 	}
 
