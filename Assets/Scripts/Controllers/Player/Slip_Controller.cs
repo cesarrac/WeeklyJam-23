@@ -70,7 +70,7 @@ public class Slip_Controller : MonoBehaviour {
 		animator.SetTrigger("slip");
 		Debug.Log("Item slipping!!");
 		// Start mini game
-		MiniGameManager.instance.StartDropItemGame(MiniGameDifficulty.Average, OnSuccess, OnFail);
+		MiniGameManager.instance.StartDropItemGame(transform.position, MiniGameDifficulty.Average, OnSuccess, OnFail);
 	}
 	void OnSuccess(){
 		// Unlock movement, reset timer, nothing changes

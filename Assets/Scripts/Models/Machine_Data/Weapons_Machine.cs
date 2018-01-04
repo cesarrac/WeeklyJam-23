@@ -9,6 +9,6 @@ public class Weapons_Machine : Machine_Data {
          machine_Controller.InitData(machineName, machineSprite, animatorController,tileWidth, tileHeight, systemControlled, efficiencyRate, repairDifficulty);
 	}
 	public override void InitSystems(ShipManager shipManager){
-		Debug.Log("Weapons init!");
+		//Debug.Log("Weapons init!");
 	}
 }

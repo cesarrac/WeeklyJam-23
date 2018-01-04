@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ShipMode{ OFF, ON, WAITING}
 public class ShipManager : MonoBehaviour {
 
 	public static ShipManager instance {get; protected set;}
@@ -12,7 +13,7 @@ public class ShipManager : MonoBehaviour {
 	public ShipNavigation shipNavigation {get; protected set;}
 	ShipSystem[] coreSystems;
 	ObjectPool pool;
-
+	public ShipMode shipMode {get; protected set;}
 	void Awake(){
 		instance = this;
 		coreSystems = new ShipSystem[5];
@@ -27,6 +28,7 @@ public class ShipManager : MonoBehaviour {
 		shipNavigation = new ShipNavigation();
 		coreSystems[4] = shipNavigation;
 		Debug.Log("Systems initalized!");
+		shipMode = ShipMode.OFF;
 	}
 	/* void Start(){
 		InitializeCurrentMachines();
@@ -56,32 +58,48 @@ public class ShipManager : MonoBehaviour {
 		if (curStation == null)
 			return;
 		curStation.EnterStation();
-		shipNavigation.SetCurrentStation(shipNavigation.destinationStationIndex);
+		shipNavigation.EnterStation(shipNavigation.destinationStationIndex);
 		ShipOff();
 	}
 	public void ExitStation(){
 
 	}
-	public void ShipOn(){
-		// Try turning on Power first, if that doesn't start nothing else should
+	public bool CanUseEssentials(){
 		if (shipPower.CanUse() == false){
-			Notification_Manager.instance.AddNotification("Ship POWER cannot start so systems cannot turn on!!");
-			return;
+			return false;
 		}
+		if (shipNavigation.CanUse() == false){
+			return false;
+		}
+		if (shipPropulsion.CanUse() == false){
+			return false;
+		}
+		return true;
+	}
+	public bool ShipOn(){
+		// Try turning on Power first, if that doesn't start nothing else should
+		if (CanUseEssentials() == false){
+			Notification_Manager.instance.AddNotification("Essential systems are down!");
+			shipMode = ShipMode.WAITING;
+			return false;
+		}
+
+		if (shipMode == ShipMode.ON)
+			return true;
+			
 		foreach(ShipSystem system in coreSystems){
 			system.UseSystem();
 		}
 		Notification_Manager.instance.AddNotification("Systems check ... OK!");
+		shipMode = ShipMode.ON;
+		return true;
 	}
 	public void ShipOff(){
 		foreach(ShipSystem system in coreSystems){
 			system.StopSystem();
 		}
+		shipMode = ShipMode.OFF;
 	}
-	void UpdateShipSystems(){
-		
-	}
-
 	public bool AddMachine(Machine_Data data, Vector2 machinePosition){
 		if (data == null)
 			return false;

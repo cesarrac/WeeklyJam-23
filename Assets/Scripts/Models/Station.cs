@@ -40,7 +40,7 @@ public class Station   {
 	}
 	public void SetJumpLocation(int jumpLoc){
 		jumpLocation = jumpLoc;
-		Debug.Log(stationName + " jump loc set to: " + jumpLocation);
+		//Debug.Log(stationName + " jump loc set to: " + jumpLocation);
 	}
 	public void EnterStation(){
 		Station_Manager.instance.OnEnterStation(this);

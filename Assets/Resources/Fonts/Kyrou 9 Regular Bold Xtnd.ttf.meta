@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 6f16d52241d03c34ba7f8ad657159499
+timeCreated: 1514927494
+licenseType: Pro
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Grixel Kyrou 9 Regular Bold Xtnd
+  fontNames:
+  - Grixel Kyrou 9 Regular Bold Xtnd
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

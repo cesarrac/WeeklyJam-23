@@ -12,6 +12,7 @@ public class LevelUI_Manager : MonoBehaviour {
 	List<GameObject> jobsAdded;
 	Text missionCompText;
 	Action onMissionCompDismissed;
+	public Image transitProgressBar;
 	void Awake(){
 		instance = this;
 		jumpButton = shipUIPanel.GetComponentInChildren<Button>();
@@ -28,9 +29,13 @@ public class LevelUI_Manager : MonoBehaviour {
 	public void DisplayShipUI(){
 		HideStationUI();
 		shipUIPanel.SetActive(true);
+		transitProgressBar.rectTransform.offsetMax = new Vector2(-Screen.width, transitProgressBar.rectTransform.offsetMax.y);
+		transitProgressBar.gameObject.SetActive(true);
 	}
 	public void HideShipUI(){
 		shipUIPanel.SetActive(false);
+		
+		transitProgressBar.gameObject.SetActive(false);
 	}
 	public void DisplayNavigationButton(){
 
@@ -41,6 +46,10 @@ public class LevelUI_Manager : MonoBehaviour {
 	}
 	public void DisplayStationUI(){
 		stationUIPanel.SetActive(true);
+	}
+	public void UpdateTransitProgress(float transitPerc){
+		float offset = Screen.width - (Screen.width * transitPerc);
+		transitProgressBar.rectTransform.offsetMax = new Vector2(-offset, transitProgressBar.rectTransform.offsetMax.y);
 	}
 	public void HideStationUI(){
 		stationUIPanel.SetActive(false);

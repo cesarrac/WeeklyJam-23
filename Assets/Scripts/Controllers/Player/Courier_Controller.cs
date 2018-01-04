@@ -11,6 +11,7 @@ public class Courier_Controller : MonoBehaviour {
 	public Inventory playerInventory {get; protected set;}
 	public InventoryUI inventoryUI {get; protected set;}
 	Animator anim;
+	bool isRepairing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
 	void Awake(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
@@ -32,6 +33,7 @@ public class Courier_Controller : MonoBehaviour {
 				if (item_held != null && item_held.item != null){
 					if (item_held.item.itemUseType == ItemUseType.Repair){
 						TryRepairMachine(tile.machine);
+						isRepairing = true;
 						return;
 					}
 				}
@@ -42,12 +44,15 @@ public class Courier_Controller : MonoBehaviour {
 		}
 	}
 	void TryRepairMachine(Machine_Controller machine){
+		if (isRepairing == true)
+			return;
 		animator.SetTrigger("repair");
 		characterMovement.LockMovement(true);
 		machine.TryRepair(OnUseDone);
 	}
 	void OnUseDone(){
 		Debug.Log("OnUseDone");
+		isRepairing = false;
 		animator.SetTrigger("repairDone");
 		characterMovement.LockMovement(false);
 	}

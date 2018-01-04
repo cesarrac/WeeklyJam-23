@@ -20,6 +20,7 @@ public class Machine_Controller : MonoBehaviour {
     public SpriteRenderer shadowRenderer;
     Animator animator;
     Action onRepairDoneCB;
+    public GameObject damageFX;
     void OnEnable(){
         animator = GetComponent<Animator>();
     }
@@ -59,13 +60,15 @@ public class Machine_Controller : MonoBehaviour {
                     }
             }
 
+        
+        } 
            collidable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, 0.5f);
            collidable.size  = new Vector2(tileWidth, 1);
            /* interactable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, tileHeight > 1 ? 1 : 0.5f);
            interactable.size  = new Vector2(tileWidth, tileHeight); */
            shadowRenderer.size = new Vector2(tileWidth, 1);
-        } 
-        
+
+           damageFX.GetComponent<SpriteRenderer>().size = new Vector2(tileWidth, 2);
     }
     public bool CanUse(){
         if ((int)machineCondition < 2){
@@ -112,15 +115,17 @@ public class Machine_Controller : MonoBehaviour {
     public void RepairSuccess(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
-        onRepairDoneCB = null;
+      
         RepairCondition();
         animator.SetTrigger("off");
+        onRepairDoneCB = null;
     }
     public void RepairFail(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
-        onRepairDoneCB = null;
+        
         animator.SetTrigger("off");
+        onRepairDoneCB = null;
     }
     void RepairCondition(){
         // called if mini game was succesful
@@ -130,6 +135,10 @@ public class Machine_Controller : MonoBehaviour {
         int curCondition = (int)machineCondition;
         
         machineCondition = (MachineCondition) curCondition + 1;
+        if (damageFX.activeSelf == true){
+            damageFX.SetActive(false);
+        }
+        Notification_Manager.instance.AddNotification(shipSystemsControlled + " machine repaired to " + machineCondition);
         Debug.Log("MACHINE REPAIRED! " + machineCondition);
     }
     public void DecayCondition(){
@@ -138,6 +147,14 @@ public class Machine_Controller : MonoBehaviour {
             return;
         }
         machineCondition = (MachineCondition) curCondition - 1;
+        Notification_Manager.instance.AddNotification(shipSystemsControlled + " machine's condition decayed to " + machineCondition);
+        // Activate damage FX animation
+        if (machineCondition < MachineCondition.Decayed){
+            if (damageFX.activeSelf == false){
+                damageFX.SetActive(true);
+            }
+        }
+   
     }
 
     public void DestroyMachine(){

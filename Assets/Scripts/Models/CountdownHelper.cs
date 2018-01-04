@@ -7,6 +7,7 @@ public class CountdownHelper  {
 	//TimeManager timeManager;
 	float timeToCount, timer;
 	public float elapsedPercent {get; protected set;}
+	public float elapsedTime {get; protected set;}
 	public bool isDone {get; protected set;}
 	public CountdownHelper(float _timeToCount){
 		timeToCount = _timeToCount;
@@ -18,6 +19,7 @@ public class CountdownHelper  {
 			isDone = true;
 		}else{
 			timer += Time.deltaTime;
+			elapsedTime = timer;
 			elapsedPercent = timer / timeToCount;
 			if (isDone == true)
 				isDone = false;
@@ -28,6 +30,7 @@ public class CountdownHelper  {
 			timeToCount = _timeToCount;
 		timer = 0;
 		elapsedPercent = 0;
+		elapsedTime = 0;
 		isDone = false;
 	}
 }
