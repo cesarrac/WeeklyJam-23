@@ -21,8 +21,11 @@ public class Machine_Controller : MonoBehaviour {
     Animator animator;
     Action onRepairDoneCB;
     public GameObject damageFX;
+    public Item machineItem {get; protected set;}
+    SpriteRenderer mainSpriteR;
     void OnEnable(){
         animator = GetComponent<Animator>();
+        mainSpriteR = GetComponent<SpriteRenderer>();
     }
     public void InitData(string _name, Sprite machineSprite, RuntimeAnimatorController animatorController, int _tileWidth, int _tileHeight,ShipSystemType _systemsControlled, float _efficiency, MiniGameDifficulty _repairDifficulty){
         machineName = _name;
@@ -31,13 +34,16 @@ public class Machine_Controller : MonoBehaviour {
         shipSystemsControlled = _systemsControlled;
         efficiencyRate = _efficiency;   
         repairDifficulty = _repairDifficulty;
-        GetComponent<SpriteRenderer>().sprite = machineSprite;
+        mainSpriteR.sprite = machineSprite;
         animator.runtimeAnimatorController = animatorController;
+        Debug.Log("Data initialized " + _name + " with sprite " + machineSprite.name);
     }
 
-    public void InitMachine(Tile_Data tile, ShipManager ship){
+    public void InitMachine(Item _machineItem, Tile_Data tile, ShipManager ship){
         if (tile.AddMachine(this) == false)
             return;
+        // Store the machine as Item that can be placed into an inventory
+        machineItem = _machineItem;
         machineCondition = MachineCondition.OK;
         gameObject.name = machineName;
         baseTile = tile;
@@ -157,7 +163,7 @@ public class Machine_Controller : MonoBehaviour {
    
     }
 
-    public void DestroyMachine(){
+    public void RemoveMachine(){
         if (baseTile != null){
 			if (baseTile.RemoveMachine() == true){
 				Debug.Log(machineName + " removed from tile");
@@ -168,11 +174,10 @@ public class Machine_Controller : MonoBehaviour {
                 tile.RemoveMachine();
             }
         }
-		// Pool this machine's gameobject
-    }
-    void OnDisable(){
-		DestroyMachine();
         if (animator != null)
             animator.runtimeAnimatorController = null;
-	}
+		// Pool this machine's gameobject
+        this.gameObject.name = "Machine";
+        Item_Manager.instance.PoolItem(machineItem);
+    }
 }

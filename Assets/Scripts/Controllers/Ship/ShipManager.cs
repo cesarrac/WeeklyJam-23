@@ -41,11 +41,11 @@ public class ShipManager : MonoBehaviour {
 		}
 		for(int i = 0; i < startingMachines.Length; i++){
 
-			Machine_Data data = Item_Manager.instance.GetMachine_Data(startingMachines[i].name);
+		 	Machine_Data data = Item_Manager.instance.GetMachine_Data(startingMachines[i].name);
 			if(data == null)
-				continue;
-			if (AddMachine(data, startPos)){
-				startPos.x += data.tileWidth;
+				continue; 
+			if (AddMachine(startingMachines[i], data, startPos)){
+				startPos.x += 2;
 			}
 		}
 	}
@@ -100,24 +100,33 @@ public class ShipManager : MonoBehaviour {
 		}
 		shipMode = ShipMode.OFF;
 	}
-	public bool AddMachine(Machine_Data data, Vector2 machinePosition){
-		if (data == null)
+	public bool AddMachine(Item machineItem, Machine_Data data, Vector2 machinePosition){
+		if(data == null)
 			return false;
-		GameObject machine = pool.GetObjectForType("Machine", true, machinePosition);
+		if (machineItem == null)
+			return false;
+		GameObject machine = Item_Manager.instance.SpawnMachine(machineItem, data, machinePosition);
+		if (machine == null)
+			return false;
+		/* GameObject machine = pool.GetObjectForType("Machine", true, machinePosition);
 		machine.transform.SetParent(this.transform);
+		
+		data.Init(mController); */
 		Machine_Controller mController = machine.GetComponent<Machine_Controller>();
-		data.Init(mController);
-
 		if (AddMachine(mController) == true){
-			mController.InitMachine(TileManager.instance.GetTile(machine.transform.position), this);
+			mController.InitMachine(machineItem, TileManager.instance.GetTile(machine.transform.position), this);
 			data.InitSystems(this);
 			return true;
 		}else{
-			machine.transform.SetParent(null);
+			mController.RemoveMachine();
+			/* machine.transform.SetParent(null);
 			machine.name = "Machine";
-			pool.PoolObject(machine);
+			pool.PoolObject(machine); */
 			return false;
 		}
+
+		// TODO: Add machines that are not linked to ship systems,
+		// 		like machines that produce goods
 	}
 
 

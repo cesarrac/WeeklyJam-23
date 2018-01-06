@@ -53,10 +53,31 @@ public class Item_Manager : MonoBehaviour {
 		}
 		return null;
 	}
+	public GameObject SpawnMachine(Item machineItem, Machine_Data data, Vector2 position){
+		// NOTE: Since ship manager needs the M data, I'm passing it back here through 'data' param
+		// 		so we don't have to look it up again
+		
+		//Machine_Data data = GetMachine_Data(machineItem.name);
+		if (data == null){
+			return null;
+		}
+		GameObject machineGObj = pool.GetObjectForType("Machine", true, position);
+		if (machineGObj == null)
+			return null;
+		machineGObj.transform.SetParent(ShipManager.instance.transform);
+		Machine_Controller mController = machineGObj.GetComponent<Machine_Controller>();
+		data.Init(mController);
+		
+		itemsInWorld.Add(machineItem, machineGObj);
+		return machineGObj;
+	}
+
 	public void PoolItem(Item item){
 		if (itemsInWorld.ContainsKey(item) == false)
 			return;
-		
+		if (itemsInWorld[item].transform.parent != null)
+			itemsInWorld[item].transform.SetParent(null);
+			
 		pool.PoolObject(itemsInWorld[item]);
 		itemsInWorld.Remove(item);
 	}

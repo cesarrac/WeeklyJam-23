@@ -32,7 +32,7 @@ public class TransitState : State{
 		lastEventTime = 0;
 	}
 	public override void Update(float deltaTime){
-	/* 	countdown.UpdateCountdown();
+	 	countdown.UpdateCountdown();
 		if (countdown.elapsedPercent >= 1){
 			// Go to Jump state
 			Jump();
@@ -50,7 +50,7 @@ public class TransitState : State{
 		if (countdown.elapsedTime - lastEventTime >= timeBwEvent){
 			lastEventTime = countdown.elapsedTime;
 			CheckForEvent();
-		} */
+		} 
 	}
 	void CheckForEvent(){
 		

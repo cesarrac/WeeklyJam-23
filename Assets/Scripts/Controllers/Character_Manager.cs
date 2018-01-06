@@ -30,9 +30,18 @@ public class Character_Manager : MonoBehaviour {
         SpawnPlayer();
     }
     public void SpawnPlayer(){
+        if (player_GObj != null){
+            player_GObj.GetComponent<CharacterMovement>().LockMovement(false);
+            player_GObj.SetActive(true);
+            return;
+        }
         player_GObj = pool.GetObjectForType("COURIER", true, Vector2.down);
         player_GObj.GetComponent<Courier_Controller>().Initialize(playerCharacter);
         Camera_Controller.instance.SetVCamTarget(player_GObj.transform);
+    }
+    public void HidePlayer(){
+        player_GObj.GetComponent<CharacterMovement>().LockMovement(true);
+        player_GObj.SetActive(false);
     }
     public void PoolPlayer(){
         ObjectPool.instance.PoolObject(player_GObj);

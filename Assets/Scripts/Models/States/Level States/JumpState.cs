@@ -14,7 +14,7 @@ public class JumpState : State {
 
         cutscene_Manager.onJumpComplete += JumpComplete;
         cutscene_Manager.StartJumpScene();
-        Character_Manager.instance.PoolPlayer();
+        Character_Manager.instance.HidePlayer();
         Item_Manager.instance.HideItems();
         
     }

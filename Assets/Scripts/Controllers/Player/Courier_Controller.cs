@@ -191,7 +191,7 @@ public class Courier_Controller : MonoBehaviour {
 		item_held.Pool();
 		item_held = null;
 	}
-	void OnDisable(){
+	public void PoolCharacter(){
 		if (MouseInput_Controller.instance != null){
 			MouseInput_Controller.instance.onUse -= Use;
 			MouseInput_Controller.instance.onInteract -= TryInteract;
