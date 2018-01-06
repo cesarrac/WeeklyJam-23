@@ -23,7 +23,7 @@ public class CharacterMovement : MonoBehaviour {
 	public event OnMove onStartMove;
 	public event OnMove onStopMove;
 	bool isLocked = false;
-	void Awake(){
+	void OnEnable(){
 		animator = GetComponentInChildren<Animator>();
 		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 		minX = minY = -8;

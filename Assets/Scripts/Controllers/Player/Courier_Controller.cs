@@ -8,22 +8,29 @@ public class Courier_Controller : MonoBehaviour {
 	public Item_Controller item_held {get; protected set;}
 	public GameObject itemHolder;
 	CharacterMovement characterMovement;
-	public Inventory playerInventory {get; protected set;}
+	public CharacterPC characterData {get; protected set;}
 	public InventoryUI inventoryUI {get; protected set;}
 	Animator anim;
 	bool isRepairing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
-	void Awake(){
+
+	void OnEnable(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
-		playerInventory = new Inventory(3);
 		inventoryUI = GetComponent<InventoryUI>();
 	}
-	void Start(){
-		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
+	public void Initialize(CharacterPC character){
+		characterData = character;
+		inventoryUI.Initialize(characterData.characterInventory, UI_Manager.instance.playerInventoryPanel);
 		MouseInput_Controller.instance.onInteract += TryInteract;
 		MouseInput_Controller.instance.onUse += Use;
 		inventoryUI.onItemSelected += OnItemSelected;
 	}
+/* 	void Start(){
+		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
+		MouseInput_Controller.instance.onInteract += TryInteract;
+		MouseInput_Controller.instance.onUse += Use;
+		inventoryUI.onItemSelected += OnItemSelected;
+	} */
 	void Use(){
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.z = 0;
@@ -91,7 +98,7 @@ public class Courier_Controller : MonoBehaviour {
 	}
 	public void PickUpItem(GameObject itemGobj){
 		Item itemToPickUp = itemGobj.GetComponent<Item_Controller>().item;
-		if (playerInventory.AddItem(itemToPickUp) == false)
+		if (characterData.characterInventory.AddItem(itemToPickUp) == false)
 			return;
 		if (item_held != null){
 			PutAwayHeldItem();
@@ -115,7 +122,7 @@ public class Courier_Controller : MonoBehaviour {
 	public void DropItem(){
 		if (item_held == null)
 			return;
-		if (playerInventory.RemoveItem(item_held.item.name) == false)
+		if (characterData.characterInventory.RemoveItem(item_held.item.name) == false)
 			return;
 		Vector2 direction = characterMovement.facingDirection == Direction.Right ? Vector2.right : Vector2.left;
 		if (item_held.item.itemType == ItemType.Cargo){
@@ -130,13 +137,13 @@ public class Courier_Controller : MonoBehaviour {
 		item_held = null;
 	}
 	void DepositItem(){
-		if (playerInventory.RemoveItem(item_held.item.name) == false)
+		if (characterData.characterInventory.RemoveItem(item_held.item.name) == false)
 			return;
 		Debug.Log("DepositItem");
 		PutAwayHeldItem();
 	}
 	void OnItemSelected(int itemIndex){
-		Item itemSelected = playerInventory.inventory_items[itemIndex].item;
+		Item itemSelected = characterData.characterInventory.inventory_items[itemIndex].item;
 		if (itemSelected == null){
 			PutAwayHeldItem();
 			return;

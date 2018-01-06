@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class JumpState : State {
-    CountdownHelper countdown;
-    float jumpTime = 2;
+    Cutscene_Manager cutscene_Manager;
 	public JumpState(StateType sType) : base (sType){
-		countdown = new CountdownHelper(jumpTime);
+
 	}
     public override void Enter(){
         base.Enter();
-        countdown.Reset();
+        if (cutscene_Manager == null)
+            cutscene_Manager = Cutscene_Manager.instance;
+
+        cutscene_Manager.onJumpComplete += JumpComplete;
+        cutscene_Manager.StartJumpScene();
+        Character_Manager.instance.PoolPlayer();
+        Item_Manager.instance.HideItems();
+        
     }
 	public override void Update(float deltaTime){
-        countdown.UpdateCountdown();
-        // Update Jump animations here:
-
-        if (countdown.elapsedPercent >= 1){
-            Finished();
-        }
+       
 	}
+    void JumpComplete(){
+        cutscene_Manager.onJumpComplete -= JumpComplete;
+        Character_Manager.instance.SpawnPlayer();
+        Item_Manager.instance.ShowItems();
+        Finished();
+    }
     public override void Finished(){
         Game_LevelManager.instance.ReplaceStateWith(StateType.StationArrival);
     }

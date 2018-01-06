@@ -14,7 +14,7 @@ public class Item_Controller : MonoBehaviour {
 		spriteRenderer.sprite = item.sprite;
 	}
 	public void Pool(){
+		Item_Manager.instance.PoolItem(item);
 		item = null;
-		ObjectPool.instance.PoolObject(this.gameObject);
 	}
 }

@@ -9,8 +9,10 @@ public class Item_Manager : MonoBehaviour {
 	ItemPrototype[] available_Items;
 	Machine_Data[] available_Machines;
 	ObjectPool pool;
+	Dictionary<Item, GameObject> itemsInWorld;
 	void Awake(){
 		instance = this;
+		itemsInWorld = new Dictionary<Item, GameObject>();
 		available_Items = Resources.LoadAll<ItemPrototype>("ScriptableObjects/Item Prototypes");
 		available_Machines = Resources.LoadAll<Machine_Data>("ScriptableObjects/MachineData");
 		if (available_Machines.Length <= 0)
@@ -18,10 +20,8 @@ public class Item_Manager : MonoBehaviour {
 	}	
 	void Start(){
 		pool = ObjectPool.instance;
-		GameObject testObj = pool.GetObjectForType("Item", true, new Vector2(0, -3f));
-		testObj.GetComponent<Item_Controller>().Initialize(CreateInstance(testPrototypes[0]));
-		GameObject testObj2 = pool.GetObjectForType("Item", true, new Vector2(1, -3f));
-		testObj2.GetComponent<Item_Controller>().Initialize(CreateInstance(testPrototypes[1]));
+		SpawnItem(testPrototypes[0],  new Vector2(0, -3f));
+		SpawnItem(testPrototypes[1], new Vector2(1, -3f));
 	}
 	public ItemPrototype GetPrototype(string itemName){
 		foreach(ItemPrototype prototype in available_Items){
@@ -34,6 +34,10 @@ public class Item_Manager : MonoBehaviour {
 	public void SpawnItem(ItemPrototype prototype, Vector2 position){
 		GameObject itemGObj = pool.GetObjectForType("Item", true, position);
 		itemGObj.GetComponent<Item_Controller>().Initialize(CreateInstance(prototype));
+		Item item = itemGObj.GetComponent<Item_Controller>().item;
+		if (item == null)
+			return;
+		itemsInWorld.Add(item, itemGObj);
 	}
 	public Item CreateInstance(ItemPrototype prototype){
         return Item.CreateInstance(prototype);
@@ -48,5 +52,26 @@ public class Item_Manager : MonoBehaviour {
 			}
 		}
 		return null;
+	}
+	public void PoolItem(Item item){
+		if (itemsInWorld.ContainsKey(item) == false)
+			return;
+		
+		pool.PoolObject(itemsInWorld[item]);
+		itemsInWorld.Remove(item);
+	}
+	public void HideItems(){
+		if (itemsInWorld.Count <= 0)
+			return;
+		foreach(GameObject gobj in itemsInWorld.Values){
+			gobj.SetActive(false);
+		}
+	}
+	public void ShowItems(){
+		if (itemsInWorld.Count <= 0)
+			return;
+		foreach(GameObject gobj in itemsInWorld.Values){
+			gobj.SetActive(true);
+		}
 	}
 }

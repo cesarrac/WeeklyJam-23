@@ -23,11 +23,17 @@ public class Game_LevelManager : MonoBehaviour {
 	
 	}
 	void Start(){
+		StartGame();
+	}
+
+	void StartGame(){
+		TileManager.instance.GenerateTileData();
+		Character_Manager.instance.StartNewPlayer("Tipo");
 		InitStartingShipMachines();
 		stateMachine.Push(LevelStates[0]);
 	}
 	void InitStartingShipMachines(){
-		TileManager.instance.GenerateTileData();
+	
 		startingItems = new Item [startingMachines.Length];
 		int i = 0;
 		foreach(ItemPrototype prototype in startingMachines){

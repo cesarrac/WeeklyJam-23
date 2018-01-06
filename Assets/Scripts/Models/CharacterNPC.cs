@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CharacterNPC : Character {
     
-    public override void Initialize(string _name){
-        characterName = _name;
+    public override void Initialize(string _name, int invMaxSpaces = 1){
+        base.Initialize(_name);
     }
     
     

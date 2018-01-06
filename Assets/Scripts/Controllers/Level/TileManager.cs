@@ -26,10 +26,6 @@ public class TileManager : MonoBehaviour {
 		//Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
 		//GenerateTileData();
 	}
-	void Start(){
-		
-		
-	}
 
 	public void GenerateTileData(){
 		tileData_Grid = new Tile_Data[map_width, map_height];

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraShaker : MonoBehaviour {
+	public static CameraShaker instance {get; protected set;}
 	public float trauma, shake;
 	float shakeAngle, shakeOffsetX, shakeOffsetY;
 	float maxAngle = 10, maxOffset = 2;
 	bool isShaking;
+	void Awake(){
+		instance = this;
+	}
 	void Update(){
 		if (Input.GetKeyDown(KeyCode.T)){
 			AddTrauma();
@@ -21,8 +25,8 @@ public class CameraShaker : MonoBehaviour {
 			StopShake();
 		}
 	}
-	public void AddTrauma(){
-		trauma += 0.4f;
+	public void AddTrauma(float multiplier = 1){
+		trauma += (0.4f * multiplier);
 		StartCamShake();
 	}
 	void StartCamShake(){
