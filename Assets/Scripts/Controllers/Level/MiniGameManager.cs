@@ -7,9 +7,8 @@ using DG.Tweening;
 public class MiniGameManager : MonoBehaviour {
 	public static MiniGameManager instance {get; protected set;}
 	public GameObject dropGamePanel;
-	MiniGame miniGame_dropItem;
 	public MiniGameControl miniGame_Repair;
-	public SlipMGameControl miniGame;
+	public SlipMGameControl miniGame_Slip;
 	Machine_Controller current_machine;
 	Action onDropGameSuccessCB;
 	Action onDropGameFailCB;
@@ -30,6 +29,11 @@ public class MiniGameManager : MonoBehaviour {
 		miniGame_Repair.onGameSuccess += OnRepairSuccess;
 		miniGame_Repair.onGameFail += OnRepairFail;
 	}
+	public void CancelRepairGame(){
+		if (miniGame_Repair.gameObject.activeSelf == false)
+			return;
+		DeactivateRepairGame();
+	}
 	void OnRepairSuccess(){
 		if (current_machine == null)
 			return;
@@ -44,60 +48,51 @@ public class MiniGameManager : MonoBehaviour {
 		DeactivateRepairGame();	
 	}
 	void DeactivateRepairGame(){
+		if (miniGame_Repair.gameObject.activeSelf == false)
+			return;
 		miniGame_Repair.onGameSuccess -= OnRepairSuccess;
 		miniGame_Repair.onGameFail -= OnRepairFail;
 		miniGame_Repair.gameObject.SetActive(false);
 	}
 	
-	public void StartDropItemGame(Vector2 position, MiniGameDifficulty difficulty, Action onSuccess, Action onFail){
-		if (miniGame.gameObject.activeSelf == true)
+	public void StartSlipItemGame(Vector2 position, MiniGameDifficulty difficulty, Action onSuccess, Action onFail){
+		if (miniGame_Slip.gameObject.activeSelf == true)
 			return;
-		miniGame.gameObject.SetActive(true);
-		miniGame.transform.position = position + new Vector2(0, 2);
-		miniGame.Initialize(difficulty);
+		miniGame_Slip.gameObject.SetActive(true);
+		miniGame_Slip.transform.position = position + new Vector2(0, 2);
+		miniGame_Slip.Initialize(difficulty);
 		onDropGameSuccessCB += onSuccess;
 		onDropGameFailCB += onFail;
-		miniGame.onGameSuccess += OnDropItemSuccess;
-		miniGame.onGameFail += OnDropItemFail;
-	/* 	dropGamePanel.SetActive(true);
-		onDropGameSuccessCB += onSuccess;
-		onDropGameFailCB += onFail;
-		miniGame_dropItem.onGameSuccess += OnDropItemSuccess;
-		miniGame_dropItem.onGameFail += OnDropItemFail;
-		miniGame_dropItem.Initialize(difficulty); */
+		miniGame_Slip.onGameSuccess += OnSlipItemSuccess;
+		miniGame_Slip.onGameFail += OnSlipItemFail;
 	}
-	public void CheckForGoal_DropItem(){
-		if (miniGame_dropItem == null)
-			return;
-		if (dropGamePanel.activeSelf == false){
-			return;
-		}
-		miniGame_dropItem.CheckForGoal();
-	}
-	void OnDropItemSuccess(){
+	void OnSlipItemSuccess(){
 		if (onDropGameSuccessCB != null){
 			onDropGameSuccessCB();
 		}
 		
-		DeactivateDropItemGame();
+		DeactivateSlipGame();
 	}
-	void OnDropItemFail(){
+	void OnSlipItemFail(){
 		if (onDropGameFailCB != null){
 			onDropGameFailCB();
 		}
 		
-		DeactivateDropItemGame();
+		DeactivateSlipGame();
 	}
-	public void DeactivateDropItemGame(){
-		miniGame.onGameFail -= OnDropItemFail;
-		miniGame.onGameSuccess -=  OnDropItemSuccess;
-		miniGame.gameObject.SetActive(false);
-	/* 	miniGame_dropItem.onGameSuccess -= OnDropItemSuccess;
-		miniGame_dropItem.onGameFail -= OnDropItemFail;
-		miniGame_dropItem.Deactivate();
-		dropGamePanel.SetActive(false);
-		onDropGameFailCB = null;
-		onDropGameSuccessCB = null; */
+	public void DeactivateSlipGame(){
+		if (miniGame_Slip.gameObject.activeSelf == false)
+			return;
+		miniGame_Slip.onGameFail -= OnSlipItemFail;
+		miniGame_Slip.onGameSuccess -=  OnSlipItemSuccess;
+		miniGame_Slip.gameObject.SetActive(false);
 	}
 
+	
+	public void CancelMiniGames(){
+		// Cancel any active mini games
+	//DeactivateRepairGame();		// repair game deactivated through Courier Controller
+		if (miniGame_Slip.gameObject.activeSelf == true)
+			OnSlipItemSuccess();
+	}
 }

@@ -25,10 +25,9 @@ public class Slip_Controller : MonoBehaviour {
 		if (isChecking)
 			return;
 
-		if (courierController.item_held != null && 
-		courierController.item_held.item != null && 
-		courierController.item_held.item.itemType == ItemType.Cargo){
-			slipperiness = courierController.item_held.item.GetStat(StatType.Slipperiness);
+		if (courierController.iteminHand != null && 
+			courierController.iteminHand.itemType == ItemType.Cargo){
+			slipperiness = courierController.iteminHand.GetStat(StatType.Slipperiness);
 			if (slipperiness <= 0)
 				return;
 			isChecking = true;
@@ -46,9 +45,6 @@ public class Slip_Controller : MonoBehaviour {
 					SlipItem();
 				}
 			}
-		}
-		if (Input.GetKeyDown(KeyCode.E)){
-				MiniGameManager.instance.CheckForGoal_DropItem();
 		}
 	}
 	bool SlipCheck(){
@@ -70,7 +66,7 @@ public class Slip_Controller : MonoBehaviour {
 		animator.SetTrigger("slip");
 		Debug.Log("Item slipping!!");
 		// Start mini game
-		MiniGameManager.instance.StartDropItemGame(transform.position, MiniGameDifficulty.Average, OnSuccess, OnFail);
+		MiniGameManager.instance.StartSlipItemGame(transform.position, MiniGameDifficulty.Average, OnSuccess, OnFail);
 	}
 	void OnSuccess(){
 		// Unlock movement, reset timer, nothing changes

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
 guid: fd11544748f7e21498ca0fd7cce6d85f
-timeCreated: 1513631561
+timeCreated: 1515601367
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Reactor-animated_0
+    21300000: Reactor_0
     21300002: Reactor-animated_1
     21300004: Reactor-animated_2
     21300006: Reactor-animated_3
@@ -69,6 +69,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   - buildTarget: Standalone
     maxTextureSize: 512
     resizeAlgorithm: 0
@@ -78,6 +79,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   - buildTarget: WebGL
     maxTextureSize: 512
     resizeAlgorithm: 0
@@ -87,11 +89,12 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Reactor-animated_0
+      name: Reactor_0
       rect:
         serializedVersion: 2
         x: 0

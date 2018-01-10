@@ -28,12 +28,12 @@ public class LevelUI_Manager : MonoBehaviour {
 	}
 	public void DisplayShipUI(){
 		HideStationUI();
-		shipUIPanel.SetActive(true);
+		//shipUIPanel.SetActive(true);
 		transitProgressBar.rectTransform.offsetMax = new Vector2(-Screen.width, transitProgressBar.rectTransform.offsetMax.y);
 		transitProgressBar.gameObject.SetActive(true);
 	}
 	public void HideShipUI(){
-		shipUIPanel.SetActive(false);
+		//shipUIPanel.SetActive(false);
 		
 		transitProgressBar.gameObject.SetActive(false);
 	}

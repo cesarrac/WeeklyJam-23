@@ -1,0 +1,11 @@
+{
+    "name": "Basic Diagnostics Pad",
+    "sprite": "Control-Tablet",
+    "itemType": "Tool",
+    "itemUseType":"Repair",
+    "itemQuality":"Terrible",
+    "stackCount": 1,
+    "cost": 10,
+    "stats": [ {"statType": "Hitpoints", "minValue":100, "maxValue":0}, {"statType":"Slipperiness", "minValue":0, "maxValue":0}],
+    "timeToCreate": 20.0
+}

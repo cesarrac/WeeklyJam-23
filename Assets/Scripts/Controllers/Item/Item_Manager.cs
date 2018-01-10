@@ -42,6 +42,14 @@ public class Item_Manager : MonoBehaviour {
 	public Item CreateInstance(ItemPrototype prototype){
         return Item.CreateInstance(prototype);
     }
+	public void SpawnItem(Item itemInstance, Vector2 position){
+		if (itemInstance == null)
+			return;
+		GameObject itemGObj = pool.GetObjectForType("Item", true, position);
+		itemGObj.GetComponent<Item_Controller>().Initialize(itemInstance);
+		
+		itemsInWorld.Add(itemInstance, itemGObj);
+	}
 	public Machine_Data GetMachine_Data(string itemName){
 		if (available_Machines.Length < 0)
 			return null;

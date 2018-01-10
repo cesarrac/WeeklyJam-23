@@ -41,6 +41,7 @@ public class Character_Manager : MonoBehaviour {
     }
     public void HidePlayer(){
         player_GObj.GetComponent<CharacterMovement>().LockMovement(true);
+        player_GObj.GetComponent<Courier_Controller>().CancelRepair();
         player_GObj.SetActive(false);
     }
     public void PoolPlayer(){

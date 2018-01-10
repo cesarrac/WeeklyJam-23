@@ -12,16 +12,33 @@ public class Mission  {
 	// Where to deliver
 	public Station stationDestination {get; protected set;}
 	// Where the mission was generated/received
-	public Station stationOrigin {get; protected set;}
+	public Station stationPickUp {get; protected set;}
 	public int jumpsRequired {get; protected set;}
-	public Mission (Character _owner, string desc, MissionItem[] deliveryItems, Station _origin, Station _destination, int jumpRequirement){
+	public bool itemsAcquired {get; protected set;} // Has the player received the items required?
+	public Mission (Character _owner, string desc, MissionItem[] deliveryItems, Station _pickUp, Station _destination, int jumpRequirement){
 		owner = _owner;
 		description = desc;
 		itemsToDeliver = deliveryItems;
-		stationOrigin = _origin;
+		stationPickUp = _pickUp;
 		stationDestination = _destination;
 		jumpsRequired = jumpRequirement;
-		Debug.Log("Mission created to deliver " +  itemsToDeliver[0].count + " " + itemsToDeliver[0].itemPrototype.name);
+		Debug.Log("Mission created to pick up " +  itemsToDeliver[0].count + " " + 
+				itemsToDeliver[0].itemPrototype.name + " at " + stationPickUp.stationName + 
+				"  and deliver to " + stationDestination.stationName);
+		itemsAcquired = false;
+	}
+
+	public ItemPrototype[] PickUpItems(){
+		// Returns an array with the necessary items to spawn for the player to pick up
+		ItemPrototype[] items = new ItemPrototype[itemsToDeliver.Length];
+		for(int i = 0; i < items.Length; i++){
+			if (itemsToDeliver[i].itemPrototype == null)
+				continue;
+			items[i] = itemsToDeliver[i].itemPrototype;
+		}
+		// Mark mission as picked up so we don't give the player the items more than once
+		itemsAcquired = true;
+		return items;
 	}
 
 	// Has this mission been completed?
@@ -29,7 +46,7 @@ public class Mission  {
 		if (Station_Manager.instance.current_station != 
 			stationDestination){
 				return false;
-			}
+		}
 		// Check cargo hold inventory for items
 		ShipCargoHolds cargo = ShipManager.instance.shipCargo;
 		foreach(MissionItem mItem in itemsToDeliver){

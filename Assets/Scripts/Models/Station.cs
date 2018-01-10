@@ -54,20 +54,20 @@ public class Station   {
 	void GeneratePublicJobs(){
 		// TESTING HERE! Finish this so that we generate a good random set of jobs
 		// Select a neighbor within jump distance of 1
-		Station destination = null;
+		Station pickUpStation = null;
 		foreach(Neighbor neighbor in neighbors){
 			if (neighbor.station.jumpLocation <= 1){
-				destination = neighbor.station;
+				pickUpStation = neighbor.station;
 				break;
 			}
 		}
-		if (destination == null){
-			Debug.LogError(stationName + " could not create a job to a destination with jump location of 1 or less");
+		if (pickUpStation == null){
+			Debug.LogError(stationName + " could not create a job with a pick up station with jump location of 1 or less");
 			return;
 		}
 		public_Jobs.Add(new Mission(stationAuthority, "For His Majesty", 
 						new MissionItem[]{new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)},
-						this, destination, destination.jumpLocation));
+						pickUpStation, this, pickUpStation.jumpLocation));
 	}
 	public void OnMissionAccepted(Mission job){
 		if (public_Jobs.Contains(job) == false)

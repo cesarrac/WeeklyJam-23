@@ -32,14 +32,14 @@ public class TransitState : State{
 		lastEventTime = 0;
 	}
 	public override void Update(float deltaTime){
+		// if at any moment we cant use essential systems, pop out
+		if (shipManager.CanUseEssentials() == false){
+			return;
+		}
 	 	countdown.UpdateCountdown();
 		if (countdown.elapsedPercent >= 1){
 			// Go to Jump state
 			Jump();
-			return;
-		}
-		// if at any moment we cant use essential systems, pop out
-		if (shipManager.CanUseEssentials() == false){
 			return;
 		}
 		// update progress

@@ -5,14 +5,14 @@ using UnityEngine;
 public class Courier_Controller : MonoBehaviour {
 	public LayerMask interactableMask;
 	Animator animator;
-	public Item_Controller item_held {get; protected set;}
+	public Item iteminHand {get; protected set;}
 	public GameObject itemHolder;
 	CharacterMovement characterMovement;
 	public CharacterPC characterData {get; protected set;}
 	public InventoryUI inventoryUI {get; protected set;}
 	Animator anim;
-	bool isRepairing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
-
+	bool isUsing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
+	Machine_Controller machineUsed;
 	void OnEnable(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
@@ -21,26 +21,20 @@ public class Courier_Controller : MonoBehaviour {
 	public void Initialize(CharacterPC character){
 		characterData = character;
 		inventoryUI.Initialize(characterData.characterInventory, UI_Manager.instance.playerInventoryPanel);
-		MouseInput_Controller.instance.onInteract += TryInteract;
+		MouseInput_Controller.instance.onInteract += RightClickInteract;
 		MouseInput_Controller.instance.onUse += Use;
 		inventoryUI.onItemSelected += OnItemSelected;
 	}
-/* 	void Start(){
-		inventoryUI.Initialize(playerInventory, UI_Manager.instance.playerInventoryPanel);
-		MouseInput_Controller.instance.onInteract += TryInteract;
-		MouseInput_Controller.instance.onUse += Use;
-		inventoryUI.onItemSelected += OnItemSelected;
-	} */
 	void Use(){
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.z = 0;
 		Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 		if (tile != null){
 			if (tile.machine != null){
-				if (item_held != null && item_held.item != null){
-					if (item_held.item.itemUseType == ItemUseType.Repair){
+				if (iteminHand != null){
+					if (iteminHand.itemUseType == ItemUseType.Repair){
 						TryRepairMachine(tile.machine);
-						isRepairing = true;
+						isUsing = true;
 						return;
 					}
 				}
@@ -51,20 +45,34 @@ public class Courier_Controller : MonoBehaviour {
 		}
 	}
 	void TryRepairMachine(Machine_Controller machine){
-		if (isRepairing == true)
+		if (isUsing == true)
 			return;
+		machineUsed = machine;
 		animator.SetTrigger("repair");
 		characterMovement.LockMovement(true);
-		machine.TryRepair(OnUseDone);
+		machineUsed.TryRepair(OnUseDone);
+	}
+	public void CancelRepair(){
+		if (isUsing == true && machineUsed != null){
+
+			machineUsed.CancelRepair();
+			return;
+		}
 	}
 	void OnUseDone(){
 		Debug.Log("OnUseDone");
-		isRepairing = false;
+		isUsing = false;
 		animator.SetTrigger("repairDone");
 		characterMovement.LockMovement(false);
+		machineUsed = null;
 	}
-	void TryInteract(){
-		if (item_held != null){
+	void RightClickInteract(){
+		if (isUsing == true && machineUsed != null){
+
+			machineUsed.CancelRepair();
+			return;
+		}
+		if (iteminHand!= null){
 			// Check for a machine under the mouse to see if we are dropping this in a cargo hold
 			Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			mousePosition.z = 0;
@@ -78,9 +86,6 @@ public class Courier_Controller : MonoBehaviour {
 					return;
 				}
 			}
-/* 
-			DropItem();
-			return; */
 		}
 
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 0, interactableMask);
@@ -100,44 +105,31 @@ public class Courier_Controller : MonoBehaviour {
 		Item itemToPickUp = itemGobj.GetComponent<Item_Controller>().item;
 		if (characterData.characterInventory.AddItem(itemToPickUp) == false)
 			return;
-		if (item_held != null){
+		if (iteminHand != null){
 			PutAwayHeldItem();
-			/* // Item gets added to inventory but Item gobj gets pooled
-			itemGobj.GetComponent<Item_Controller>().Pool();
-			return; */
 		}
-		item_held = itemGobj.GetComponent<Item_Controller>();
-		item_held.Initialize(itemToPickUp);
-		item_held.transform.position = transform.position;
-		item_held.transform.SetParent(this.transform);
-		item_held.gameObject.SetActive(false);
+		itemGobj.GetComponent<Item_Controller>().Pool();
+		iteminHand = itemToPickUp;
 		// If it's cargo, place it over player's head
-		if (itemGobj.GetComponent<Item_Controller>().item.itemType == ItemType.Cargo){
-			itemHolder.GetComponent<SpriteRenderer>().sprite = itemGobj.GetComponent<SpriteRenderer>().sprite;
+		if (iteminHand.itemType == ItemType.Cargo){
+			itemHolder.GetComponent<SpriteRenderer>().sprite = iteminHand.sprite;
 			animator.SetTrigger("pickUp");
 			animator.SetBool("isCarrying", true);
 		}
 		
 	}
 	public void DropItem(){
-		if (item_held == null)
+		if (iteminHand == null)
 			return;
-		if (characterData.characterInventory.RemoveItem(item_held.item.name) == false)
+		if (characterData.characterInventory.RemoveItem(iteminHand.name) == false)
 			return;
 		Vector2 direction = characterMovement.facingDirection == Direction.Right ? Vector2.right : Vector2.left;
-		if (item_held.item.itemType == ItemType.Cargo){
-			animator.SetTrigger("drop");
-			animator.SetBool("isCarrying", false);
-		}
-			
-		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
-		item_held.gameObject.SetActive(true);
-		item_held.transform.SetParent(null);
-		item_held.transform.position = ((Vector2)transform.position + direction);
-		item_held = null;
+	
+		Item_Manager.instance.SpawnItem(iteminHand, (Vector2)transform.position + direction);
+		PutAwayHeldItem();
 	}
 	void DepositItem(){
-		if (characterData.characterInventory.RemoveItem(item_held.item.name) == false)
+		if (characterData.characterInventory.RemoveItem(iteminHand.name) == false)
 			return;
 		Debug.Log("DepositItem");
 		PutAwayHeldItem();
@@ -153,15 +145,7 @@ public class Courier_Controller : MonoBehaviour {
 				PutAwayHeldItem();
 		}
 
-		if (item_held == null){
-			GameObject itemGobj = ObjectPool.instance.GetObjectForType("Item", true, itemHolder.transform.position);
-			item_held = itemGobj.GetComponent<Item_Controller>();
-			item_held.transform.position = transform.position;
-			item_held.transform.SetParent(this.transform);
-		}
-		item_held.Initialize(itemSelected);
-		item_held.gameObject.SetActive(false);
-
+		iteminHand = itemSelected;
 			// If it's cargo, place it over player's head
 		if (itemSelected.itemType == ItemType.Cargo){
 			itemHolder.GetComponent<SpriteRenderer>().sprite = itemSelected.sprite;
@@ -170,31 +154,21 @@ public class Courier_Controller : MonoBehaviour {
 		}
 	}
 	void PutAwayHeldItem(){
-		if (item_held == null){
+		if (iteminHand == null)
+			return;
+		if (iteminHand.itemType != ItemType.Cargo){
+			iteminHand = null;
 			return;
 		}
-		if (item_held.item == null){
-			return;
-		}
-		item_held.transform.SetParent(null);
-		
-
-		if (item_held.item.itemType != ItemType.Cargo){
-			item_held.Pool();
-			item_held = null;
-			return;
-		}
-		Debug.Log("Putting away item held");
 		animator.SetTrigger("drop");
 		animator.SetBool("isCarrying", false);
 		itemHolder.GetComponent<SpriteRenderer>().sprite = null;
-		item_held.Pool();
-		item_held = null;
+		iteminHand = null;
 	}
 	public void PoolCharacter(){
 		if (MouseInput_Controller.instance != null){
 			MouseInput_Controller.instance.onUse -= Use;
-			MouseInput_Controller.instance.onInteract -= TryInteract;
+			MouseInput_Controller.instance.onInteract -= RightClickInteract;
 		}
 		if (inventoryUI != null)
 			inventoryUI.onItemSelected -= OnItemSelected;

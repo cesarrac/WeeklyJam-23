@@ -11,7 +11,7 @@ public class StationInsideState : State {
 		// Initialize the Station's characters
 		// ...so that they can generate missions to display them.
 		// ... and check if the Player has a mission currently and if so...
-		Mission_Manager.instance.CheckMissionComplete();
+		Mission_Manager.instance.CheckMissions();
 		// ... complete the current mission
 		if (Mission_Manager.instance.completed_missions.Count > 0){
 			Game_LevelManager.instance.ChangeStateTo(StateType.MissionComplete);

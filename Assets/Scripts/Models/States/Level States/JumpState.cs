@@ -8,21 +8,21 @@ public class JumpState : State {
 
 	}
     public override void Enter(){
-        base.Enter();
+        
         if (cutscene_Manager == null)
             cutscene_Manager = Cutscene_Manager.instance;
 
-        cutscene_Manager.onJumpComplete += JumpComplete;
+        cutscene_Manager.onComplete += JumpComplete;
         cutscene_Manager.StartJumpScene();
         Character_Manager.instance.HidePlayer();
         Item_Manager.instance.HideItems();
-        
+        MiniGameManager.instance.CancelMiniGames();
     }
 	public override void Update(float deltaTime){
        
 	}
     void JumpComplete(){
-        cutscene_Manager.onJumpComplete -= JumpComplete;
+        cutscene_Manager.onComplete -= JumpComplete;
         Character_Manager.instance.SpawnPlayer();
         Item_Manager.instance.ShowItems();
         Finished();

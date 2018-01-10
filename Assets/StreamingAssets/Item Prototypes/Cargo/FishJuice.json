@@ -1,0 +1,11 @@
+{
+    "name": "Fish Juice",
+    "sprite": "Item Box",
+    "itemType": "Cargo",
+    "itemUseType":"None",
+    "itemQuality":"Terrible",
+    "stackCount": 10,
+    "cost": 10,
+    "stats": [ {"statType": "Hitpoints", "minValue":100, "maxValue":0}, {"statType":"Slipperiness", "minValue":80, "maxValue":0}],
+    "timeToCreate": 1.0
+}

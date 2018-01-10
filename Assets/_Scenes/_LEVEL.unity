@@ -547,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dropGamePanel: {fileID: 123507017}
   miniGame_Repair: {fileID: 1288008}
-  miniGame: {fileID: 100800755}
+  miniGame_Slip: {fileID: 100800755}
 --- !u!114 &47546570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -930,6 +930,10 @@ Prefab:
         type: 2}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4124609146937814, guid: e834087677bcb494eb1e73ad8dd981e5, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -24
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e834087677bcb494eb1e73ad8dd981e5, type: 2}
@@ -6018,6 +6022,8 @@ MonoBehaviour:
     Count: 10
   - Prefab: {fileID: 1426388327736952, guid: b22bad0164e8cbf4988972b3b4eb889c, type: 2}
     Count: 1
+  - Prefab: {fileID: 1035563098253968, guid: e33ef6d9df7f40649b0dedc7450b5bbe, type: 2}
+    Count: 1
 --- !u!4 &477399623
 Transform:
   m_ObjectHideFlags: 0
@@ -8964,7 +8970,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -67.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -12977,7 +12983,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -247.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -13266,7 +13272,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -157.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}

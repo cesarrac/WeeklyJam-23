@@ -16,7 +16,7 @@ public class Cutscene_Manager : MonoBehaviour {
 	Sequence arriveSequence;
 	public Text cutSceneText;
 	public delegate void OnComplete();
-	public event OnComplete onJumpComplete;
+	public event OnComplete onComplete;
 	void Awake(){
 		instance = this;
 	}
@@ -57,8 +57,21 @@ public class Cutscene_Manager : MonoBehaviour {
 	void JumpComplete(){
 		Debug.Log("Jump complete");
 		cutSceneText.gameObject.SetActive(false);
-		if (onJumpComplete != null){
-			onJumpComplete();
+		arriveSequence.Kill();
+		if (onComplete != null){
+			onComplete();
+		}
+	}
+	public void StartStationExit(){
+		CameraShaker.instance.AddTrauma(3);
+		arriveSequence.Append(stationHolder.transform.DOMoveY(24, 1).OnComplete(()=>StationExitComplete()));
+	}
+
+	void StationExitComplete(){
+		stationHolder.SetActive(false);
+		stationHolder.transform.position = new Vector2(0, -24);
+		if (onComplete != null){
+			onComplete();
 		}
 	}
 }

@@ -41,7 +41,7 @@ public class ShipCargoHolds : ShipSystem {
 	public override bool Interact(GameObject user){
 		if (base.Interact(user) == false)
 			return false;
-		Item newItem = user.GetComponent<Courier_Controller>().item_held.item;
+		Item newItem = user.GetComponent<Courier_Controller>().iteminHand;    //item_held.item;
 		if (newItem == null)
 			return false;
 		if (active_inventory.AddItem(newItem) == false){
@@ -59,8 +59,7 @@ public class ShipCargoHolds : ShipSystem {
 		Item item = active_inventory.inventory_items[itemIndex].item;
 		if (active_inventory.RemoveItem(item.name, 1) == false)
 			return;
-		GameObject itemGObj = ObjectPool.instance.GetObjectForType("Item", true, currMachine.transform.position + Vector3.down);
-		itemGObj.GetComponent<Item_Controller>().Initialize(item);
+		Item_Manager.instance.SpawnItem(item, currMachine.transform.position + Vector3.down);
 	}
 
 	

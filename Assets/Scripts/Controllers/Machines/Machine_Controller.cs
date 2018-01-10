@@ -118,6 +118,13 @@ public class Machine_Controller : MonoBehaviour {
         MiniGameManager.instance.StartRepairGame(this);
         animator.SetTrigger("stay");
     }
+    public void CancelRepair(){
+        if (onRepairDoneCB != null)
+            onRepairDoneCB();
+        MiniGameManager.instance.CancelRepairGame();
+        animator.SetTrigger("off");
+        onRepairDoneCB = null;
+    }
     public void RepairSuccess(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();

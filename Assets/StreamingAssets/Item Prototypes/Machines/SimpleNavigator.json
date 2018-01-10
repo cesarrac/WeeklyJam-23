@@ -1,0 +1,11 @@
+{
+    "name": "Simple Navigator",
+    "sprite": "Navigation_0",
+    "itemType": "Machine",
+    "itemUseType":"Build",
+    "itemQuality":"Terrible",
+    "stackCount": 1,
+    "cost": 0,
+    "stats": [ {"statType": "Hitpoints", "minValue":100, "maxValue":0}, {"statType":"Slipperiness", "minValue":0, "maxValue":0}],
+    "timeToCreate": 60.0
+}

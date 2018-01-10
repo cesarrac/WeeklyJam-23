@@ -40,38 +40,17 @@ public class CharacterMovement : MonoBehaviour {
 			return;
 		
 		inputVector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-		if (Input.GetKeyDown(KeyCode.LeftShift)){
+		if (Input.GetKeyDown(KeyCode.Space)){
 			if (isMoving == false)
 				return;
 			curSpeed = runSpeed;
 			animator.SetTrigger("dash");
 			isDashing = true;
 		}
-		//DashCheck();
 		Dash();
 		Move();
 	}
-	void DashCheck(){
-		if (isDashing == true){
-			return;
-		}
-		if (canDash == false){
-			return;
-		}
-		if (Input.GetKeyDown(KeyCode.LeftShift)){
-			curSpeed = runSpeed;
-			isDashing = true;
-			timer = 0;
-			animator.SetTrigger("dash");
-			return;
-		}
-		if (timer >= timeToDash){
-			canDash = false;
-			timer = 0;
-		}else{
-			timer += Time.deltaTime;
-		}
-	}
+	
 	void Dash(){
 		if (isDashing == false)
 			return;

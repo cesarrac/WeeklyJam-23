@@ -1,0 +1,11 @@
+{
+    "name": "Gochum Cookie Box",
+    "sprite": "Item Box",
+    "itemType": "Cargo",
+    "itemUseType":"None",
+    "itemQuality":"Terrible",
+    "stackCount": 50,
+    "cost": 20,
+    "stats": [ {"statType": "Hitpoints", "minValue":100, "maxValue":0}, {"statType":"Slipperiness", "minValue":50, "maxValue":0}],
+    "timeToCreate": 60.0
+}
