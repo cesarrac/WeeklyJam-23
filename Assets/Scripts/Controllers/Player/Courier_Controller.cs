@@ -80,7 +80,7 @@ public class Courier_Controller : MonoBehaviour {
 			if (tile != null){
 				if (tile.machine != null){
 					if (tile.machine.Interact(this.gameObject) == true){
-						if (tile.machine.shipSystemsControlled == ShipSystemType.CargoHold)
+						if (tile.machine.machine.systemControlled == ShipSystemType.CargoHold)
 							DepositItem();
 					}
 					return;
@@ -129,6 +129,11 @@ public class Courier_Controller : MonoBehaviour {
 		PutAwayHeldItem();
 	}
 	void DepositItem(){
+		if (iteminHand == null){
+			Debug.Log("ITEM IN HAND IS NULL");
+			return;
+		}
+		Debug.Log("Depositing item " + iteminHand.name);
 		if (characterData.characterInventory.RemoveItem(iteminHand.name) == false)
 			return;
 		Debug.Log("DepositItem");

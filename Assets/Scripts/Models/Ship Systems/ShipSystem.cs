@@ -10,7 +10,7 @@ public class ShipSystem  {
 	public Action<int> OnShipChangedCB {get; protected set;}
 	public bool isSystemOn = false;
 	public virtual bool CanAddMachine(Machine_Controller newMachine){
-		if (newMachine.shipSystemsControlled != shipSystemType)
+		if (newMachine.machine.systemControlled != shipSystemType)
 			return false;
 		if (currMachine != null)
 			return false;

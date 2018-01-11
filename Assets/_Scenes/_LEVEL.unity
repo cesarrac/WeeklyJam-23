@@ -489,6 +489,8 @@ GameObject:
   - component: {fileID: 47546574}
   - component: {fileID: 47546575}
   - component: {fileID: 47546576}
+  - component: {fileID: 47546577}
+  - component: {fileID: 47546578}
   m_Layer: 0
   m_Name: _MANAGERS
   m_TagString: Untagged
@@ -559,9 +561,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77332389ef586e04aafee5e877182bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPrototypes:
-  - {fileID: 11400000, guid: 009df891601f03f4c9d170bc140b2b28, type: 2}
-  - {fileID: 11400000, guid: 3e22417599be62a46bf9311f34b455b4, type: 2}
+  startItems:
+  - Fish Juice
+  - Letters
+  startingMachines:
+  - Simple Navigator
+  - Simple Cargohold
+  - Simple Engines
+  - Simple Generator
 --- !u!114 &47546571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -644,6 +651,28 @@ MonoBehaviour:
   shipHolder: {fileID: 770358948}
   stationHolder: {fileID: 479420500}
   cutSceneText: {fileID: 481034453}
+--- !u!114 &47546577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 47546565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d24cebe3777c89e4ca1eaa19b38fa5c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &47546578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 47546565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f36ed3ceda8b6846a2a2cd481325152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &73714101
 GameObject:
   m_ObjectHideFlags: 0
@@ -1304,11 +1333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b77f26c74fd635439aa2aa43f5c1852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingMachines:
-  - {fileID: 11400000, guid: 9401b02a0123ac046b77cab60657833c, type: 2}
-  - {fileID: 11400000, guid: 975fcbd55b67d88499a1257681c94c92, type: 2}
-  - {fileID: 11400000, guid: 6d79efc970dd845438e93b272d463298, type: 2}
-  - {fileID: 11400000, guid: e19710627340f9b438d275b2e7d8c597, type: 2}
+  startingMachines: []
 --- !u!4 &160697200
 Transform:
   m_ObjectHideFlags: 0
@@ -8520,11 +8545,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114048907948140916, guid: 68439765fbdd8d744856a39a33cc042f,
-        type: 2}
-      propertyPath: m_Follow
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 68439765fbdd8d744856a39a33cc042f, type: 2}
   m_IsPrefabParent: 0
@@ -8970,7 +8990,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -67.5
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -12983,7 +13003,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -247.5
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -13272,7 +13292,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -157.5
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}

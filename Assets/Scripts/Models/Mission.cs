@@ -23,22 +23,22 @@ public class Mission  {
 		stationDestination = _destination;
 		jumpsRequired = jumpRequirement;
 		Debug.Log("Mission created to pick up " +  itemsToDeliver[0].count + " " + 
-				itemsToDeliver[0].itemPrototype.name + " at " + stationPickUp.stationName + 
+				itemsToDeliver[0].itemName + " at " + stationPickUp.stationName + 
 				"  and deliver to " + stationDestination.stationName);
 		itemsAcquired = false;
 	}
 
-	public ItemPrototype[] PickUpItems(){
+	public string[] GetMisItemNames(){
 		// Returns an array with the necessary items to spawn for the player to pick up
-		ItemPrototype[] items = new ItemPrototype[itemsToDeliver.Length];
-		for(int i = 0; i < items.Length; i++){
-			if (itemsToDeliver[i].itemPrototype == null)
+		List<string> itemNames = new List<string>();
+		for(int i = 0; i < itemsToDeliver.Length; i++){
+			if (itemsToDeliver[i].count <= 0)
 				continue;
-			items[i] = itemsToDeliver[i].itemPrototype;
+			itemNames.Add(itemsToDeliver[i].itemName);
 		}
 		// Mark mission as picked up so we don't give the player the items more than once
 		itemsAcquired = true;
-		return items;
+		return itemNames.ToArray();
 	}
 
 	// Has this mission been completed?
@@ -50,11 +50,11 @@ public class Mission  {
 		// Check cargo hold inventory for items
 		ShipCargoHolds cargo = ShipManager.instance.shipCargo;
 		foreach(MissionItem mItem in itemsToDeliver){
-			if (mItem.itemPrototype == null)
+			if (mItem.itemName.Length <= 0)
 				continue;
 			if (mItem.count <= 0)
 				continue;
-			if(cargo.active_inventory.ContainsItem(mItem.itemPrototype.name, mItem.count) == false)
+			if(cargo.active_inventory.ContainsItem(mItem.itemName, mItem.count) == false)
 				return false;
 		}
 		
@@ -64,11 +64,12 @@ public class Mission  {
 	
 }
 public struct MissionItem{
-	public ItemPrototype itemPrototype;
+	public string itemName;
 	public int count;
-	
-	public MissionItem(ItemPrototype prototype, int _count){
-		itemPrototype = prototype;
+	public ItemType itemType;
+	public MissionItem(string name, ItemType iType, int _count){
+		itemName = name;
 		count = _count;
+		itemType = iType;
 	}
 }

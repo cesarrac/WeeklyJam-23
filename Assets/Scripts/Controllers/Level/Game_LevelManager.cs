@@ -20,29 +20,24 @@ public class Game_LevelManager : MonoBehaviour {
 			new MissionCompleteState(StateType.MissionComplete)
 		};
 		stateMachine = new StackFSM();
-	
+
+		// Create Json data loader
+		new JsonLoader();
 	}
 	void Start(){
 		StartGame();
 	}
 
 	void StartGame(){
+		Item_Manager.instance.Initialize();
+		Buildable_Manager.instance.Initialize();
 		TileManager.instance.GenerateTileData();
 		Character_Manager.instance.StartNewPlayer("Tipo");
-		InitStartingShipMachines();
+		Item_Manager.instance.SpawnStartingItems();
+		Station_Manager.instance.Initialize();
 		stateMachine.Push(LevelStates[0]);
 	}
-	void InitStartingShipMachines(){
-	
-		startingItems = new Item [startingMachines.Length];
-		int i = 0;
-		foreach(ItemPrototype prototype in startingMachines){
-			startingItems[i] = Item_Manager.instance.CreateInstance(prototype);
-			i++;
-		}
-		ShipManager.instance.InitStartMachines(startingItems, new Vector2(-3, 0));
-		Station_Manager.instance.Initialize();
-	}
+
 	public void ReplaceStateWith(StateType stateType){
 		if (currentState.stateType == stateType)
 			return;

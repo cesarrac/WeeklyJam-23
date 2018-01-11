@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using DG.Tweening;
+public enum MiniGameDifficulty {Easy, Slow, Average, Fast, Ace, Fire, Mindblown, Sauvant, Intergalactic, Master}
 public class MiniGameManager : MonoBehaviour {
 	public static MiniGameManager instance {get; protected set;}
 	public GameObject dropGamePanel;
@@ -25,7 +26,7 @@ public class MiniGameManager : MonoBehaviour {
 		Vector2 gamePosition = current_machine.transform.position + new Vector3(0, 4, 0);
 		miniGame_Repair.gameObject.SetActive(true);
 		miniGame_Repair.transform.position = gamePosition;
-		miniGame_Repair.Initialize(current_machine.machineCondition, current_machine.repairDifficulty);
+		miniGame_Repair.Initialize(current_machine.machine.machineCondition, current_machine.machine.repairDifficulty);
 		miniGame_Repair.onGameSuccess += OnRepairSuccess;
 		miniGame_Repair.onGameFail += OnRepairFail;
 	}

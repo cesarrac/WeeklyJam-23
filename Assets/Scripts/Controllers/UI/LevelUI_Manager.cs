@@ -83,7 +83,7 @@ public class LevelUI_Manager : MonoBehaviour {
 				GameObject jobGobj = ObjectPool.instance.GetObjectForType("Job", true, jobBoardPanel.transform.position);
 				jobGobj.transform.SetParent(jobBoardPanel.transform);
 				string description = job.description;
-				description += " Deliver " + job.itemsToDeliver[0].count + " " + job.itemsToDeliver[0].itemPrototype.name;
+				description += " Deliver " + job.itemsToDeliver[0].count + " " + job.itemsToDeliver[0].itemName;
 				jobGobj.GetComponentInChildren<Text>().text = description;
 				jobGobj.GetComponent<Button>().onClick.AddListener(() => OnJobClicked(jobGobj, job));
 				jobsAdded.Add(jobGobj);

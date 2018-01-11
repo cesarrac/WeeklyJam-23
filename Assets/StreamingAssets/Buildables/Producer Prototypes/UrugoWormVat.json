@@ -1,0 +1,23 @@
+{
+    "name": "Urugo Worm Vat",
+    "sprite": "UrugoVat_0",
+    "animatorController": "Urugo Worm Vat",
+    "tileWidth" : 2,
+    "tileHeight" : 2,
+    "stats": [ 
+              {"statType":3, "minValue": 50, "maxValue": 0}  
+             ],
+    "repairDifficulty": 0,
+    "machineCondition": 3,
+    "itemsProduced":[
+                        {"itemName" :   "Urugo Worm",
+                         "yield"    : 1,
+                         "costs"    :   [
+                                        {"itemRequired" : "Nutro Pellets",
+                                        "total"         : 5},
+                                        {"itemRequired" : "Urugo DNA",
+                                        "total"         : 1}
+                                        ]
+                        }
+                    ]
+}

@@ -16,6 +16,7 @@ public class JumpState : State {
         cutscene_Manager.StartJumpScene();
         Character_Manager.instance.HidePlayer();
         Item_Manager.instance.HideItems();
+        Buildable_Manager.instance.HideBuildables();
         MiniGameManager.instance.CancelMiniGames();
     }
 	public override void Update(float deltaTime){
@@ -25,6 +26,7 @@ public class JumpState : State {
         cutscene_Manager.onComplete -= JumpComplete;
         Character_Manager.instance.SpawnPlayer();
         Item_Manager.instance.ShowItems();
+        Buildable_Manager.instance.ShowBuildables();
         Finished();
     }
     public override void Finished(){

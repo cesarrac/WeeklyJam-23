@@ -14,19 +14,21 @@ public class Item  {
 	public Stat[] stats {get; protected set;}
 	public Sprite sprite {get; protected set;}
 	public GameObject user;
-	public int costToCreate {get; protected set;}
+	public int cost {get; protected set;}
+	public float timeToCreate {get; protected set;}
 	protected Item(ItemPrototype b){
 		this.name = b.name;
 		this.itemType = b.itemType;
 		this.stackCount = b.stackCount;
 		this.itemQuality = b.itemQuality;
-		this.stats = new Stat[b.baseStats.Length];
+		this.stats = new Stat[b.stats.Length];
 		for(int i = 0; i < this.stats.Length; i++){
-			this.stats[i] = new Stat(b.baseStats[i].statType, b.baseStats[i].minValue, b.baseStats[i].maxValue);
+			this.stats[i] = new Stat(b.stats[i].statType, b.stats[i].minValue, b.stats[i].maxValue);
 		}
-		this.sprite = b.sprite;
+		this.sprite = Sprite_Manager.instance.GetSprite(b.sprite);
 		this.itemUseType = b.itemUseType;
-		this.costToCreate = b.cost;
+		this.cost = b.cost;
+		this.timeToCreate = b.timeToCreate;
 	}
 	public static Item CreateInstance(ItemPrototype prototype){
 		return new Item(prototype);

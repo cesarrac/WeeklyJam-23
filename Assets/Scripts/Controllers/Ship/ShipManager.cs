@@ -41,13 +41,16 @@ public class ShipManager : MonoBehaviour {
 		}
 		for(int i = 0; i < startingMachines.Length; i++){
 
-		 	Machine_Data data = Item_Manager.instance.GetMachine_Data(startingMachines[i].name);
-			if(data == null)
-				continue; 
-			if (AddMachine(startingMachines[i], data, startPos)){
+			if (TryPlaceMachine(startingMachines[i], startPos)){
 				startPos.x += 2;
 			}
 		}
+	}
+	public bool TryPlaceMachine(Item machineItem, Vector2 placePosition){
+		MachinePrototype prototype = Buildable_Manager.instance.GetMachinePrototype(machineItem.name);
+		if(prototype.name == "Empty")
+			return false; 
+		return AddMachine(machineItem, prototype, placePosition);
 	}
 	public void EnterStation(){
 		if (shipNavigation.destinationStationIndex < 0){
@@ -100,22 +103,21 @@ public class ShipManager : MonoBehaviour {
 		}
 		shipMode = ShipMode.OFF;
 	}
-	public bool AddMachine(Item machineItem, Machine_Data data, Vector2 machinePosition){
-		if(data == null)
-			return false;
+	public bool AddMachine(Item machineItem, MachinePrototype prototype, Vector2 machinePosition){
+		
 		if (machineItem == null)
 			return false;
-		GameObject machine = Item_Manager.instance.SpawnMachine(machineItem, data, machinePosition);
+		Machine machine = Buildable_Manager.instance.CreateMachineInstance(prototype);
 		if (machine == null)
 			return false;
-		/* GameObject machine = pool.GetObjectForType("Machine", true, machinePosition);
-		machine.transform.SetParent(this.transform);
+		GameObject machineGObj = Buildable_Manager.instance.SpawnMachine(machine, machinePosition);
+		if (machineGObj == null)
+			return false;
 		
-		data.Init(mController); */
-		Machine_Controller mController = machine.GetComponent<Machine_Controller>();
-		if (AddMachine(mController) == true){
-			mController.InitMachine(machineItem, TileManager.instance.GetTile(machine.transform.position), this);
-			data.InitSystems(this);
+		Machine_Controller mController = machineGObj.GetComponent<Machine_Controller>();
+		mController.InitMachine(machineItem, machine, TileManager.instance.GetTile(machineGObj.transform.position), this);
+		if (AddMachine(mController, machine) == true){
+			//machine.InitSystems(this);
 			return true;
 		}else{
 			mController.RemoveMachine();
@@ -130,14 +132,16 @@ public class ShipManager : MonoBehaviour {
 	}
 
 
-	public bool AddMachine(Machine_Controller newMachine){
+	public bool AddMachine(Machine_Controller newMachine, Machine machine){
 		bool canAdd = false;
-		switch(newMachine.shipSystemsControlled){
+		switch(machine.systemControlled){
 			case ShipSystemType.CargoHold:
 					canAdd = shipCargo.AddMachine(newMachine);
+					shipCargo.InitCargo(machine.GetStat(StatType.Storage).GetValue());
 					break;
 			case ShipSystemType.Nav:
 					canAdd = shipNavigation.AddMachine(newMachine);
+					shipNavigation.InitJumpCapacity(machine.GetStat(StatType.JumpCapacity).GetValue());
 					break;
 			case ShipSystemType.Propulsion:
 					canAdd = shipPropulsion.AddMachine(newMachine);
@@ -154,7 +158,7 @@ public class ShipManager : MonoBehaviour {
 	}
 	public bool RemoveMachine(Machine_Controller oldMachine){
 		bool canAdd = false;
-		switch(oldMachine.shipSystemsControlled){
+		switch(oldMachine.machine.systemControlled){
 			case ShipSystemType.CargoHold:
 					canAdd = shipCargo.AddMachine(oldMachine);
 					break;

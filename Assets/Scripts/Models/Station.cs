@@ -66,7 +66,7 @@ public class Station   {
 			return;
 		}
 		public_Jobs.Add(new Mission(stationAuthority, "For His Majesty", 
-						new MissionItem[]{new MissionItem(Item_Manager.instance.GetPrototype("Gochum Cookie Box"), 1)},
+						new MissionItem[]{new MissionItem("Gochum Cookie Box", ItemType.Cargo, 1)},
 						pickUpStation, this, pickUpStation.jumpLocation));
 	}
 	public void OnMissionAccepted(Mission job){

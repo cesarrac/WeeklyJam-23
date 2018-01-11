@@ -35,11 +35,11 @@ public class Mission_Manager : MonoBehaviour {
 				if (active_missions[i].stationPickUp == Station_Manager.instance.current_station){
 					if (active_missions[i].itemsAcquired == true)
 						continue;
-					ItemPrototype[] items = active_missions[i].PickUpItems();
-					foreach(ItemPrototype prototype in items){
-						if(prototype == null)
+					//string[] missionItemNames = active_missions[i].GetMisItemNames();
+					foreach(MissionItem mItem in active_missions[i].itemsToDeliver){
+						if(mItem.itemName.Length <= 0)
 							continue;
-						Item_Manager.instance.SpawnItem(prototype, new Vector2(-8f, -8f));
+						Item_Manager.instance.SpawnItem(mItem.itemName,mItem.itemType, new Vector2(-8f, -8f));
 					}
 				}
 			}

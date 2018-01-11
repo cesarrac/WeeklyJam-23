@@ -35,11 +35,11 @@ public class MissionCompleteState : State {
         }
         // Remove the mission items from inventory
         foreach(MissionItem mItem in compMission.itemsToDeliver){
-            if (ShipManager.instance.shipCargo.active_inventory.RemoveItem(mItem.itemPrototype.name, mItem.count) == false){
+            if (ShipManager.instance.shipCargo.active_inventory.RemoveItem(mItem.itemName, mItem.count) == false){
                 Finished();
                 return;
             }
-            Notification_Manager.instance.AddNotification(mItem.count + " " + mItem.itemPrototype.name + " removed from Cargo Hold");
+            Notification_Manager.instance.AddNotification(mItem.count + " " + mItem.itemName + " removed from Cargo Hold");
         }
         LevelUI_Manager.instance.ShowCompMissionUI(compMission, TryComplete);
     }

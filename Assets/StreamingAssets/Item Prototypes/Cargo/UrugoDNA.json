@@ -1,0 +1,11 @@
+{
+    "name": "Urugo DNA",
+    "sprite": "Item Box",
+    "itemType": 0,
+    "itemUseType":0,
+    "itemQuality":0,
+    "stackCount": 50,
+    "cost": 2500,
+    "stats": [ {"statType": 0, "minValue":100, "maxValue":0}, {"statType":1, "minValue":50, "maxValue":0}],
+    "timeToCreate": 0.0
+}

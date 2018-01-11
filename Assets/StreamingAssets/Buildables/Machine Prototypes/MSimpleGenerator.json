@@ -1,0 +1,13 @@
+{
+    "name": "Simple Generator",
+    "sprite": "Reactor_0",
+    "animatorController": "Simple Generator",
+    "tileWidth" : 1,
+    "tileHeight" : 2,
+    "stats": [ 
+              {"statType":3, "minValue": 50, "maxValue": 0}
+             ],
+    "systemControlled": 1,
+    "repairDifficulty": 0,
+    "machineCondition": 3
+}

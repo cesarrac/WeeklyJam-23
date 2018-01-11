@@ -1,11 +1,11 @@
 {
     "name": "Simple Engines",
     "sprite": "Engines_0",
-    "itemType": "Machine",
-    "itemUseType":"Build",
-    "itemQuality":"Terrible",
+    "itemType": 1,
+    "itemUseType":1,
+    "itemQuality":0,
     "stackCount": 1,
     "cost": 0,
-    "stats": [ {"statType": "Hitpoints", "minValue":100, "maxValue":0}, {"statType":"Slipperiness", "minValue":0, "maxValue":0}],
+    "stats": [ {"statType": 0, "minValue":100, "maxValue":0}, {"statType":1, "minValue":0, "maxValue":0}],
     "timeToCreate": 60.0
 }

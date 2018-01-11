@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StatType{Hitpoints, Slipperiness, Grip}
+public enum StatType{Hitpoints, Slipperiness, Grip, Efficiency, Width, Height, Storage, JumpCapacity}
 [System.Serializable]
 public class Stat  {
 	public StatType statType;

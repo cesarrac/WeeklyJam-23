@@ -1,11 +1,11 @@
 {
     "name": "Letters",
     "sprite": "Item Box",
-    "itemType": "Cargo",
-    "itemUseType":"None",
-    "itemQuality":"Terrible",
+    "itemType": 0,
+    "itemUseType":0,
+    "itemQuality":0,
     "stackCount": 100,
     "cost": 1,
-    "stats": [ {"statType": "Hitpoints", "minValue":1000, "maxValue":0}, {"statType":"Slipperiness", "minValue":0, "maxValue":0}],
+    "stats": [ {"statType": 0, "minValue":1000, "maxValue":0}, {"statType":1, "minValue":0, "maxValue":0}],
     "timeToCreate": 0.5
 }
