@@ -17,7 +17,7 @@ public class DataTester : MonoBehaviour {
 		
         testMachine.InitController(mac_Controller); */
 		new JsonLoader();
-		List<ItemPrototype> iPrototypes = JsonLoader.instance.LoadCargo();
+	/* 	List<ItemPrototype> iPrototypes = JsonLoader.instance.LoadCargo();
 		if (iPrototypes.Count > 0)
 			Debug.Log(iPrototypes[0].name);
 		List<MachinePrototype> mPrototypes = JsonLoader.instance.LoadMachineData();
@@ -28,7 +28,7 @@ public class DataTester : MonoBehaviour {
 		for (int i = 0; i < newMachine.stats.Length; i++)
 		{
 			Debug.Log("Stat " + i + " " + newMachine.stats[i].statType + newMachine.stats[i].GetValue());
-		}
+		} */
 		
 	}
 }

@@ -9,15 +9,8 @@ public class JsonLoader {
     public JsonLoader(){
         instance = this;
     }
-    public List<ItemPrototype> LoadCargo(){
-        path = Application.streamingAssetsPath + "/Item Prototypes/Cargo";
-        string[] filePaths = Directory.GetFiles(path, "*.json*");
-        Debug.Log(filePaths.Length + " cargo files found");
-        return Load<ItemPrototype>(filePaths);
-        //return DoLoadItem(filePaths);
-    }
-    public List<ItemPrototype> LoadMachineItems(){
-        path = Application.streamingAssetsPath + "/Item Prototypes/Machines";
+    public List<ItemPrototype> LoadItems(string itemType){
+        path = Application.streamingAssetsPath + "/Item Prototypes/" + itemType;
         string[] filePaths = Directory.GetFiles(path, "*.json*");
         Debug.Log(filePaths.Length + " cargo files found");
         return Load<ItemPrototype>(filePaths);

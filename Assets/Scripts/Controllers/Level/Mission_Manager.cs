@@ -39,7 +39,7 @@ public class Mission_Manager : MonoBehaviour {
 					foreach(MissionItem mItem in active_missions[i].itemsToDeliver){
 						if(mItem.itemName.Length <= 0)
 							continue;
-						Item_Manager.instance.SpawnItem(mItem.itemName,mItem.itemType, new Vector2(-8f, -8f));
+						Item_Manager.instance.SpawnItem(mItem.itemName, new Vector2(-8f, -8f));
 					}
 				}
 			}

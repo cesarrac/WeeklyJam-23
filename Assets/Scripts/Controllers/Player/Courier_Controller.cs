@@ -13,6 +13,7 @@ public class Courier_Controller : MonoBehaviour {
 	Animator anim;
 	bool isUsing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
 	Machine_Controller machineUsed;
+	public GameObject toolHolder;
 	void OnEnable(){
 		characterMovement = GetComponent<CharacterMovement>();
 		animator = GetComponentInChildren<Animator>();
@@ -48,6 +49,7 @@ public class Courier_Controller : MonoBehaviour {
 		if (isUsing == true)
 			return;
 		machineUsed = machine;
+		DoToolHolder(true);
 		animator.SetTrigger("repair");
 		characterMovement.LockMovement(true);
 		machineUsed.TryRepair(OnUseDone);
@@ -63,8 +65,17 @@ public class Courier_Controller : MonoBehaviour {
 		Debug.Log("OnUseDone");
 		isUsing = false;
 		animator.SetTrigger("repairDone");
+		DoToolHolder(false);
 		characterMovement.LockMovement(false);
 		machineUsed = null;
+	}
+	void DoToolHolder(bool enable){
+		if (enable){
+			toolHolder.SetActive(true);
+			toolHolder.GetComponent<Animator>().runtimeAnimatorController = Sprite_Manager.instance.GetAnimator(iteminHand.name);
+		}else{
+			toolHolder.SetActive(false);
+		}
 	}
 	void RightClickInteract(){
 		if (isUsing == true && machineUsed != null){

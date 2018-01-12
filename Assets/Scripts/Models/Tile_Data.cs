@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using System.Linq;
 public enum TileType {Floor, Wall}
 public class Tile_Data  {
@@ -10,6 +11,12 @@ public class Tile_Data  {
 	public int Y {get; protected set;}
 	public Vector3Int worldPos {get; protected set;}
 	public Machine_Controller machine {get; protected set;}
+	float pDirtiness = 0;
+	float dirtiness {get {return pDirtiness;} set{pDirtiness = Mathf.Clamp(value, 0.0f, 1.0f);}}
+	float dirtyThreshold = 1.0f;
+	public float Dirtiness{get{return dirtiness;}}
+	public float DirtyThreshold{get{return dirtyThreshold;}}
+	Action<Tile_Data> OnDirtyChangedCB;
 	public Tile_Data(int gridX, int gridY, Vector3Int worldPosition, TileType tType){
 		X = gridX;
 		Y = gridY;
@@ -51,4 +58,24 @@ public class Tile_Data  {
 		}
 		  return neighbors.Where(tile => tile != null).ToArray();
 	} 
+
+	public void IncreaseDirtness(float multiplier = 1){
+		dirtiness += (0.1f * multiplier);
+		
+		Debug.Log("Tile dirtyness increased to " + dirtiness);
+		if (OnDirtyChangedCB != null)
+			OnDirtyChangedCB(this);
+	}
+	public void DecreaseDirtness(float multiplier = 1){
+		dirtiness -= (0.1f * multiplier);
+		if (OnDirtyChangedCB != null)
+			OnDirtyChangedCB(this);
+	}
+
+	public void RegisterOnDirtCB(Action<Tile_Data> cb){
+		OnDirtyChangedCB += cb;
+	}
+	public void UnregisterOnDirtCB(Action<Tile_Data> cb){
+		OnDirtyChangedCB -= cb;
+	}
 }

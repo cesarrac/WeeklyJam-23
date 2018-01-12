@@ -7,8 +7,7 @@ public class Item_Manager : MonoBehaviour {
 	public static Item_Manager instance {get; protected set;}
 	public string[] startItems;
 	public string[] startingMachines;
-	ItemPrototype[] available_Cargo;
-	ItemPrototype[] available_Machines;
+	ItemPrototype[] available_Items;
 	ObjectPool pool;
 	Dictionary<Item, GameObject> itemsInWorld;
 	void Awake(){
@@ -21,17 +20,34 @@ public class Item_Manager : MonoBehaviour {
 			Debug.LogError("Machine data was not loaded by Item_Manager!"); */
 		
 		// Load available item prototypes from Json
-		available_Cargo = JsonLoader.instance.LoadCargo().ToArray();
-		available_Machines = JsonLoader.instance.LoadMachineItems().ToArray();
+		List<ItemPrototype> all_items = new List<ItemPrototype>();
+		List<ItemPrototype> cargo = JsonLoader.instance.LoadItems("Cargo");
+		foreach (ItemPrototype prototype in cargo)
+		{
+			all_items.Add(prototype);
+		}
+		List<ItemPrototype> machines = JsonLoader.instance.LoadItems("Machines");
+		foreach (ItemPrototype prototype in machines)
+		{
+			all_items.Add(prototype);
+		}
+		List<ItemPrototype> tools = JsonLoader.instance.LoadItems("Tools");
+		foreach (ItemPrototype prototype in tools)
+		{
+			all_items.Add(prototype);
+		}
+
+		available_Items = all_items.ToArray();
+
 		pool = ObjectPool.instance;
 	}
 
 	public void SpawnStartingItems(){
-		SpawnItem(GetPrototype(startItems[0], ItemType.Cargo),  new Vector2(0, -3f));
-		SpawnItem(GetPrototype(startItems[1], ItemType.Cargo), new Vector2(1, -3f));
+		SpawnItem(GetPrototype(startItems[0]),  new Vector2(0, -3f));
+		SpawnItem(GetPrototype(startItems[1]), new Vector2(1, -3f));
 		List<Item> machines = new List<Item>();
 		for(int i = 0; i < startingMachines.Length; i++){
-			Item newItem = CreateInstance(GetPrototype(startingMachines[i], ItemType.Machine));
+			Item newItem = CreateInstance(GetPrototype(startingMachines[i]));
 			if (newItem == null)
 				continue;
 
@@ -40,30 +56,15 @@ public class Item_Manager : MonoBehaviour {
 		ShipManager.instance.InitStartMachines(machines.ToArray(),  new Vector2(-3, 0));
 	}
 	
-	public ItemPrototype GetPrototype(string itemName, ItemType itemType){
-		if (itemType == ItemType.Cargo)
+	public ItemPrototype GetPrototype(string itemName){
+		/* if (itemType == ItemType.Cargo)
 			return GetCargoProto(itemName);
 		if (itemType == ItemType.Machine)
-			return GetMachineProto(itemName);
-		ItemPrototype empty = new ItemPrototype();
-		empty.name = "Empty";
-		return empty;
-	}
-	ItemPrototype GetCargoProto(string itemName){
-		foreach(ItemPrototype prototype in available_Cargo){
-			if (prototype.name == itemName){
+			return GetMachineProto(itemName); */
+		foreach (ItemPrototype prototype in available_Items)
+		{
+			if (prototype.name == itemName)
 				return prototype;
-			}
-		}
-		ItemPrototype empty = new ItemPrototype();
-		empty.name = "Empty";
-		return empty;
-	}
-	ItemPrototype GetMachineProto(string itemName){
-		foreach(ItemPrototype prototype in available_Machines){
-			if (prototype.name == itemName){
-				return prototype;
-			}
 		}
 		ItemPrototype empty = new ItemPrototype();
 		empty.name = "Empty";
@@ -79,8 +80,8 @@ public class Item_Manager : MonoBehaviour {
 		itemGObj.GetComponent<Item_Controller>().Initialize(item);
 		itemsInWorld.Add(item, itemGObj);
 	}
-	public void SpawnItem(string itemName, ItemType itemType, Vector2 position){
-		SpawnItem(GetPrototype(itemName, itemType), position);
+	public void SpawnItem(string itemName, Vector2 position){
+		SpawnItem(GetPrototype(itemName), position);
 	}
 	public void SpawnItem(ItemPrototype prototype, Vector2 position){
 		if (prototype.name == "Empty")

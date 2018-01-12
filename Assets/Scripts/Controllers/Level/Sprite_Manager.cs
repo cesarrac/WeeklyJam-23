@@ -18,9 +18,19 @@ public class Sprite_Manager : MonoBehaviour {
 		foreach(Sprite machine in machines){
 			AddSpriteToMap(machine);
 		}
+		Sprite[] dirtyTiles = Resources.LoadAll<Sprite>("Sprites/Tiles/Tile Effects/");
+		foreach (Sprite sprite in dirtyTiles)
+		{
+			AddSpriteToMap(sprite);
+		}
 		animatorsMap = new Dictionary<string, RuntimeAnimatorController>();
-		RuntimeAnimatorController[] animators = Resources.LoadAll<RuntimeAnimatorController>("Animators/Machines/");
-		foreach (RuntimeAnimatorController animator in animators)
+		RuntimeAnimatorController[] machineAnims = Resources.LoadAll<RuntimeAnimatorController>("Animators/Machines/");
+		foreach (RuntimeAnimatorController animator in machineAnims)
+		{
+			AddAnimatorToMap(animator);
+		}
+		RuntimeAnimatorController[] toolAnims = Resources.LoadAll<RuntimeAnimatorController>("Animators/Tools/");
+		foreach (RuntimeAnimatorController animator in toolAnims)
 		{
 			AddAnimatorToMap(animator);
 		}
@@ -46,5 +56,11 @@ public class Sprite_Manager : MonoBehaviour {
 			return null;
 		
 		return animatorsMap[name];
+	}
+	public Sprite GetDirt(int dirtLevel){
+		string spriteName = "DirtyTile_" + dirtLevel;
+		if (spritesMap.ContainsKey(spriteName) == false)
+			return null;
+		return spritesMap[spriteName];
 	}
 }

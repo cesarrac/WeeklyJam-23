@@ -12,6 +12,7 @@ public class TileManager : MonoBehaviour {
 	int map_width;
 	int map_height;
 	Tile_Data[,] tileData_Grid;
+	Dictionary<Tile_Data, GameObject> dirtGObjMap;
 	
 	void Awake(){
 		instance = this;
@@ -22,6 +23,8 @@ public class TileManager : MonoBehaviour {
 		startingY = ship_TileMap.origin.y;
 		map_width = ship_TileMap.size.x;
 		map_height = ship_TileMap.size.y;
+
+		dirtGObjMap = new Dictionary<Tile_Data, GameObject>();
 		//Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
 		//Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
 		//GenerateTileData();
@@ -37,10 +40,12 @@ public class TileManager : MonoBehaviour {
 				}
 				if (ship_TileMap.GetSprite(nextTilePosition).name == "Floor"){
 					tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Floor);
+					tileData_Grid[x, y].RegisterOnDirtCB(OnTileDirty);
 					//Debug.Log("Tile at " + nextTilePosition + " set to FLOOR!");
 					continue;
 				}
 				tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Wall);
+				
 			}
 		}
 	}
@@ -69,4 +74,38 @@ public class TileManager : MonoBehaviour {
 		return true;
 	}
 	
+	public void OnTileDirty(Tile_Data tile){
+		Debug.Log("OnTileDirty");
+		if (dirtGObjMap.ContainsKey(tile)){
+			if (tile.Dirtiness <= 0){
+				// Pool the dirty tile
+				GameObject gobj = dirtGObjMap[tile];
+				gobj.transform.SetParent(null);
+				ObjectPool.instance.PoolObject(gobj);
+				dirtGObjMap.Remove(tile);
+				return;
+			}
+			// Increase or Decrease dirt by changing sprite
+			Sprite newDirt = Sprite_Manager.instance.GetDirt(Mathf.RoundToInt(tile.Dirtiness * 10));
+			if (newDirt == null)
+				return;
+			dirtGObjMap[tile].GetComponentInChildren<SpriteRenderer>().sprite = newDirt;
+			return;
+		}
+
+		if (tile.Dirtiness <= 0){
+			Debug.Log("TileManager-- not changing dirty tile because its dirtiness is less than 0");
+			return;
+		}
+			
+		// Create new one:
+		GameObject dirt = ObjectPool.instance.GetObjectForType("Dirty Tile", true, tile.worldPos);
+		Sprite dirtSprite = Sprite_Manager.instance.GetDirt(Mathf.RoundToInt(tile.Dirtiness * 10));
+		if (dirtSprite == null)
+			 dirtSprite = Sprite_Manager.instance.GetDirt(1);
+		dirt.GetComponentInChildren<SpriteRenderer>().sprite = dirtSprite;
+		//dirt.transform.SetParent(ship_TileMap.transform);
+		dirtGObjMap.Add(tile, dirt);
+
+	}
 }
