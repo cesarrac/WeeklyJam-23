@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Interactable : MonoBehaviour {
     [Header("Max Distance for Interact to trigger")]
-    public float maxDistance = 1.0f;
+    public float maxDistance = 1.25f;
     [HideInInspector]
     public Vector3 interactionWorldPoint;
     [HideInInspector]

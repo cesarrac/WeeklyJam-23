@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum ItemType {Cargo, Machine, Tool}
 public enum ItemQuality {Terrible, Defective, Functional, Worthy, Majestic}
-public enum ItemUseType {None, Build, Repair}
+public enum ItemUseType {None, Build, Repair, Clean}
 public class Item  {
 	public string name {get; protected set;}
 	public ItemType itemType {get; protected set;}

@@ -13,6 +13,7 @@ public class Courier_Controller : MonoBehaviour {
 	Animator anim;
 	bool isUsing = false; // TODO: Implement PLAYER STATES so you don't have to use bool check!
 	Machine_Controller machineUsed;
+	Tile_Data tileBeingCleaned;
 	public GameObject toolHolder;
 	void OnEnable(){
 		characterMovement = GetComponent<CharacterMovement>();
@@ -29,19 +30,30 @@ public class Courier_Controller : MonoBehaviour {
 	void Use(){
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		mousePosition.z = 0;
+		
 		Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 		if (tile != null){
 			if (tile.machine != null){
-				if (iteminHand != null){
-					if (iteminHand.itemUseType == ItemUseType.Repair){
+				// Check distance to mouse, if too far, return
+				if (Vector2.Distance(transform.position, mousePosition) > 1.25f)
+					return;
+
+				if (iteminHand != null && iteminHand.itemUseType == ItemUseType.Repair){
 						TryRepairMachine(tile.machine);
 						isUsing = true;
 						return;
-					}
 				}
-				
 				// If player is holding nothing or not holding a tool: 
 				tile.machine.DisplayMachineUI();
+			}else{
+					// Check distance to mouse, if too far, return
+					if (Vector2.Distance(transform.position, mousePosition) > 1f)
+						return;
+					if (iteminHand != null && iteminHand.itemUseType == ItemUseType.Clean){
+						TryCleanTile(tile);
+						isUsing = true;
+						return;
+					}
 			}
 		}
 	}
@@ -52,7 +64,28 @@ public class Courier_Controller : MonoBehaviour {
 		DoToolHolder(true);
 		animator.SetTrigger("repair");
 		characterMovement.LockMovement(true);
-		machineUsed.TryRepair(OnUseDone);
+		machineUsed.TryRepair(OnRepairDone);
+	}
+	void TryCleanTile(Tile_Data tile){
+		if (isUsing == true)
+			return;
+		if (tile == null)
+			return;
+		DoToolHolder(true);
+		animator.SetTrigger("clean");
+		characterMovement.LockMovement(true);
+		tileBeingCleaned = tile;
+		Invoke("StopClean", 1);
+	}
+	void StopClean(){
+		Debug.Log("Stopping clean");
+		characterMovement.LockMovement(false);
+		isUsing = false;
+		DoToolHolder(false);
+		if (tileBeingCleaned == null)
+			return;
+		tileBeingCleaned.DecreaseDirtness();
+		tileBeingCleaned = null;
 	}
 	public void CancelRepair(){
 		if (isUsing == true && machineUsed != null){
@@ -61,7 +94,7 @@ public class Courier_Controller : MonoBehaviour {
 			return;
 		}
 	}
-	void OnUseDone(){
+	void OnRepairDone(){
 		Debug.Log("OnUseDone");
 		isUsing = false;
 		animator.SetTrigger("repairDone");

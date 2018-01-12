@@ -9,7 +9,7 @@ public class CharacterMovement : MonoBehaviour {
 	int minY, maxY;
 	Vector2 moveVector, inputVector;
 	Animator animator;
-	SpriteRenderer[] spriteRenderers;
+	public SpriteRenderer[] spriteRenderers;
 	bool isMoving = false;
 	float normalSpeed = 4;
 	public float curSpeed {get; protected set;}
@@ -25,7 +25,7 @@ public class CharacterMovement : MonoBehaviour {
 	bool isLocked = false;
 	void OnEnable(){
 		animator = GetComponentInChildren<Animator>();
-		spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+		//spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 		minX = minY = -8;
 		maxX = 7;
 		maxY = 3;
@@ -113,11 +113,13 @@ public class CharacterMovement : MonoBehaviour {
 			flip = true;
 			facingDirection = Direction.Right;
 		}
-		// OFFSET the main sprite since it is pivoting from bottom left
+		// OFFSET the main sprite & Tool since it is pivoting from bottom left
 		if (flip == true){
 			spriteRenderers[0].transform.localPosition = Vector2.right;
+			//spriteRenderers[4].transform.localPosition = Vector2.right;
 		}else{
 			spriteRenderers[0].transform.localPosition = Vector2.zero;
+			//spriteRenderers[4].transform.localPosition = Vector2.zero;
 		}
 		foreach(SpriteRenderer sr in spriteRenderers){
 			sr.flipX = flip;

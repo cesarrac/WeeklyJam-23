@@ -794,8 +794,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startItems:
+  - Basic Mop
   - Fish Juice
-  - Basic Diagnostics Pad
   startingMachines:
   - Simple Navigator
   - Simple Cargohold

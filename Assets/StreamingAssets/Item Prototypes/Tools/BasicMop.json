@@ -1,0 +1,11 @@
+{
+    "name": "Basic Mop",
+    "sprite": "Basic_Mop",
+    "itemType": 2,
+    "itemUseType":3,
+    "itemQuality":0,
+    "stackCount": 1,
+    "cost": 10,
+    "stats": [ {"statType": 0, "minValue":100, "maxValue":0}, {"statType":1, "minValue":0, "maxValue":0}],
+    "timeToCreate": 20.0
+}

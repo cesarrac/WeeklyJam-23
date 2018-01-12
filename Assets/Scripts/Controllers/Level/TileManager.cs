@@ -104,7 +104,7 @@ public class TileManager : MonoBehaviour {
 		if (dirtSprite == null)
 			 dirtSprite = Sprite_Manager.instance.GetDirt(1);
 		dirt.GetComponentInChildren<SpriteRenderer>().sprite = dirtSprite;
-		//dirt.transform.SetParent(ship_TileMap.transform);
+		dirt.transform.SetParent(ship_TileMap.transform);
 		dirtGObjMap.Add(tile, dirt);
 
 	}

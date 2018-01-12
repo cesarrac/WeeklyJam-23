@@ -1,13 +1,17 @@
 fileFormatVersion: 2
-guid: 27c10d679b7d3f7408a492b664c1e733
-timeCreated: 1515789091
+guid: 47d01a4965712cd4fbc4d580242c706c
+timeCreated: 1515790611
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Courier_clean_torso_0
-    21300002: Courier_clean_torso_1
-    21300004: Courier_clean_torso_2
-    21300006: Courier_clean_torso_3
+    21300000: Basic_Mop_anim_0
+    21300002: Basic_Mop_anim_1
+    21300004: Basic_Mop_anim_2
+    21300006: Basic_Mop_anim_3
+    21300008: Basic_Mop_0
+    21300010: Basic_Mop_1
+    21300012: Basic_Mop_2
+    21300014: Basic_Mop_3
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -94,7 +98,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Courier_clean_torso_0
+      name: Basic_Mop_0
       rect:
         serializedVersion: 2
         x: 0
@@ -108,7 +112,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Courier_clean_torso_1
+      name: Basic_Mop_1
       rect:
         serializedVersion: 2
         x: 16
@@ -122,7 +126,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Courier_clean_torso_2
+      name: Basic_Mop_2
       rect:
         serializedVersion: 2
         x: 32
@@ -136,7 +140,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Courier_clean_torso_3
+      name: Basic_Mop_3
       rect:
         serializedVersion: 2
         x: 48
