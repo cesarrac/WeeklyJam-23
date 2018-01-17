@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Game_LevelManager : MonoBehaviour {
 	public static Game_LevelManager instance {get; protected set;}
-	public ItemPrototype[] startingMachines;
-	Item[] startingItems;
 	public StackFSM stateMachine {get;protected set;}
 	State currentState;
 	State[] LevelStates;
@@ -32,7 +30,9 @@ public class Game_LevelManager : MonoBehaviour {
 		Item_Manager.instance.Initialize();
 		Buildable_Manager.instance.Initialize();
 		TileManager.instance.GenerateTileData();
+		
 		Character_Manager.instance.StartNewPlayer("Tipo");
+		BGVisuals_Manager.instance.GenerateSpace();
 		Item_Manager.instance.SpawnStartingItems();
 		Station_Manager.instance.Initialize();
 		stateMachine.Push(LevelStates[0]);
@@ -58,9 +58,9 @@ public class Game_LevelManager : MonoBehaviour {
 		}
 	}
 	void Update(){
-		currentState = stateMachine.GetCurrentState();
+		/* currentState = stateMachine.GetCurrentState();
 		if (currentState != null){
 			currentState.Update(Time.deltaTime);
-		}
+		} */
 	}
 }

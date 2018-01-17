@@ -17,10 +17,24 @@ public class Buildable_Manager : MonoBehaviour
         machineData_prototypes = JsonLoader.instance.LoadMachineData().ToArray();
 		producer_prototypes = JsonLoader.instance.LoadProducerData().ToArray();
         pool = ObjectPool.instance;
-		Producer producer = Producer.CreateInstance(producer_prototypes[0]);
-		Debug.Log(producer.name + " created!");
-		Debug.Log(producer.name + " produces " + producer.itemsProduced[0].itemName);
     }
+	public void SpawnStartingProducers(List<Item>buildableItems){
+		if (buildableItems.Count <= 0)
+			return;
+		Vector2 startingPos = new Vector2(-3, -4);
+		foreach (Item item in buildableItems)
+		{	
+			Tile_Data baseTile = TileManager.instance.GetTile(startingPos);
+			if (baseTile == null)
+				continue;
+			Producer producer = CreateProducerInstance(GetProducerPrototype(item.name));
+			GameObject prodGObj = SpawnProducer(producer, startingPos);
+			if (prodGObj == null)
+				continue;
+			prodGObj.GetComponent<Producer_Controller>().Init(item, producer, baseTile);
+			startingPos.x += producer.tileWidth;
+		}
+	}
     public MachinePrototype GetMachinePrototype(string itemName){
 		MachinePrototype empty = new MachinePrototype();
 		empty.name = "Empty";
@@ -34,20 +48,51 @@ public class Buildable_Manager : MonoBehaviour
 		}
 		return empty;
 	}
+	public ProducerPrototype GetProducerPrototype(string itemName){
+		ProducerPrototype empty = new ProducerPrototype();
+		empty.name = "Empty";
+		if (producer_prototypes.Length < 0)
+			return empty;
+		
+		foreach(ProducerPrototype data in producer_prototypes){
+			if (data.name == itemName){
+				return data;
+			}
+		}
+		return empty;
+	}
+	private GameObject SpawnBuildable<T>(T buildable, BuildableType buildableType, Vector2 position){
+		if (buildable == null)
+			return null;
+		GameObject gObj = pool.GetObjectForType(buildableType.ToString(), true, position);
+		if (gObj == null)
+			return null;
+		gObj.transform.SetParent(ShipManager.instance.transform);
+		return gObj;
+	}
 	public Machine CreateMachineInstance(MachinePrototype prototype){
 		return Machine.CreateInstance(prototype);
 	}
 	public GameObject SpawnMachine(Machine machine, Vector2 position){
 		if (machine == null)
 			return null;
-	
-		GameObject machineGObj = pool.GetObjectForType("Machine", true, position);
+		GameObject machineGObj = SpawnBuildable<Machine>(machine, BuildableType.Machine, position);
 		if (machineGObj == null)
 			return null;
-		machineGObj.transform.SetParent(ShipManager.instance.transform);
-		Machine_Controller mController = machineGObj.GetComponent<Machine_Controller>();
 		buildablesInWorld.Add(machine, machineGObj);
 		return machineGObj;
+	}
+	public Producer CreateProducerInstance(ProducerPrototype prototype){
+		return Producer.CreateInstance(prototype);
+	}
+	public GameObject SpawnProducer(Producer producer, Vector2 position){
+		if (producer == null)
+			return null;
+		GameObject prodGObj = SpawnBuildable<Producer>(producer, BuildableType.Producer, position);
+		if (prodGObj == null)
+			return null;
+		buildablesInWorld.Add(producer, prodGObj);
+		return prodGObj;
 	}
 	public void PoolBuildable(Buildable buildable){
 		if (buildablesInWorld.ContainsKey(buildable) == false)
@@ -103,17 +148,5 @@ public struct ProducerPrototype{
     public Stat[] stats;
 	public MiniGameDifficulty repairDifficulty;
 	public MachineCondition machineCondition;
-	public ProductionItem[] itemsProduced;
-}
-[System.Serializable]
-public struct ProductionItem{
-	public string itemName;
-	public int yield; // Total number of items created when this is produced
-	public ProductionRequirement[] costs;
-	// the time it takes to create it is stored within the item prototype
-}
-[System.Serializable]
-public struct ProductionRequirement{
-	public string itemRequired;
-	public int total;
+	public ProductionBlueprint[] productionBlueprints;
 }

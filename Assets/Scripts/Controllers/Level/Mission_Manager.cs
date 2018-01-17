@@ -36,7 +36,7 @@ public class Mission_Manager : MonoBehaviour {
 					if (active_missions[i].itemsAcquired == true)
 						continue;
 					//string[] missionItemNames = active_missions[i].GetMisItemNames();
-					foreach(MissionItem mItem in active_missions[i].itemsToDeliver){
+					foreach(ItemReference mItem in active_missions[i].itemsToDeliver){
 						if(mItem.itemName.Length <= 0)
 							continue;
 						Item_Manager.instance.SpawnItem(mItem.itemName, new Vector2(-8f, -8f));

@@ -27,12 +27,14 @@ public class Cutscene_Manager : MonoBehaviour {
 		arriveSequence = DOTween.Sequence();
 		if (jumpParticles == null)
 			jumpParticles = pool.GetObjectForType("Jump Particles", true, Vector2.zero);
+		int destStationIndex = ShipManager.instance.shipNavigation.destinationStationIndex;
 		cutSceneText.gameObject.SetActive(true);
+		cutSceneText.text = "Arriving at " + Station_Manager.instance.GetStation(destStationIndex).stationName;
 	}
 	public void StartJumpScene(){
 		InitializeJumpScene();
 		CameraShaker.instance.AddTrauma(6);
-		arriveSequence.Append(shipHolder.transform.DOMoveY(-5, 0.75f).SetLoops(4, LoopType.Yoyo).OnComplete(() => ShipVanish()));
+		arriveSequence.Append(shipHolder.transform.DOMoveY(-0.5f, 0.75f).SetLoops(4, LoopType.Yoyo).OnComplete(() => ShipVanish()));
 		
 	}
 	void ShipVanish(){

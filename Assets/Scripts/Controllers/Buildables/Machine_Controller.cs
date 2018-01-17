@@ -70,7 +70,7 @@ public class Machine_Controller : MonoBehaviour {
     public void UseMachine(){
         
         // Play animation of machine being used
-        animator.SetTrigger("on");
+        AnimateOn();
 
         float roll = UnityEngine.Random.Range (1, 100);
         if (roll <= machine.GetStat(StatType.Efficiency).GetValue()){
@@ -81,33 +81,39 @@ public class Machine_Controller : MonoBehaviour {
         DecayCondition();
     
     }
-    public void DisplayMachineUI(){
+    public virtual void DisplayMachineUI(){
         UI_Manager.instance.ShowMachineUI(machine.systemControlled);
         AnimateOn();
     }
-    public bool Interact(GameObject user){
+    public virtual void Interact(GameObject user){
         if (shipManager.SystemInteract(machine.systemControlled, user) == true){
             AnimateOn();
-            return true;
         }
-        return false;
     }
     public void AnimateOn(){
         // animate machine to show it being interfaced
         animator.SetTrigger("on");
+    }
+    public void AnimateStayOn(){
+        // animate machine to show it being interfaced
+        animator.SetTrigger("stay");
+    }
+    public void AnimateOff(){
+        // animate machine to show it being interfaced
+        animator.SetTrigger("off");
     }
     public void TryRepair(Action onDoneCB){
         if (onDoneCB != null)
             onRepairDoneCB += onDoneCB;
         // Start mini game ui
         MiniGameManager.instance.StartRepairGame(this);
-        animator.SetTrigger("stay");
+        AnimateStayOn();
     }
     public void CancelRepair(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
         MiniGameManager.instance.CancelRepairGame();
-        animator.SetTrigger("off");
+        AnimateOff();
         onRepairDoneCB = null;
     }
     public void RepairSuccess(){
@@ -115,14 +121,14 @@ public class Machine_Controller : MonoBehaviour {
             onRepairDoneCB();
       
         RepairCondition();
-        animator.SetTrigger("off");
+        AnimateOff();
         onRepairDoneCB = null;
     }
     public void RepairFail(){
         if (onRepairDoneCB != null)
             onRepairDoneCB();
         
-        animator.SetTrigger("off");
+        AnimateOff();
         onRepairDoneCB = null;
     }
     void RepairCondition(){
@@ -133,13 +139,13 @@ public class Machine_Controller : MonoBehaviour {
         if (damageFX.activeSelf == true){
             damageFX.SetActive(false);
         }
-        Notification_Manager.instance.AddNotification(machine.systemControlled + " machine repaired to " + machine.machineCondition);
+        Notification_Manager.instance.AddNotification(machine.name + " repaired to " + machine.machineCondition);
         Debug.Log("MACHINE REPAIRED! " + machine.machineCondition);
     }
     public void DecayCondition(){
         machine.DecayCondition();
 
-        Notification_Manager.instance.AddNotification(machine.systemControlled + " machine's condition decayed to " + machine.machineCondition);
+        Notification_Manager.instance.AddNotification(machine.name + " decayed to " + machine.machineCondition);
         // Activate damage FX animation
         if (machine.machineCondition < MachineCondition.Decayed){
             if (damageFX.activeSelf == false){
@@ -148,7 +154,7 @@ public class Machine_Controller : MonoBehaviour {
         }
     }
 
-    public void RemoveMachine(){
+    public virtual void RemoveMachine(){
         if (baseTile != null){
 			if (baseTile.RemoveMachine() == true){
 				Debug.Log(machine.name + " removed from tile");

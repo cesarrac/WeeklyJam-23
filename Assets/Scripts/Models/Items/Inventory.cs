@@ -5,18 +5,33 @@ using UnityEngine;
 public class Inventory{
    
     public InventoryItem[] inventory_items;
-    int maxSpaces = 10;
-    int pSpacesFilled;
-    int spacesFilled {get{return pSpacesFilled;}set{pSpacesFilled = Mathf.Clamp(value, 0, maxSpaces);}}
+    int maxSpaces = 10, spacesFilled;
     public delegate void OnInventoryChanged();
     public event OnInventoryChanged onInventoryChanged; 
 
     public Inventory(int maxSpace){
         maxSpaces = maxSpace;
+        spacesFilled = 0;
         inventory_items  = new InventoryItem[maxSpaces];
         for(int i= 0; i <inventory_items.Length; i++){
             inventory_items[i] = new InventoryItem(null);
         }
+    }
+    public bool IsFull(){
+        if (spacesFilled >= maxSpaces){
+           return true;
+        }
+        return false;
+    }
+    public bool IsEmpty(){
+        if (spacesFilled == 0)
+            return true;
+        return false;
+    }
+    public bool HasSpaceFor(int count){
+        if ((maxSpaces - spacesFilled) < count)
+            return false;
+        return true;
     }
     public bool AddItem(Item item, int count = 1){
         if (count == 0){
@@ -31,7 +46,7 @@ public class Inventory{
                 return true;
             }
         }
-        if (spacesFilled >= maxSpaces){
+        if (IsFull()){
            return false;
         }
         // Find first empty space
@@ -48,7 +63,7 @@ public class Inventory{
         inventory_items[emptyIndex].item = item;
         inventory_items[emptyIndex].count = count;
 
-        spacesFilled += 1;
+        spacesFilled ++;
 
         if (onInventoryChanged != null)
             onInventoryChanged();
@@ -86,8 +101,7 @@ public class Inventory{
         if (inventory_items[index].count <= 0){
             // make item null
             inventory_items[index].item = null;
-            
-            spacesFilled -= 1;
+            spacesFilled--;
         }
 
         if (onInventoryChanged != null)
@@ -107,8 +121,7 @@ public class Inventory{
         if (inventory_items[inventoryIndex].count <= 0){
             // make item null
             inventory_items[inventoryIndex].item = null;
-            
-            spacesFilled -= 1;
+            spacesFilled--;
         }
         
         if (onInventoryChanged != null)
@@ -127,10 +140,8 @@ public class Inventory{
                     inventory_items[i].count -= count;
                     if(inventory_items[i].count <= 0){
                         inventory_items[i].item = null;
-                        spacesFilled -= 1;
+                        spacesFilled--;
                     }
-                    
-                    
                     if (onInventoryChanged != null)
                         onInventoryChanged();
                     return true;

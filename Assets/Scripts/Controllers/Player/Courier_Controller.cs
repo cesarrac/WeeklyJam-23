@@ -35,7 +35,7 @@ public class Courier_Controller : MonoBehaviour {
 		if (tile != null){
 			if (tile.machine != null){
 				// Check distance to mouse, if too far, return
-				if (Vector2.Distance(transform.position, mousePosition) > 1.25f)
+				if (Vector2.Distance(transform.position, new Vector2(tile.worldPos.x, tile.worldPos.y)) > 4f)
 					return;
 
 				if (iteminHand != null && iteminHand.itemUseType == ItemUseType.Repair){
@@ -47,7 +47,7 @@ public class Courier_Controller : MonoBehaviour {
 				tile.machine.DisplayMachineUI();
 			}else{
 					// Check distance to mouse, if too far, return
-					if (Vector2.Distance(transform.position, mousePosition) > 1f)
+					if (Vector2.Distance(transform.position, mousePosition) > 1.5f)
 						return;
 					if (iteminHand != null && iteminHand.itemUseType == ItemUseType.Clean){
 						TryCleanTile(tile);
@@ -123,11 +123,14 @@ public class Courier_Controller : MonoBehaviour {
 			Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 			if (tile != null){
 				if (tile.machine != null){
-					if (tile.machine.Interact(this.gameObject) == true){
+					/* if (tile.machine.Interact(this.gameObject) == true){
 						if (tile.machine.machine.systemControlled == ShipSystemType.CargoHold)
 							DepositItem();
-					}
+					} */
+					tile.machine.Interact(this.gameObject);
 					return;
+					//if (tile.machine.Interact(this.gameObject) == true)
+					//	return;
 				}
 			}
 		}
@@ -149,10 +152,16 @@ public class Courier_Controller : MonoBehaviour {
 		Item itemToPickUp = itemGobj.GetComponent<Item_Controller>().item;
 		if (characterData.characterInventory.AddItem(itemToPickUp) == false)
 			return;
+		itemGobj.GetComponent<Item_Controller>().Pool();
 		if (iteminHand != null){
+			if (iteminHand.name == itemToPickUp.name){
+				iteminHand = itemToPickUp;
+				return;
+			}
+
 			PutAwayHeldItem();
 		}
-		itemGobj.GetComponent<Item_Controller>().Pool();
+		
 		iteminHand = itemToPickUp;
 		// If it's cargo, place it over player's head
 		if (iteminHand.itemType == ItemType.Cargo){
@@ -171,6 +180,20 @@ public class Courier_Controller : MonoBehaviour {
 	
 		Item_Manager.instance.SpawnItem(iteminHand, (Vector2)transform.position + direction);
 		PutAwayHeldItem();
+	}
+	public bool HasItem(string itemName, int count){
+		if (iteminHand != null && iteminHand.name == itemName){
+			return true;
+		}
+		return characterData.characterInventory.ContainsItem(itemName, count);
+	}
+	public bool RemoveItem(string itemName, int count){
+		if (characterData.characterInventory.RemoveItem(itemName, count) == false)
+			return false;
+		if (iteminHand != null && iteminHand.name == itemName)
+			PutAwayHeldItem();
+		
+		return true;
 	}
 	void DepositItem(){
 		if (iteminHand == null){
@@ -195,6 +218,7 @@ public class Courier_Controller : MonoBehaviour {
 		}
 
 		iteminHand = itemSelected;
+		Debug.Log("Item selected by player: " + iteminHand.name);
 			// If it's cargo, place it over player's head
 		if (itemSelected.itemType == ItemType.Cargo){
 			itemHolder.GetComponent<SpriteRenderer>().sprite = itemSelected.sprite;

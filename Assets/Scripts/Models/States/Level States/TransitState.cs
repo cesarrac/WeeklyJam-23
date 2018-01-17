@@ -7,7 +7,7 @@ public class TransitState : State{
 	float timeForEvent = 5;
 	ShipManager shipManager;
 	LevelUI_Manager levelUI;
-	float timePerJump = 10f;
+	float timePerJump = 2f;
 	float transitProgress = 0;
 	float lastEventTime, timeBwEvent = 5;
 	public TransitState(StateType sType) : base (sType){
@@ -32,7 +32,7 @@ public class TransitState : State{
 		lastEventTime = 0;
 	}
 	public override void Update(float deltaTime){
-/* 		// if at any moment we cant use essential systems, pop out
+ 		// if at any moment we cant use essential systems, pop out
 		if (shipManager.CanUseEssentials() == false){
 			return;
 		}
@@ -50,7 +50,7 @@ public class TransitState : State{
 		if (countdown.elapsedTime - lastEventTime >= timeBwEvent){
 			lastEventTime = countdown.elapsedTime;
 			CheckForEvent();
-		}  */
+		} 
 	}
 	void CheckForEvent(){
 		

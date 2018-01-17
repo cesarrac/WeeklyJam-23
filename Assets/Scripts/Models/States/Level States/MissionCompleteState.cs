@@ -34,7 +34,7 @@ public class MissionCompleteState : State {
             return;
         }
         // Remove the mission items from inventory
-        foreach(MissionItem mItem in compMission.itemsToDeliver){
+        foreach(ItemReference mItem in compMission.itemsToDeliver){
             if (ShipManager.instance.shipCargo.active_inventory.RemoveItem(mItem.itemName, mItem.count) == false){
                 Finished();
                 return;

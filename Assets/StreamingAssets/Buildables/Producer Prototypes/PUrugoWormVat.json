@@ -1,0 +1,20 @@
+{
+    "name": "Urugo Worm Vat",
+    "sprite": "UrugoWormVat_0",
+    "animatorController": "Urugo Worm Vat",
+    "tileWidth" : 2,
+    "tileHeight" : 2,
+    "stats": [ 
+              {"statType":3, "minValue": 50, "maxValue": 0} , {"statType":6, "minValue": 3, "maxValue": 0}  
+             ],
+    "repairDifficulty": 0,
+    "machineCondition": 3,
+    "productionBlueprints": [   
+                                {
+                                    "keyIngredient" : {"itemName":"Urugo DNA", "count": 1, "itemType": 0 },
+                                    "secondaryIngredients" : [{"itemName":"Nutro Pellets", "count": 5, "itemType": 0}],
+                                    "itemProduced" : {"itemName": "Urugo Worm", "count": 1, "itemType": 0}
+                                }                    
+                            ]
+    
+}

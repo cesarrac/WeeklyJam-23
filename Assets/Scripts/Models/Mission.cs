@@ -8,14 +8,14 @@ public class Mission  {
 	public Character owner {get; protected set;}
 	public string description {get; protected set;}
 	// what items and how many of them to deliver
-	public MissionItem[] itemsToDeliver {get; protected set;}
+	public ItemReference[] itemsToDeliver {get; protected set;}
 	// Where to deliver
 	public Station stationDestination {get; protected set;}
 	// Where the mission was generated/received
 	public Station stationPickUp {get; protected set;}
 	public int jumpsRequired {get; protected set;}
 	public bool itemsAcquired {get; protected set;} // Has the player received the items required?
-	public Mission (Character _owner, string desc, MissionItem[] deliveryItems, Station _pickUp, Station _destination, int jumpRequirement){
+	public Mission (Character _owner, string desc, ItemReference[] deliveryItems, Station _pickUp, Station _destination, int jumpRequirement){
 		owner = _owner;
 		description = desc;
 		itemsToDeliver = deliveryItems;
@@ -49,7 +49,7 @@ public class Mission  {
 		}
 		// Check cargo hold inventory for items
 		ShipCargoHolds cargo = ShipManager.instance.shipCargo;
-		foreach(MissionItem mItem in itemsToDeliver){
+		foreach(ItemReference mItem in itemsToDeliver){
 			if (mItem.itemName.Length <= 0)
 				continue;
 			if (mItem.count <= 0)
@@ -63,11 +63,12 @@ public class Mission  {
 	}
 	
 }
-public struct MissionItem{
+[System.Serializable]
+public struct ItemReference{
 	public string itemName;
 	public int count;
 	public ItemType itemType;
-	public MissionItem(string name, ItemType iType, int _count){
+	public ItemReference(string name, ItemType iType, int _count){
 		itemName = name;
 		count = _count;
 		itemType = iType;

@@ -5,8 +5,9 @@ using UnityEngine;
 public class Item_Manager : MonoBehaviour {
 
 	public static Item_Manager instance {get; protected set;}
-	public string[] startItems;
-	public string[] startingMachines;
+	public string debugItem;
+	public string[] startShipMachines;
+	public string[] startingProducers;
 	ItemPrototype[] available_Items;
 	ObjectPool pool;
 	Dictionary<Item, GameObject> itemsInWorld;
@@ -41,19 +42,37 @@ public class Item_Manager : MonoBehaviour {
 
 		pool = ObjectPool.instance;
 	}
-
+	public void DebugSpawnItem(){
+		SpawnItem(GetPrototype(debugItem),  new Vector2(0, -3f));
+	}
+	public void DebugAddItemToPlayer(){
+		GameObject playerGObj = Character_Manager.instance.player_GObj;
+		if (playerGObj == null)
+			return;
+		Item newItem = CreateInstance(GetPrototype(debugItem));
+		playerGObj.GetComponent<Courier_Controller>().characterData.characterInventory.AddItem(newItem);
+	}
 	public void SpawnStartingItems(){
-		SpawnItem(GetPrototype(startItems[0]),  new Vector2(0, -3f));
-		SpawnItem(GetPrototype(startItems[1]), new Vector2(1, -3f));
 		List<Item> machines = new List<Item>();
-		for(int i = 0; i < startingMachines.Length; i++){
-			Item newItem = CreateInstance(GetPrototype(startingMachines[i]));
+		for(int i = 0; i < startShipMachines.Length; i++){
+			Item newItem = CreateInstance(GetPrototype(startShipMachines[i]));
 			if (newItem == null)
 				continue;
 
 			machines.Add(newItem);
 		}
 		ShipManager.instance.InitStartMachines(machines.ToArray(),  new Vector2(-3, 0));
+		if (startingProducers.Length > 0){
+			List<Item> producers = new List<Item>();
+			for (int i = 0; i < startingProducers.Length; i++)
+			{
+				Item newItem = CreateInstance(GetPrototype(startingProducers[i]));
+				if (newItem == null)
+					continue;
+				producers.Add(newItem);
+			}
+			Buildable_Manager.instance.SpawnStartingProducers(producers);
+		}
 	}
 	
 	public ItemPrototype GetPrototype(string itemName){

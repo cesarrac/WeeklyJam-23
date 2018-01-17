@@ -44,6 +44,8 @@ public class ShipCargoHolds : ShipSystem {
 		Item newItem = user.GetComponent<Courier_Controller>().iteminHand;    //item_held.item;
 		if (newItem == null)
 			return false;
+		if (user.GetComponent<Courier_Controller>().RemoveItem(newItem.name, 1) == false)
+			return false;
 		if (active_inventory.AddItem(newItem) == false){
 			Debug.Log("Could NOT add item " + newItem.name + " to cargo hold inventory!");
 			return false;

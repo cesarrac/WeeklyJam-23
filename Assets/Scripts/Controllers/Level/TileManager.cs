@@ -108,4 +108,10 @@ public class TileManager : MonoBehaviour {
 		dirtGObjMap.Add(tile, dirt);
 
 	}
+	public float GetMaxX(){
+		return startingX + map_width;
+	}
+	public float GetMaxY(){
+		return startingY + map_height;
+	}
 }

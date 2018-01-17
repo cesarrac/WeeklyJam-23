@@ -1,9 +1,9 @@
  public class Producer : Machine
     {
-        public ProductionItem[] itemsProduced {get; protected set;}
+        public ProductionBlueprint[] productionBlueprints {get; protected set;}
         protected Producer(ProducerPrototype b) : base(b)
         {
-            this.itemsProduced = b.itemsProduced;
+            this.productionBlueprints = b.productionBlueprints;
         }
         public static Producer CreateInstance(ProducerPrototype prototype){
             return new Producer(prototype);
