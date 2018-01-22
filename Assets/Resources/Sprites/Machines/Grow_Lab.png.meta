@@ -1,21 +1,33 @@
 fileFormatVersion: 2
-guid: 72b7b4ffe4dec314b89f76e2d75bcfdc
-timeCreated: 1516463649
+guid: 99fcba69e20e82f419fe8dc63fd3da04
+timeCreated: 1516465413
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
-    21300000: UgumoWormVat_0
-    21300002: UgumoWormVat_1
-    21300004: UgumoWormVat_2
-    21300006: UrugoWormVat_0
-    21300008: UrugoWormVat_1
-    21300010: UrugoWormVat_2
-    21300012: UrugoWormVat_3
-    21300014: UrugoWormVat_4
-    21300016: UrugoWormVat_5
-    21300018: UrugoWormVat_6
-    21300020: UrugoWormVat_7
-    21300022: UrugoWormVat_8
+    21300000: Veggie_Farm_0
+    21300002: Veggie_Farm_1
+    21300004: Veggie_Farm_2
+    21300006: Veggie_Farm_3
+    21300008: Veggie_Farm_4
+    21300010: Veggie_Farm_5
+    21300012: Veggie_Farm_6
+    21300014: Veggie_Farm_7
+    21300016: Veggie_Farm_8
+    21300018: Veggie_Farm_9
+    21300020: Veggie_Farm_10
+    21300022: Veggie_Farm_11
+    21300024: Grow_Lab_0
+    21300026: Grow_Lab_1
+    21300028: Grow_Lab_2
+    21300030: Grow_Lab_3
+    21300032: Grow_Lab_4
+    21300034: Grow_Lab_5
+    21300036: Grow_Lab_6
+    21300038: Grow_Lab_7
+    21300040: Grow_Lab_8
+    21300042: Grow_Lab_9
+    21300044: Grow_Lab_10
+    21300046: Grow_Lab_11
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -92,7 +104,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UrugoWormVat_0
+      name: Grow_Lab_0
       rect:
         serializedVersion: 2
         x: 0
@@ -106,7 +118,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_1
+      name: Grow_Lab_1
       rect:
         serializedVersion: 2
         x: 32
@@ -120,7 +132,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_2
+      name: Grow_Lab_2
       rect:
         serializedVersion: 2
         x: 64
@@ -134,7 +146,21 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_3
+      name: Grow_Lab_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 32
+        height: 32
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Grow_Lab_4
       rect:
         serializedVersion: 2
         x: 0
@@ -148,7 +174,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_4
+      name: Grow_Lab_5
       rect:
         serializedVersion: 2
         x: 32
@@ -162,7 +188,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_5
+      name: Grow_Lab_6
       rect:
         serializedVersion: 2
         x: 64
@@ -176,7 +202,21 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_6
+      name: Grow_Lab_7
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Grow_Lab_8
       rect:
         serializedVersion: 2
         x: 0
@@ -190,7 +230,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_7
+      name: Grow_Lab_9
       rect:
         serializedVersion: 2
         x: 32
@@ -204,10 +244,24 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: UrugoWormVat_8
+      name: Grow_Lab_10
       rect:
         serializedVersion: 2
         x: 64
+        y: 0
+        width: 32
+        height: 32
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Grow_Lab_11
+      rect:
+        serializedVersion: 2
+        x: 96
         y: 0
         width: 32
         height: 32

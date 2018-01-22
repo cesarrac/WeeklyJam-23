@@ -7695,6 +7695,7 @@ MonoBehaviour:
   - Simple Generator
   startingProducers:
   - Urugo Worm Vat
+  - Grow Lab
 --- !u!1 &681217614
 GameObject:
   m_ObjectHideFlags: 0

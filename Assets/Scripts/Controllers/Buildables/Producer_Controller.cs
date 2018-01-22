@@ -13,12 +13,22 @@ public class Producer_Controller : Machine_Controller {
 	CountdownHelper timer;
 	Inventory storage_inventory;
 	bool isProducing;
+	public SpriteRenderer growth_visuals;
+	int pProductionStage;
+	int productionStage {get{return pProductionStage;}set{pProductionStage = Mathf.Clamp(value, -1, 4);}}
 	public void Init(Item producerAsItem, Producer _producer, Tile_Data baseTile){
 		producer = _producer;
 		base.InitMachine(producerAsItem, producer, baseTile, ShipManager.instance);
 		item_Manager = Item_Manager.instance;
 		timer = new CountdownHelper(0);
-		storage_inventory = new Inventory(producer.GetStat(StatType.Storage).GetValue());
+		storage_inventory = new Inventory(1);
+		SetProductionStage(0);
+
+		// Position the growth visuals X correctly according to the machine's tile width
+		if (growth_visuals != null){
+			growth_visuals.transform.localPosition = new Vector2(producer.tileWidth > 1 ? 0.5f : 0,0.5f);
+		}
+
 	//	Debug.Log("Producer INITIALIZED: " + " key ingredient = " + producer.productionBlueprints[0].keyIngredient.count + " " + producer.productionBlueprints[0].keyIngredient.itemName + 
 		//		 " secondary ingredient " + producer.productionBlueprints[0].secondaryIngredients[0].count + " " + producer.productionBlueprints[0].secondaryIngredients[0].itemName);
 	}
@@ -81,6 +91,10 @@ public class Producer_Controller : Machine_Controller {
 			}
 		}
 	}
+	public void DebugStartProduction(){
+		current_Blueprint = producer.productionBlueprints[0];
+		StartProduction();
+	}
 	void StartProduction(){
 		Debug.Log("STARTING PRODUCTION ON " + current_Blueprint.itemProduced.itemName);
 		// Grab an instance of the item about to be produced
@@ -88,13 +102,14 @@ public class Producer_Controller : Machine_Controller {
 		// Set timer
 		timeToCreate = itemInProduction.timeToCreate;
 		timer.Reset(timeToCreate);
-
+		SetProductionStage(0);
 		isProducing = true;
 		AnimateStayOn();
 	}
 	private void Update() {
 		if (isProducing == true){
 			timer.UpdateCountdown();
+			SetProductionStage(timer.elapsedPercent);
 			if (timer.elapsedPercent >= 1){
 				CompleteProduction();
 			}
@@ -111,7 +126,49 @@ public class Producer_Controller : Machine_Controller {
 		isProducing = false;
 		AnimateOff();
 	}
-	public override void DisplayMachineUI(){
+	void SetProductionStage(float elapsedPercent){
+		if(elapsedPercent <= 0){
+			productionStage = -1;
+			SetGrowthVisuals();
+			return;
+		}
+		int pStage = productionStage;
+		if (elapsedPercent > 0 && elapsedPercent < 0.25f){
+			pStage = 0;
+		}else if (elapsedPercent >= 0.25f && elapsedPercent < 0.5f){
+			pStage = 1;
+		}else if (elapsedPercent >= 0.5f && elapsedPercent < 0.75f){
+			pStage = 2;
+		}else if (elapsedPercent >= 0.75f && elapsedPercent <= 1){
+			pStage = 3;
+		}
+		if (pStage == productionStage)
+			return;
+
+		productionStage = pStage;
+		SetGrowthVisuals();
+	}
+	void SetGrowthVisuals(){
+		if (growth_visuals == null)
+			return;
+		if(producer.showsGrowth == false)
+			return;
+		if (productionStage < 0){
+			growth_visuals.sprite = null;
+			growth_visuals.gameObject.SetActive(false);
+			return;
+		}
+		if (itemInProduction == null)
+			return;
+		Sprite growthSprite = Sprite_Manager.instance.GetSprite(itemInProduction.name + "_" + productionStage.ToString());
+		if (growthSprite != null){
+			if (growth_visuals.gameObject.activeSelf == false){
+				growth_visuals.gameObject.SetActive(true);
+			}
+			growth_visuals.sprite = growthSprite;
+		}
+	}
+	public override void UserUseMachine(){
 		if (isProducing == false)
 			AnimateOn();
 		
@@ -126,6 +183,7 @@ public class Producer_Controller : Machine_Controller {
 		if (storage_inventory.RemoveItem(item.name) == false)
 			return;
 		playerInventory.AddItem(item);
+		SetProductionStage(0);
 	}
 
 	// UI to display production options and requirements

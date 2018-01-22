@@ -149,4 +149,5 @@ public struct ProducerPrototype{
 	public MiniGameDifficulty repairDifficulty;
 	public MachineCondition machineCondition;
 	public ProductionBlueprint[] productionBlueprints;
+	public bool showsGrowth;
 }

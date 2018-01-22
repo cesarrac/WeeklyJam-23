@@ -15,6 +15,7 @@
                                     "secondaryIngredients" : [{"itemName":"Nutro Pellets", "count": 5, "itemType": 0}],
                                     "itemProduced" : {"itemName": "Urugo Worm", "count": 1, "itemType": 0}
                                 }                    
-                            ]
+                            ],
+    "showsGrowth" : false
     
 }

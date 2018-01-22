@@ -81,7 +81,7 @@ public class Machine_Controller : MonoBehaviour {
         DecayCondition();
     
     }
-    public virtual void DisplayMachineUI(){
+    public virtual void UserUseMachine(){
         UI_Manager.instance.ShowMachineUI(machine.systemControlled);
         AnimateOn();
     }

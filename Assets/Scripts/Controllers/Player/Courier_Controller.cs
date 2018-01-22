@@ -44,7 +44,7 @@ public class Courier_Controller : MonoBehaviour {
 						return;
 				}
 				// If player is holding nothing or not holding a tool: 
-				tile.machine.DisplayMachineUI();
+				tile.machine.UserUseMachine();
 			}else{
 					// Check distance to mouse, if too far, return
 					if (Vector2.Distance(transform.position, mousePosition) > 1.5f)

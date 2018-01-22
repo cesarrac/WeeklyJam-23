@@ -1,0 +1,21 @@
+{
+    "name": "Grow Lab",
+    "sprite": "Grow_Lab_0",
+    "animatorController": "Grow Lab",
+    "tileWidth" : 2,
+    "tileHeight" : 2,
+    "stats": [ 
+              {"statType":3, "minValue": 50, "maxValue": 0} , {"statType":6, "minValue": 3, "maxValue": 0}  
+             ],
+    "repairDifficulty": 0,
+    "machineCondition": 3,
+    "productionBlueprints": [   
+                                {
+                                    "keyIngredient" : {"itemName":"Vida Leaf Seeds", "count": 1, "itemType": 0 },
+                                    "secondaryIngredients" : [{"itemName":"Herb Grow", "count": 2, "itemType": 0}],
+                                    "itemProduced" : {"itemName": "Vida Leaf", "count": 1, "itemType": 0}
+                                }                    
+                            ],
+    "showsGrowth" : true
+    
+}
