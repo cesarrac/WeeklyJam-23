@@ -5,43 +5,78 @@ using UnityEngine.Tilemaps;
 
 public class TileManager : MonoBehaviour {
 	public static TileManager instance {get; protected set;}
-	public Tilemap ship_TileMap;
 	Vector3Int positionToCheck = Vector3Int.zero;
 	int startingX;
 	int startingY;
 	int map_width;
 	int map_height;
 	Tile_Data[,] tileData_Grid;
-	Dictionary<Tile_Data, GameObject> dirtGObjMap;
+	Dictionary<AreaID, Tile_Data[,]> TileDataMap;
+	Dictionary<Tile_Data, GameObject> dirtyTilesGObjMap;
 	
+	public Area[] tile_areas;
+	public Area currentArea {get; protected set;}
+
 	void Awake(){
 		instance = this;
-		/* if (ship_TileMap.HasTile(positionToCheck)){
-			Debug.Log(ship_TileMap.name + " has tile at " + positionToCheck);
-		} */
-		startingX = ship_TileMap.origin.x;
-		startingY = ship_TileMap.origin.y;
-		map_width = ship_TileMap.size.x;
-		map_height = ship_TileMap.size.y;
 
-		dirtGObjMap = new Dictionary<Tile_Data, GameObject>();
-		//Debug.Log(ship_TileMap.name + " starts at " + startingX + ", " + startingY);
-		//Debug.Log(ship_TileMap.name + " ends at " + (startingX+ map_width) + ", " + (startingY + map_height));
-		//GenerateTileData();
+		dirtyTilesGObjMap = new Dictionary<Tile_Data, GameObject>();
+		TileDataMap = new Dictionary<AreaID, Tile_Data[,]>();
 	}
 
-	public void GenerateTileData(){
+	public void LoadArea(AreaID areaID){
+		if (tileData_Grid != null && currentArea.tilemap != null){
+			// Save the current data in map, keyed to area id
+			if (TileDataMap.ContainsKey(currentArea.id) == true){
+				// replace old data
+				TileDataMap[currentArea.id] = tileData_Grid;
+			}else{
+				// new data
+				TileDataMap.Add(currentArea.id, tileData_Grid);
+			}
+		}
+		foreach (Area area in tile_areas)
+		{
+			if (area.id == areaID){
+				currentArea = area;
+				break;
+			}
+		}
+		if (currentArea.tilemap == null)
+			return;
+		startingX = currentArea.tilemap.origin.x;
+		startingY = currentArea.tilemap.origin.y;
+		map_width = currentArea.tilemap.size.x;
+		map_height = currentArea.tilemap.size.y;
+		GenerateTileData();
+
+		// Load background, if any
+		BGVisuals_Manager.instance.LoadBgForArea(currentArea.id);
+	}
+
+	void GenerateTileData(){
+		// Verify that we don't alreay have the tile data
+		if (TileDataMap.ContainsKey(currentArea.id) == true){
+			// Load it if we got it
+			tileData_Grid = TileDataMap[currentArea.id];
+			return;
+		}
 		tileData_Grid = new Tile_Data[map_width, map_height];
 		for(int x = 0; x <map_width; x++){
 			for(int y = 0; y <map_height; y++){
+
 				Vector3Int nextTilePosition = new Vector3Int(startingX + x, startingY + y, 0);
-				if (ship_TileMap.HasTile(nextTilePosition) == false){
+
+				if (currentArea.tilemap.HasTile(nextTilePosition) == false){
 					continue;
 				}
-				if (ship_TileMap.GetSprite(nextTilePosition).name == "Floor"){
+				if (currentArea.tilemap.GetSprite(nextTilePosition).name == "Floor"){
 					tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Floor);
-					tileData_Grid[x, y].RegisterOnDirtCB(OnTileDirty);
-					//Debug.Log("Tile at " + nextTilePosition + " set to FLOOR!");
+
+					// If this is a ship, process dirty tiles
+					if (currentArea.id == AreaID.Player_Ship)
+						tileData_Grid[x, y].RegisterOnDirtCB(OnTileDirty);
+
 					continue;
 				}
 				tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Wall);
@@ -75,21 +110,25 @@ public class TileManager : MonoBehaviour {
 	}
 	
 	public void OnTileDirty(Tile_Data tile){
-		Debug.Log("OnTileDirty");
-		if (dirtGObjMap.ContainsKey(tile)){
+		if (currentArea.tilemap == null)
+			return;
+		if (currentArea.id != AreaID.Player_Ship)
+			return;
+
+		if (dirtyTilesGObjMap.ContainsKey(tile)){
 			if (tile.Dirtiness <= 0){
 				// Pool the dirty tile
-				GameObject gobj = dirtGObjMap[tile];
+				GameObject gobj = dirtyTilesGObjMap[tile];
 				gobj.transform.SetParent(null);
 				ObjectPool.instance.PoolObject(gobj);
-				dirtGObjMap.Remove(tile);
+				dirtyTilesGObjMap.Remove(tile);
 				return;
 			}
 			// Increase or Decrease dirt by changing sprite
 			Sprite newDirt = Sprite_Manager.instance.GetDirt(Mathf.RoundToInt(tile.Dirtiness * 10));
 			if (newDirt == null)
 				return;
-			dirtGObjMap[tile].GetComponentInChildren<SpriteRenderer>().sprite = newDirt;
+			dirtyTilesGObjMap[tile].GetComponentInChildren<SpriteRenderer>().sprite = newDirt;
 			return;
 		}
 
@@ -104,8 +143,8 @@ public class TileManager : MonoBehaviour {
 		if (dirtSprite == null)
 			 dirtSprite = Sprite_Manager.instance.GetDirt(1);
 		dirt.GetComponentInChildren<SpriteRenderer>().sprite = dirtSprite;
-		dirt.transform.SetParent(ship_TileMap.transform);
-		dirtGObjMap.Add(tile, dirt);
+		dirt.transform.SetParent(currentArea.tilemap.transform);
+		dirtyTilesGObjMap.Add(tile, dirt);
 
 	}
 	public float GetMaxX(){
@@ -114,4 +153,14 @@ public class TileManager : MonoBehaviour {
 	public float GetMaxY(){
 		return startingY + map_height;
 	}
+}
+
+[System.Serializable]
+public enum AreaID {NULL, Player_Ship, Centrum_Plaza}
+[System.Serializable]
+public struct Area{
+
+	public AreaID id;
+	public Tilemap tilemap;
+
 }

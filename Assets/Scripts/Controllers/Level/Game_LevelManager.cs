@@ -23,18 +23,23 @@ public class Game_LevelManager : MonoBehaviour {
 		new JsonLoader();
 	}
 	void Start(){
-		StartGame();
+		InitGameData();
+		StartOnShip();
 	}
 
-	void StartGame(){
+	void InitGameData(){
 		Item_Manager.instance.Initialize();
 		Buildable_Manager.instance.Initialize();
-		TileManager.instance.GenerateTileData();
+		Station_Manager.instance.Initialize();
+	}
+	void StartOnShip(){
+		
+		TileManager.instance.LoadArea(AreaID.Player_Ship);
 		
 		Character_Manager.instance.StartNewPlayer("Tipo");
-		BGVisuals_Manager.instance.GenerateSpace();
+		
 		Item_Manager.instance.SpawnStartingItems();
-		Station_Manager.instance.Initialize();
+	
 		stateMachine.Push(LevelStates[0]);
 	}
 

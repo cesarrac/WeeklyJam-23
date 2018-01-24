@@ -1117,11 +1117,6 @@ Prefab:
       propertyPath: m_Name
       value: TILES
       objectReference: {fileID: 0}
-    - target: {fileID: 3664157344301723992, guid: e834087677bcb494eb1e73ad8dd981e5,
-        type: 2}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e834087677bcb494eb1e73ad8dd981e5, type: 2}
   m_IsPrefabParent: 0
@@ -11251,11 +11246,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
---- !u!1839735485 &1248174132 stripped
-Tilemap:
-  m_PrefabParentObject: {fileID: 8195094282697621812, guid: e834087677bcb494eb1e73ad8dd981e5,
-    type: 2}
-  m_PrefabInternal: {fileID: 87187901}
 --- !u!1 &1270601393
 GameObject:
   m_ObjectHideFlags: 0
@@ -19297,7 +19287,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23cafabcbea1fd641a39df205f47f57f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ship_TileMap: {fileID: 1248174132}
+  tile_areas:
+  - id: 1
+    tilemap: {fileID: 8195094279575171246, guid: 6047e41dba5b9ed419d23b7a2a834187,
+      type: 2}
+  - id: 0
+    tilemap: {fileID: 0}
 --- !u!1 &1998981866
 GameObject:
   m_ObjectHideFlags: 0

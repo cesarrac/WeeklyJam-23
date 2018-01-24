@@ -11,27 +11,41 @@ public class BGVisuals_Manager : MonoBehaviour {
 
 	public int totalAsteroidAnimations = 2;
 	public int asteroidCount = 10;
-	List<GameObject> pixelStars_active, asteroids_active;
+	List<GameObject> pixelStars_active, asteroids_active, bgFX_GameObjs;
 	GameObject bgHolder, asteroidsHolder, pixelStarHolder;
 	public Transform vCamTransform;
 	public Cinemachine.CinemachineVirtualCamera bgVCam;
 	float maxY, maxX, minX, minY;
+	Sequence asteroid_sequence;
+
+	AreaID curAreaID;
 	private void Awake() {
 		instance = this;
 		pixelStars_active = new List<GameObject>();
 		asteroids_active = new List<GameObject>();
+		bgFX_GameObjs = new List<GameObject>();
 		maxY = (Camera.main.orthographicSize * 2) + 2;
 		minY = -(maxY) - 2;
 		maxX = (Camera.main.orthographicSize * 2) + 2f;
 		minX = -(maxX) - 2;
 		bgHolder = new GameObject();
 		bgHolder.name = "BACKGROUND EFFECTS";
+
+		asteroid_sequence = DOTween.Sequence();
 	}
 	private void Start() {
 		pool = ObjectPool.instance;
 		
 	}
-	public void GenerateSpace(){
+	public void LoadBgForArea(AreaID areaID){
+
+		ClearCurrentBG();
+		curAreaID = areaID;
+		if(areaID == AreaID.Player_Ship){
+			GenerateSpace();
+		}
+	}
+	void GenerateSpace(){
 		GeneratePixelStars();
 		StartCoroutine("WaitToSpawnAsteroids");
 	}
@@ -58,7 +72,7 @@ public class BGVisuals_Manager : MonoBehaviour {
 			starGobj.GetComponentInChildren<Animator>().Play("Pixel_stars" + animSelection.ToString());
 			Color starColor = new Color32(255, 255, 255, (byte)Random.Range(50, 255));
 			starGobj.GetComponentInChildren<SpriteRenderer>().color = starColor;
-			pixelStars_active.Add(starGobj);
+			bgFX_GameObjs.Add(starGobj);
 		}
 
 		float shipMaxX = TileManager.instance.GetMaxX();
@@ -80,6 +94,11 @@ public class BGVisuals_Manager : MonoBehaviour {
 			return effectGObj;
 	}
 	void StartGenerateAsteroids(){
+		if (asteroidsHolder == null){
+			asteroidsHolder = new GameObject();
+			asteroidsHolder.name = "Asteroids";
+			asteroidsHolder.transform.SetParent(bgHolder.transform);
+		}
 		StartCoroutine("SpawnAsteroids");
 	}
 	IEnumerator WaitToSpawnAsteroids(){
@@ -95,14 +114,16 @@ public class BGVisuals_Manager : MonoBehaviour {
 			for (int i = 0; i < asteroidCount; i++)
 			{
 				GameObject asteroid = SpawnEffect("Asteroid", Random.Range(minX, maxX), -20);
-
+				asteroid.transform.SetParent(asteroidsHolder.transform);
 				yield return new WaitForSeconds(2);
 
 				if (asteroid == null)
 					continue;
+				
 				int animSelection = Random.Range(1, totalAsteroidAnimations + 1);
 				asteroid.GetComponentInChildren<Animator>().Play("Asteroid" + animSelection.ToString());
-				asteroid.transform.DOMoveY(maxY + 10, Random.Range(40, 100)).OnComplete(() => PoolAsteroid(asteroid));
+				asteroid_sequence.Append(asteroid.transform.DOMoveY(maxY + 10, Random.Range(40, 100)).OnComplete(() => PoolAsteroid(asteroid)));
+				bgFX_GameObjs.Add(asteroid);
 				yield return null;
 			}
 			StartCoroutine("WaitToSpawnAsteroids");
@@ -111,6 +132,27 @@ public class BGVisuals_Manager : MonoBehaviour {
 	}
 
 	void PoolAsteroid(GameObject asteroid){
+		if (bgFX_GameObjs.Contains(asteroid))
+			bgFX_GameObjs.Remove(asteroid);
+
 		pool.PoolObject(asteroid);
+	}
+
+	void PoolAllBackgroundFX(){
+		foreach (GameObject gobj in bgFX_GameObjs)
+		{
+			pool.PoolObject(gobj);
+		}
+		bgFX_GameObjs.Clear();
+	}
+
+	void ClearCurrentBG(){
+		if (bgFX_GameObjs.Count <= 0)
+			return;
+
+		if (curAreaID == AreaID.Player_Ship){
+			asteroid_sequence.Kill();
+		}
+		PoolAllBackgroundFX();
 	}
 }
