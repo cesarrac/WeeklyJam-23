@@ -16,6 +16,8 @@
                                     "itemProduced" : {"itemName": "Urugo Worm", "count": 1, "itemType": 0}
                                 }                    
                             ],
-    "showsGrowth" : false
+    "showsGrowth" : false,
+    "productionStage": 0,
+    "curProductionName" : ""
     
 }

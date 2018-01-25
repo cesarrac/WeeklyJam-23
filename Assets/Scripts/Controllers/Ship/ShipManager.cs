@@ -120,7 +120,7 @@ public class ShipManager : MonoBehaviour {
 			//machine.InitSystems(this);
 			return true;
 		}else{
-			mController.RemoveMachine();
+			mController.RemoveAndPool();
 			/* machine.transform.SetParent(null);
 			machine.name = "Machine";
 			pool.PoolObject(machine); */

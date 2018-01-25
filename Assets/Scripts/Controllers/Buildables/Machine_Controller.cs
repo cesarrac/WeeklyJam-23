@@ -8,10 +8,10 @@ public class Machine_Controller : MonoBehaviour {
     Vector3Int worldPosition;
     public Tile_Data baseTile;
     ShipManager shipManager;
-    List<Tile_Data> neighborTiles;
+    public List<Tile_Data> neighborTiles {get; protected set;}
     public BoxCollider2D collidable;
     public SpriteRenderer shadowRenderer;
-    Animator animator;
+    public Animator animator {get; protected set;}
     Action onRepairDoneCB;
     public GameObject damageFX;
     public Item machineItem {get; protected set;}
@@ -154,8 +154,8 @@ public class Machine_Controller : MonoBehaviour {
         }
     }
 
-    public virtual void RemoveMachine(){
-        if (baseTile != null){
+    public virtual void RemoveFromTile(){
+         if (baseTile != null){
 			if (baseTile.RemoveMachine() == true){
 				Debug.Log(machine.name + " removed from tile");
 			}
@@ -165,11 +165,18 @@ public class Machine_Controller : MonoBehaviour {
                 tile.RemoveMachine();
             }
         }
+    }
+    public virtual void Pool(){
         if (animator != null)
             animator.runtimeAnimatorController = null;
 		// Pool this machine's gameobject
         this.gameObject.name = "Machine";
 
         Buildable_Manager.instance.PoolBuildable(machine);
+    }
+    public void RemoveAndPool(){
+       
+        RemoveFromTile();
+        Pool();
     }
 }

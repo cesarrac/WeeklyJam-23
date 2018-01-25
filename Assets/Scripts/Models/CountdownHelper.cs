@@ -9,8 +9,9 @@ public class CountdownHelper  {
 	public float elapsedPercent {get; protected set;}
 	public float elapsedTime {get; protected set;}
 	public bool isDone {get; protected set;}
-	public CountdownHelper(float _timeToCount){
+	public CountdownHelper(float _timeToCount, float forcedTimerStart = 0){
 		timeToCount = _timeToCount;
+		timer = forcedTimerStart;
 		//timeManager = TimeManager.instance;
 	}
 	public void UpdateCountdown(){
@@ -25,12 +26,12 @@ public class CountdownHelper  {
 				isDone = false;
 		}
 	}
-	public void Reset(float _timeToCount = 0){
+	public void Reset(float _timeToCount = 0, float forcedTimerStart = 0){
 		if (_timeToCount > 0)
 			timeToCount = _timeToCount;
-		timer = 0;
-		elapsedPercent = 0;
-		elapsedTime = 0;
+		timer = forcedTimerStart;
+		elapsedTime = timer;
+		elapsedPercent = timer / timeToCount;
 		isDone = false;
 	}
 }

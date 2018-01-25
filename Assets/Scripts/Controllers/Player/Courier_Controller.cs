@@ -33,18 +33,18 @@ public class Courier_Controller : MonoBehaviour {
 		
 		Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 		if (tile != null){
-			if (tile.machine != null){
+			if (tile.machine_controller != null){
 				// Check distance to mouse, if too far, return
 				if (Vector2.Distance(transform.position, new Vector2(tile.worldPos.x, tile.worldPos.y)) > 4f)
 					return;
 
 				if (iteminHand != null && iteminHand.itemUseType == ItemUseType.Repair){
-						TryRepairMachine(tile.machine);
+						TryRepairMachine(tile.machine_controller);
 						isUsing = true;
 						return;
 				}
 				// If player is holding nothing or not holding a tool: 
-				tile.machine.UserUseMachine();
+				tile.machine_controller.UserUseMachine();
 			}else{
 					// Check distance to mouse, if too far, return
 					if (Vector2.Distance(transform.position, mousePosition) > 1.5f)
@@ -122,12 +122,12 @@ public class Courier_Controller : MonoBehaviour {
 			mousePosition.z = 0;
 			Tile_Data tile = TileManager.instance.GetTile(mousePosition);
 			if (tile != null){
-				if (tile.machine != null){
+				if (tile.machine_controller != null){
 					/* if (tile.machine.Interact(this.gameObject) == true){
 						if (tile.machine.machine.systemControlled == ShipSystemType.CargoHold)
 							DepositItem();
 					} */
-					tile.machine.Interact(this.gameObject);
+					tile.machine_controller.Interact(this.gameObject);
 					return;
 					//if (tile.machine.Interact(this.gameObject) == true)
 					//	return;

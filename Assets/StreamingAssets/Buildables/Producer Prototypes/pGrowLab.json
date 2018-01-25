@@ -16,6 +16,8 @@
                                     "itemProduced" : {"itemName": "Vida Leaf", "count": 1, "itemType": 0}
                                 }                    
                             ],
-    "showsGrowth" : true
+    "showsGrowth" : true,
+    "productionStage": 0,
+    "curProductionName" : ""
     
 }

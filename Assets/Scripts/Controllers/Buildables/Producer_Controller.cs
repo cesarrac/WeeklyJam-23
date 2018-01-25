@@ -6,7 +6,6 @@ using System;
 public class Producer_Controller : Machine_Controller {
 
 	Producer producer;
-	ProductionBlueprint current_Blueprint;
 	Item itemInProduction;
 	Item_Manager item_Manager;
 	float timeToCreate;
@@ -14,20 +13,39 @@ public class Producer_Controller : Machine_Controller {
 	Inventory storage_inventory;
 	bool isProducing;
 	public SpriteRenderer growth_visuals;
-	int pProductionStage;
-	int productionStage {get{return pProductionStage;}set{pProductionStage = Mathf.Clamp(value, -1, 4);}}
+	
 	public void Init(Item producerAsItem, Producer _producer, Tile_Data baseTile){
 		producer = _producer;
+		if (baseTile.AddProducer(producer) == false){
+			return;
+		}
 		base.InitMachine(producerAsItem, producer, baseTile, ShipManager.instance);
+
+		// The machine controller sets the list of Neighbor tiles,
+		// then we Add the producers on neighbor tiles as well
+		foreach (Tile_Data tile in neighborTiles)
+		{
+			tile.AddProducer(producer);
+		}
 		item_Manager = Item_Manager.instance;
 		timer = new CountdownHelper(0);
 		storage_inventory = new Inventory(1);
-		SetProductionStage(0);
-
 		// Position the growth visuals X correctly according to the machine's tile width
 		if (growth_visuals != null){
 			growth_visuals.transform.localPosition = new Vector2(producer.tileWidth > 1 ? 0.5f : 0,0.5f);
 		}
+		// This runs when a producer has already started producing before
+		if (producer.current_Blueprint.itemProduced.count > 0 && producer.productionStage >= 0){
+			itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(producer.current_Blueprint.itemProduced.itemName));
+			float timePassed = itemInProduction.timeToCreate * (0.25f * producer.productionStage);
+			timer.Reset(itemInProduction.timeToCreate, timePassed);
+			SetProductionStage(timer.elapsedPercent);
+			return;
+		}
+
+		SetProductionStage(0);
+
+	
 
 	//	Debug.Log("Producer INITIALIZED: " + " key ingredient = " + producer.productionBlueprints[0].keyIngredient.count + " " + producer.productionBlueprints[0].keyIngredient.itemName + 
 		//		 " secondary ingredient " + producer.productionBlueprints[0].secondaryIngredients[0].count + " " + producer.productionBlueprints[0].secondaryIngredients[0].itemName);
@@ -58,33 +76,25 @@ public class Producer_Controller : Machine_Controller {
 		return true;
 	}
 	bool HasRequiredItems(Courier_Controller controller){
-		foreach (ProductionBlueprint blueprint in producer.productionBlueprints)
-		{
-			if (controller.iteminHand.name == blueprint.keyIngredient.itemName){
-				current_Blueprint = blueprint;
-				Debug.Log("User has key ingredient: " + current_Blueprint.keyIngredient.itemName);
-				break;
-			}
+		if (producer.SetCurrentBlueprint(controller.iteminHand.name) == false){
+				return false;
 		}
-		if (current_Blueprint.keyIngredient.count <= 0){
+		if (controller.HasItem(producer.current_Blueprint.keyIngredient.itemName, producer.current_Blueprint.keyIngredient.count) == false)
 			return false;
-		}
-		if (controller.HasItem(current_Blueprint.keyIngredient.itemName, current_Blueprint.keyIngredient.count) == false)
-			return false;
-		if (current_Blueprint.secondaryIngredients.Length > 0){
-			for (int i = 0; i < current_Blueprint.secondaryIngredients.Length; i++)
+		if (producer.current_Blueprint.secondaryIngredients.Length > 0){
+			for (int i = 0; i < producer.current_Blueprint.secondaryIngredients.Length; i++)
 			{
-				if (controller.HasItem(current_Blueprint.secondaryIngredients[i].itemName, current_Blueprint.secondaryIngredients[i].count) == false)
+				if (controller.HasItem(producer.current_Blueprint.secondaryIngredients[i].itemName, producer.current_Blueprint.secondaryIngredients[i].count) == false)
 					return false;
 			}
 		}
 		return true;
 	}
 	void ChargeItems(Courier_Controller controller){
-		if (controller.RemoveItem(current_Blueprint.keyIngredient.itemName, current_Blueprint.keyIngredient.count) == false)
+		if (controller.RemoveItem(producer.current_Blueprint.keyIngredient.itemName, producer.current_Blueprint.keyIngredient.count) == false)
 			return;
-		if (current_Blueprint.secondaryIngredients.Length > 0){
-			foreach (ItemReference itemRef in current_Blueprint.secondaryIngredients)
+		if (producer.current_Blueprint.secondaryIngredients.Length > 0){
+			foreach (ItemReference itemRef in producer.current_Blueprint.secondaryIngredients)
 			{
 				if (controller.RemoveItem(itemRef.itemName, itemRef.count) == false)
 					break;
@@ -92,13 +102,13 @@ public class Producer_Controller : Machine_Controller {
 		}
 	}
 	public void DebugStartProduction(){
-		current_Blueprint = producer.productionBlueprints[0];
+		producer.DebugSetBlueprint();
 		StartProduction();
 	}
 	void StartProduction(){
-		Debug.Log("STARTING PRODUCTION ON " + current_Blueprint.itemProduced.itemName);
+		Debug.Log("STARTING PRODUCTION ON " + producer.current_Blueprint.itemProduced.itemName);
 		// Grab an instance of the item about to be produced
-		itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(current_Blueprint.itemProduced.itemName));
+		itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(producer.current_Blueprint.itemProduced.itemName));
 		// Set timer
 		timeToCreate = itemInProduction.timeToCreate;
 		timer.Reset(timeToCreate);
@@ -117,22 +127,22 @@ public class Producer_Controller : Machine_Controller {
 	}
 	void CompleteProduction(){
 		// Add the item to this producer's storage
-		if(storage_inventory.AddItem(itemInProduction, current_Blueprint.itemProduced.count)){
+		if(storage_inventory.AddItem(itemInProduction, producer.current_Blueprint.itemProduced.count)){
 			Notification_Manager.instance.AddNotification(machine.name + " finished " + itemInProduction.name);
 		}
 		// Reset
-		current_Blueprint.keyIngredient.count = 0;
+		producer.ResetCurrentBlueprint();
 		itemInProduction = null;
 		isProducing = false;
 		AnimateOff();
 	}
 	void SetProductionStage(float elapsedPercent){
 		if(elapsedPercent <= 0){
-			productionStage = -1;
+			producer.productionStage = -1;
 			SetGrowthVisuals();
 			return;
 		}
-		int pStage = productionStage;
+		int pStage = producer.productionStage;
 		if (elapsedPercent > 0 && elapsedPercent < 0.25f){
 			pStage = 0;
 		}else if (elapsedPercent >= 0.25f && elapsedPercent < 0.5f){
@@ -142,10 +152,10 @@ public class Producer_Controller : Machine_Controller {
 		}else if (elapsedPercent >= 0.75f && elapsedPercent <= 1){
 			pStage = 3;
 		}
-		if (pStage == productionStage)
+		if (pStage == producer.productionStage)
 			return;
 
-		productionStage = pStage;
+		producer.productionStage = pStage;
 		SetGrowthVisuals();
 	}
 	void SetGrowthVisuals(){
@@ -153,14 +163,14 @@ public class Producer_Controller : Machine_Controller {
 			return;
 		if(producer.showsGrowth == false)
 			return;
-		if (productionStage < 0){
+		if (producer.productionStage < 0){
 			growth_visuals.sprite = null;
 			growth_visuals.gameObject.SetActive(false);
 			return;
 		}
 		if (itemInProduction == null)
 			return;
-		Sprite growthSprite = Sprite_Manager.instance.GetSprite(itemInProduction.name + "_" + productionStage.ToString());
+		Sprite growthSprite = Sprite_Manager.instance.GetSprite(itemInProduction.name + "_" + producer.productionStage.ToString());
 		if (growthSprite != null){
 			if (growth_visuals.gameObject.activeSelf == false){
 				growth_visuals.gameObject.SetActive(true);
@@ -186,6 +196,27 @@ public class Producer_Controller : Machine_Controller {
 		SetProductionStage(0);
 	}
 
+	public override void RemoveFromTile(){
+		if (baseTile != null){
+			if (baseTile.RemoveProducer() == true){
+				Debug.Log(producer.name + " removed from tile");
+			}
+		}
+		if (neighborTiles != null && neighborTiles.Count > 0){
+            foreach(Tile_Data tile in neighborTiles){
+                tile.RemoveProducer();
+            }
+        }
+        base.RemoveFromTile();
+	}
+	public override void Pool(){
+		  if (animator != null)
+            animator.runtimeAnimatorController = null;
+		// Pool this machine's gameobject
+        this.gameObject.name = "Producer";
+
+        Buildable_Manager.instance.PoolBuildable(producer);
+	}
 	// UI to display production options and requirements
 	// 	UI: dropdown menu with item options, text for selected's time to create, images
 	//		of items required (horizontal layout that adds up to 4), and 1 image of the item produced

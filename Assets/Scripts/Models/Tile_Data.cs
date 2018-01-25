@@ -10,7 +10,8 @@ public class Tile_Data  {
 	public int X {get; protected set;}
 	public int Y {get; protected set;}
 	public Vector3Int worldPos {get; protected set;}
-	public Machine_Controller machine {get; protected set;}
+	public Machine_Controller machine_controller {get; protected set;}
+	public Producer producer {get; protected set;}
 	float pDirtiness = 0;
 	float dirtiness {get {return pDirtiness;} set{pDirtiness = Mathf.Clamp(value, 0.0f, 1.0f);}}
 	float dirtyThreshold = 1.0f;
@@ -25,15 +26,27 @@ public class Tile_Data  {
 	}
 
 	public bool AddMachine(Machine_Controller newMachine){
-		if (machine != null)
+		if (machine_controller != null)
 			return false;
-		machine = newMachine;
+		machine_controller = newMachine;
 		return true;
 	}
 	public bool RemoveMachine(){
-		if (machine == null)
+		if (machine_controller == null)
 			return false;
-		machine = null;
+		machine_controller = null;
+		return true;
+	}
+	public bool AddProducer(Producer newProducer){
+		if (producer != null)
+			return false;
+		producer = newProducer;
+		return true;
+	}
+	public bool RemoveProducer(){
+		if (producer == null)
+			return false;
+		producer = null;
 		return true;
 	}
 

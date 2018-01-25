@@ -150,4 +150,7 @@ public struct ProducerPrototype{
 	public MachineCondition machineCondition;
 	public ProductionBlueprint[] productionBlueprints;
 	public bool showsGrowth;
+	public int productionStage;
+	public string curProductionName;
+
 }
