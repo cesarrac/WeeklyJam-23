@@ -14,13 +14,13 @@ public class Producer_Controller : Machine_Controller {
 	bool isProducing;
 	public SpriteRenderer growth_visuals;
 	
-	public void Init(Item producerAsItem, Producer _producer, Tile_Data baseTile){
+	public void Init(Item producerAsItem, Producer _producer, Tile_Data _baseTile){
 		producer = _producer;
-		if (baseTile.AddProducer(producer) == false){
+		if (_baseTile.AddProducer(producer) == false){
 			return;
 		}
-		base.InitMachine(producerAsItem, producer, baseTile, ShipManager.instance);
-
+		base.InitMachine(producerAsItem, producer, _baseTile, ShipManager.instance);
+		
 		// The machine controller sets the list of Neighbor tiles,
 		// then we Add the producers on neighbor tiles as well
 		foreach (Tile_Data tile in neighborTiles)

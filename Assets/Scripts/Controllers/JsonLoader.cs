@@ -12,26 +12,29 @@ public class JsonLoader {
     public List<ItemPrototype> LoadItems(string itemType){
         path = Application.streamingAssetsPath + "/Item Prototypes/" + itemType;
         string[] filePaths = Directory.GetFiles(path, "*.json*");
-        Debug.Log(filePaths.Length + " cargo files found");
         return Load<ItemPrototype>(filePaths);
         //return DoLoadItem(filePaths);
     }
     public List<MachinePrototype> LoadMachineData(){
         path = Application.streamingAssetsPath + "/Buildables/Machine Prototypes";
         string[] filePaths = Directory.GetFiles(path, "*.json*");
-        Debug.Log(filePaths.Length + " machine files found");
         return Load<MachinePrototype>(filePaths);
        // return DoLoadItem(filePaths);
     }
     public List<ProducerPrototype> LoadProducerData(){
         path = Application.streamingAssetsPath + "/Buildables/Producer Prototypes";
         string[] filePaths = Directory.GetFiles(path, "*.json*");
-        Debug.Log(filePaths.Length + " machine files found");
         return Load<ProducerPrototype>(filePaths);
     }
     
-    
+    public List<STile> LoadSavedTiles(){
+        path =  Application.streamingAssetsPath + ("/SavedTiles.json");
+        string[] filePaths = Directory.GetFiles(path, "*.json");
+        return Load<STile>(filePaths);
+    }
     public static List<T> Load<T>(string[] filePaths){
+         if (filePaths.Length <= 0)
+            return null;
         List<T> prototypes = new List<T>();
         foreach(string filePath in filePaths){
             // WARNING: Since unity creates .meta files for each .json, we have to skip them

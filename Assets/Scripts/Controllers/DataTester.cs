@@ -3,32 +3,58 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DataTester : MonoBehaviour {
+
+	Tile_Data[,] tileGrid;
+	STile[,] savedTileGrid;
+	int width = 10, height = 10;
 	void Start(){
-	/* 	MachinePrototype prototype = new MachinePrototype();
-		prototype.name = "Test Machine";
-		prototype.animatorController = "Test anim";
-		prototype.sprite = "Item Box";
-		prototype.repairDifficulty = MiniGameDifficulty.Average;
-		prototype.systemControlled = ShipSystemType.Nav;
-		prototype.stats = new Stat[2];
-		prototype.stats[0] = new Stat(StatType.Height, 2, 0);
-		prototype.stats[1] = new Stat(StatType.Width, 1, 0);
-		Machine testMachine = Machine.CreateInstance(prototype);
 		
-        testMachine.InitController(mac_Controller); */
+		new JsonWriter();
 		new JsonLoader();
-	/* 	List<ItemPrototype> iPrototypes = JsonLoader.instance.LoadCargo();
-		if (iPrototypes.Count > 0)
-			Debug.Log(iPrototypes[0].name);
-		List<MachinePrototype> mPrototypes = JsonLoader.instance.LoadMachineData();
-		if (mPrototypes.Count > 0)
-			Debug.Log("Machine prototype: " + mPrototypes[0].name);
-		Machine newMachine = Machine.CreateInstance(mPrototypes[0]);
-		Debug.Log("New Machine: " + newMachine.name + " controls " + newMachine.systemControlled);
-		for (int i = 0; i < newMachine.stats.Length; i++)
-		{
-			Debug.Log("Stat " + i + " " + newMachine.stats[i].statType + newMachine.stats[i].GetValue());
-		} */
+		//SaveTileDataTest();
+		LoadTileDataTest();
 		
+	}
+	void LoadTileDataTest(){
+		List<STile> savedTiles = JsonLoader.instance.LoadSavedTiles();
+		if (savedTiles != null && savedTiles.Count > 0){
+			tileGrid = new Tile_Data[width, height];
+			foreach (STile savedTile in savedTiles)
+			{
+				AddTile(savedTile.x, savedTile.y, savedTile.tileType, savedTile.machine, savedTile.producer);
+			}
+			
+			Debug.Log("Tile Data converted and loaded");
+		}
+		else{
+			Debug.Log("No tiles found in save file!");
+		}
+	}
+	void AddTile(int x, int y, TileType tType, MachinePrototype machinePrototype, ProducerPrototype producerPrototype){
+		tileGrid[x, y] = new Tile_Data(x, y, new Vector3Int(x, y, 0), tType);
+		
+	}
+	void SaveTileDataTest(){
+		savedTileGrid = new STile[width, height];
+		SavedTiles tiles = new SavedTiles();
+		tiles.savedTiles = new STile[width * height];
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				savedTileGrid[x, y] = new STile();
+				savedTileGrid[x, y].x = x;
+				savedTileGrid[x, y].y = y;
+				MachinePrototype machine = new MachinePrototype();
+				machine.name = "M_" + (x * width + y);
+				savedTileGrid[x, y].machine = machine;
+				
+
+				tiles.savedTiles[x * width + y] = savedTileGrid[x, y];
+			}
+		}
+
+		
+		JsonWriter.WriteToJson(tiles);
 	}
 }

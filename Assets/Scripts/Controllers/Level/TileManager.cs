@@ -16,14 +16,16 @@ public class TileManager : MonoBehaviour {
 	
 	public Area[] tile_areas;
 	public Area currentArea {get; protected set;}
-
+	Buildable_Manager buildable_Manager;
 	void Awake(){
 		instance = this;
 
 		dirtyTilesGObjMap = new Dictionary<Tile_Data, GameObject>();
 		TileDataMap = new Dictionary<AreaID, Tile_Data[,]>();
 	}
-
+	void Start(){
+		buildable_Manager = Buildable_Manager.instance;
+	}
 	public void LoadArea(AreaID areaID){
 		if (tileData_Grid != null && currentArea.tilemap != null){
 			// Save the current data in map, keyed to area id
@@ -52,6 +54,8 @@ public class TileManager : MonoBehaviour {
 
 		// Load background, if any
 		BGVisuals_Manager.instance.LoadBgForArea(currentArea.id);
+
+		
 	}
 
 	void GenerateTileData(){
@@ -152,6 +156,47 @@ public class TileManager : MonoBehaviour {
 	}
 	public float GetMaxY(){
 		return startingY + map_height;
+	}
+
+	public void SaveTileData(){
+		if (tileData_Grid == null)
+			return;
+		SavedTiles tiles = new SavedTiles();
+		List<STile> saved = new List<STile>();
+		for (int x = 0; x < map_width; x++)
+		{
+			for (int y = 0; y < map_height; y++)
+			{
+				Tile_Data tile = tileData_Grid[x, y];
+				if (tile == null)
+					continue;
+
+				STile savedTile = new STile();
+				savedTile.x = tile.X;
+				savedTile.y = tile.Y;
+				savedTile.tileType = tile.tileType;
+				if (tile.machine_controller != null){
+				    if (tile.machine_controller.baseTile == tile){
+						Machine machine = tile.machine_controller.machine;
+						savedTile.machine = buildable_Manager.GetMachinePrototype(machine.name);
+						savedTile.machine.machineCondition = machine.machineCondition;
+						Debug.Log("Saving " + machine.name);
+					}
+				}
+				if (tile.producer != null){
+					if (tile.machine_controller.baseTile != tile)
+						continue;
+					savedTile.producer = buildable_Manager.GetProducerPrototype(tile.producer.name);
+					savedTile.producer.curProductionName = tile.producer.current_Blueprint.itemProduced.itemName;
+					savedTile.producer.productionStage = tile.producer.productionStage;
+					Debug.Log("Saving " + tile.producer.name);
+				}
+
+				saved.Add(savedTile);
+			}
+		}
+		tiles.savedTiles = saved.ToArray();
+		JsonWriter.WriteToJson(tiles);
 	}
 }
 

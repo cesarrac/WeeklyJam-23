@@ -21,6 +21,8 @@ public class Game_LevelManager : MonoBehaviour {
 
 		// Create Json data loader
 		new JsonLoader();
+		// and Writer
+		new JsonWriter();
 	}
 	void Start(){
 		InitGameData();

@@ -41,13 +41,18 @@ public class ShipManager : MonoBehaviour {
 		}
 		for(int i = 0; i < startingMachines.Length; i++){
 
-			if (TryPlaceMachine(startingMachines[i], startPos)){
+			if (PlaceMachine(startingMachines[i], startPos)){
 				startPos.x += 2;
 			}
 		}
 	}
-	public bool TryPlaceMachine(Item machineItem, Vector2 placePosition){
+	public bool PlaceMachine(Item machineItem, Vector2 placePosition){
 		MachinePrototype prototype = Buildable_Manager.instance.GetMachinePrototype(machineItem.name);
+		if(prototype.name == "Empty")
+			return false; 
+		return AddMachine(machineItem, prototype, placePosition);
+	}
+	public bool PlaceMachine(Item machineItem, MachinePrototype prototype, Vector2 placePosition){
 		if(prototype.name == "Empty")
 			return false; 
 		return AddMachine(machineItem, prototype, placePosition);
