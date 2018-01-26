@@ -34,12 +34,10 @@ public class Producer_Controller : Machine_Controller {
 		if (growth_visuals != null){
 			growth_visuals.transform.localPosition = new Vector2(producer.tileWidth > 1 ? 0.5f : 0,0.5f);
 		}
+		Debug.Log("Initialized a producer with a blueprint for " + producer.current_Blueprint.itemProduced.itemName);
 		// This runs when a producer has already started producing before
 		if (producer.current_Blueprint.itemProduced.count > 0 && producer.productionStage >= 0){
-			itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(producer.current_Blueprint.itemProduced.itemName));
-			float timePassed = itemInProduction.timeToCreate * (0.25f * producer.productionStage);
-			timer.Reset(itemInProduction.timeToCreate, timePassed);
-			SetProductionStage(timer.elapsedPercent);
+			StartProduction(true);
 			return;
 		}
 
@@ -105,14 +103,21 @@ public class Producer_Controller : Machine_Controller {
 		producer.DebugSetBlueprint();
 		StartProduction();
 	}
-	void StartProduction(){
+	void StartProduction(bool forcedStart = false){
 		Debug.Log("STARTING PRODUCTION ON " + producer.current_Blueprint.itemProduced.itemName);
 		// Grab an instance of the item about to be produced
 		itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(producer.current_Blueprint.itemProduced.itemName));
-		// Set timer
 		timeToCreate = itemInProduction.timeToCreate;
-		timer.Reset(timeToCreate);
-		SetProductionStage(0);
+			// Set timer
+		if (forcedStart == true){
+			float timePassed = (itemInProduction.timeToCreate * 0.25f) * producer.productionStage;
+			timer.Reset(timeToCreate, timePassed);
+		}
+		else{
+			timer.Reset(timeToCreate);
+		}
+	
+		SetProductionStage(timer.elapsedPercent, forcedStart);
 		isProducing = true;
 		AnimateStayOn();
 	}
@@ -136,7 +141,7 @@ public class Producer_Controller : Machine_Controller {
 		isProducing = false;
 		AnimateOff();
 	}
-	void SetProductionStage(float elapsedPercent){
+	void SetProductionStage(float elapsedPercent, bool forceVisuals = false){
 		if(elapsedPercent <= 0){
 			producer.productionStage = -1;
 			SetGrowthVisuals();
@@ -152,7 +157,7 @@ public class Producer_Controller : Machine_Controller {
 		}else if (elapsedPercent >= 0.75f && elapsedPercent <= 1){
 			pStage = 3;
 		}
-		if (pStage == producer.productionStage)
+		if (pStage == producer.productionStage && forceVisuals == false)
 			return;
 
 		producer.productionStage = pStage;

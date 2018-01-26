@@ -15,13 +15,21 @@ public class JsonWriter  {
 
 [System.Serializable]
 public struct STile{
-	public int x;
-	public int y;
+	public int grid_x;
+	public int grid_y;
+	public int world_x;
+	public int world_y;
 	public TileType tileType;
-	public MachinePrototype machine;
-	public ProducerPrototype producer;
+	public bool hasMachine;
+	public string machineName;
+	public MachineCondition machineCondition;
+	public bool hasProducer;
+	public string producerName;
+	public int productionStage;
+	public string itemProduced;
 }
+[System.Serializable]
 public struct SavedTiles{
-
+	public AreaID areaID;
 	public STile[] savedTiles;
 }

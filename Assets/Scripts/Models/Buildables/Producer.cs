@@ -13,16 +13,22 @@
             this.showsGrowth = b.showsGrowth;
             this.productionStage = b.productionStage;
             if (b.curProductionName.Length > 0){
-                
+               foreach (ProductionBlueprint blueprint in this.productionBlueprints)
+               {
+                   if (blueprint.itemProduced.itemName == b.curProductionName){
+                       this.current_Blueprint = blueprint;
+                       break;
+                   }
+               }
             }
         }
         public static Producer CreateInstance(ProducerPrototype prototype){
             return new Producer(prototype);
         }
-        public bool SetCurrentBlueprint(string keyItemName){
+        public bool SetCurrentBlueprint(string keyIngredientName){
             foreach (ProductionBlueprint blueprint in productionBlueprints)
             {
-                if (blueprint.keyIngredient.itemName == keyItemName){
+                if (blueprint.keyIngredient.itemName == keyIngredientName){
                     current_Blueprint = blueprint;
                     return true;
                 }

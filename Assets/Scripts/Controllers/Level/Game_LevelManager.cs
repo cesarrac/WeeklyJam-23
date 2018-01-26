@@ -36,11 +36,11 @@ public class Game_LevelManager : MonoBehaviour {
 	}
 	void StartOnShip(){
 		
-		TileManager.instance.LoadArea(AreaID.Player_Ship);
+		TileManager.instance.LoadArea(AreaID.Centrum_Plaza);
 		
 		Character_Manager.instance.StartNewPlayer("Tipo");
 		
-		Item_Manager.instance.SpawnStartingItems();
+		//Item_Manager.instance.SpawnStartingItems();
 	
 		stateMachine.Push(LevelStates[0]);
 	}

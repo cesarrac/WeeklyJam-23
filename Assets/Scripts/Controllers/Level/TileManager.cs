@@ -13,10 +13,10 @@ public class TileManager : MonoBehaviour {
 	Tile_Data[,] tileData_Grid;
 	Dictionary<AreaID, Tile_Data[,]> TileDataMap;
 	Dictionary<Tile_Data, GameObject> dirtyTilesGObjMap;
-	
 	public Area[] tile_areas;
 	public Area currentArea {get; protected set;}
 	Buildable_Manager buildable_Manager;
+	ObjectPool pool;
 	void Awake(){
 		instance = this;
 
@@ -25,6 +25,7 @@ public class TileManager : MonoBehaviour {
 	}
 	void Start(){
 		buildable_Manager = Buildable_Manager.instance;
+		pool = ObjectPool.instance;
 	}
 	public void LoadArea(AreaID areaID){
 		if (tileData_Grid != null && currentArea.tilemap != null){
@@ -36,7 +37,16 @@ public class TileManager : MonoBehaviour {
 				// new data
 				TileDataMap.Add(currentArea.id, tileData_Grid);
 			}
+			ClearCurrentTiles();
 		}
+		SetAreaTileMap(areaID);
+		SetGridToTileMap();
+		GenerateTileData();
+
+		// Load background, if any
+		BGVisuals_Manager.instance.LoadBgForArea(currentArea.id);
+	}
+	void SetAreaTileMap(AreaID areaID){
 		foreach (Area area in tile_areas)
 		{
 			if (area.id == areaID){
@@ -44,18 +54,56 @@ public class TileManager : MonoBehaviour {
 				break;
 			}
 		}
+		currentArea.tilemap.gameObject.SetActive(true);
+	}
+	void SetGridToTileMap(){
 		if (currentArea.tilemap == null)
-			return;
+		return;
 		startingX = currentArea.tilemap.origin.x;
 		startingY = currentArea.tilemap.origin.y;
 		map_width = currentArea.tilemap.size.x;
 		map_height = currentArea.tilemap.size.y;
-		GenerateTileData();
+	}
 
-		// Load background, if any
-		BGVisuals_Manager.instance.LoadBgForArea(currentArea.id);
-
-		
+	public void LoadSavedTiles(){
+		SavedTiles sTiles = JsonLoader.instance.LoadSavedTiles();
+		Item_Manager item_Manager = Item_Manager.instance;
+		if (sTiles.savedTiles.Length > 0){
+			// TODO: Take care of the current displayed tilemap, save its data, and clear
+			//		or pool the tilemap gameobject
+			// TODO: Instantiate the tilemap gameobject that needs to be displayed
+			//		and set both tilemap and Area id in the dictionary
+			foreach (Area area in tile_areas)
+			{
+				if (area.id == sTiles.areaID){
+					currentArea = area;
+					break;
+				}
+			}
+			SetGridToTileMap();
+			GenerateTileData();
+			foreach (STile sTile in sTiles.savedTiles)
+			{
+				if (sTile.hasMachine == true){
+					MachinePrototype proto = buildable_Manager.GetMachinePrototype(sTile.machineName);
+					proto.machineCondition = sTile.machineCondition;
+					Item machineItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
+					ShipManager.instance.PlaceMachine(machineItem, proto, new Vector2(sTile.world_x, sTile.world_y));
+				}
+				else if (sTile.hasProducer == true){
+					ProducerPrototype proto = buildable_Manager.GetProducerPrototype(sTile.producerName);
+					proto.machineCondition = sTile.machineCondition;
+					proto.curProductionName = sTile.itemProduced;
+					proto.productionStage = sTile.productionStage;
+					Item prodItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
+					Producer producer = buildable_Manager.CreateProducerInstance(proto);
+					GameObject prodGObj = buildable_Manager.SpawnProducer(producer, new Vector2(sTile.world_x, sTile.world_y));
+					if (prodGObj == null)
+						return;
+					prodGObj.GetComponent<Producer_Controller>().Init(prodItem, producer, tileData_Grid[sTile.grid_x, sTile.grid_y]);
+				}
+			}
+		}
 	}
 
 	void GenerateTileData(){
@@ -87,6 +135,13 @@ public class TileManager : MonoBehaviour {
 				
 			}
 		}
+	}
+	void ClearCurrentTiles(){
+		if (currentArea.tilemap == null)
+			return;
+		currentArea.tilemap.gameObject.SetActive(false);
+		
+		currentArea = new Area();
 	}
 	public Tile_Data GetTile(Vector3 worldPosition){
 		int worldX = Mathf.FloorToInt(worldPosition.x);
@@ -172,29 +227,35 @@ public class TileManager : MonoBehaviour {
 					continue;
 
 				STile savedTile = new STile();
-				savedTile.x = tile.X;
-				savedTile.y = tile.Y;
+				savedTile.grid_x = tile.X;
+				savedTile.grid_y = tile.Y;
+				savedTile.world_x = tile.worldPos.x;
+				savedTile.world_y = tile.worldPos.y;
 				savedTile.tileType = tile.tileType;
 				if (tile.machine_controller != null){
-				    if (tile.machine_controller.baseTile == tile){
+				    if (tile.machine_controller.baseTile == tile &&
+						tile.machine_controller.machine.buildableType != BuildableType.Producer){
 						Machine machine = tile.machine_controller.machine;
-						savedTile.machine = buildable_Manager.GetMachinePrototype(machine.name);
-						savedTile.machine.machineCondition = machine.machineCondition;
-						Debug.Log("Saving " + machine.name);
+						savedTile.hasMachine = true;
+						savedTile.machineName = machine.name;
+						savedTile.machineCondition = machine.machineCondition;
+						Debug.Log("Saving " + savedTile.machineName);
 					}
 				}
 				if (tile.producer != null){
 					if (tile.machine_controller.baseTile != tile)
 						continue;
-					savedTile.producer = buildable_Manager.GetProducerPrototype(tile.producer.name);
-					savedTile.producer.curProductionName = tile.producer.current_Blueprint.itemProduced.itemName;
-					savedTile.producer.productionStage = tile.producer.productionStage;
-					Debug.Log("Saving " + tile.producer.name);
+					savedTile.hasProducer = true;
+					savedTile.producerName = tile.producer.name;
+					savedTile.productionStage = tile.producer.productionStage;
+					savedTile.itemProduced = tile.producer.current_Blueprint.itemProduced.itemName;
+					Debug.Log("Saving " + savedTile.producerName);
 				}
 
 				saved.Add(savedTile);
 			}
 		}
+		tiles.areaID = currentArea.id;
 		tiles.savedTiles = saved.ToArray();
 		JsonWriter.WriteToJson(tiles);
 	}

@@ -12,26 +12,24 @@ public class DataTester : MonoBehaviour {
 		new JsonWriter();
 		new JsonLoader();
 		//SaveTileDataTest();
-		LoadTileDataTest();
 		
 	}
-	void LoadTileDataTest(){
-		List<STile> savedTiles = JsonLoader.instance.LoadSavedTiles();
-		if (savedTiles != null && savedTiles.Count > 0){
-			tileGrid = new Tile_Data[width, height];
-			foreach (STile savedTile in savedTiles)
-			{
-				AddTile(savedTile.x, savedTile.y, savedTile.tileType, savedTile.machine, savedTile.producer);
-			}
-			
-			Debug.Log("Tile Data converted and loaded");
+	
+	void AddTile(STile savedTile){
+
+		tileGrid[savedTile.grid_x, savedTile.grid_y] = new Tile_Data(savedTile.grid_x, savedTile.grid_y, new Vector3Int(savedTile.grid_x, savedTile.grid_y, 0), savedTile.tileType);
+		
+		if (savedTile.hasMachine == true){
+			MachinePrototype machineProto = Buildable_Manager.instance.GetMachinePrototype(savedTile.machineName);
+			machineProto.machineCondition = savedTile.machineCondition;
+			// use this proto to spawn the machine
 		}
-		else{
-			Debug.Log("No tiles found in save file!");
+		else if (savedTile.hasProducer == true){
+			ProducerPrototype producerProto = Buildable_Manager.instance.GetProducerPrototype(savedTile.producerName);
+			producerProto.productionStage = savedTile.productionStage;
+			producerProto.curProductionName = savedTile.itemProduced;
+
 		}
-	}
-	void AddTile(int x, int y, TileType tType, MachinePrototype machinePrototype, ProducerPrototype producerPrototype){
-		tileGrid[x, y] = new Tile_Data(x, y, new Vector3Int(x, y, 0), tType);
 		
 	}
 	void SaveTileDataTest(){
@@ -43,11 +41,9 @@ public class DataTester : MonoBehaviour {
 			for (int y = 0; y < height; y++)
 			{
 				savedTileGrid[x, y] = new STile();
-				savedTileGrid[x, y].x = x;
-				savedTileGrid[x, y].y = y;
-				MachinePrototype machine = new MachinePrototype();
-				machine.name = "M_" + (x * width + y);
-				savedTileGrid[x, y].machine = machine;
+				savedTileGrid[x, y].grid_x = x;
+				savedTileGrid[x, y].grid_y = y;
+				
 				
 
 				tiles.savedTiles[x * width + y] = savedTileGrid[x, y];

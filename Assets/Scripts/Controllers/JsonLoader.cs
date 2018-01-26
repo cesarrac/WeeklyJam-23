@@ -27,10 +27,9 @@ public class JsonLoader {
         return Load<ProducerPrototype>(filePaths);
     }
     
-    public List<STile> LoadSavedTiles(){
+    public SavedTiles LoadSavedTiles(){
         path =  Application.streamingAssetsPath + ("/SavedTiles.json");
-        string[] filePaths = Directory.GetFiles(path, "*.json");
-        return Load<STile>(filePaths);
+        return LoadFromJason<SavedTiles>(path);
     }
     public static List<T> Load<T>(string[] filePaths){
          if (filePaths.Length <= 0)
@@ -40,7 +39,7 @@ public class JsonLoader {
             // WARNING: Since unity creates .meta files for each .json, we have to skip them
             if (filePath.Contains(".json.meta"))
                 continue;
-            Debug.Log(filePath);
+         //   Debug.Log(filePath);
             prototypes.Add(LoadFromJason<T>(filePath));
         }
         return prototypes;
