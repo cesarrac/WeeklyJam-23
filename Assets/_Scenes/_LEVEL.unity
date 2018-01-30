@@ -11694,7 +11694,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -67.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -16023,7 +16023,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -247.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -16573,7 +16573,7 @@ Prefab:
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -157.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224462965233500654, guid: b2c9f14f283906d469636bdd226b7c52,
         type: 2}
@@ -19659,6 +19659,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b77f26c74fd635439aa2aa43f5c1852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  areaToLoad: 2
 --- !u!114 &1983046139
 MonoBehaviour:
   m_ObjectHideFlags: 0

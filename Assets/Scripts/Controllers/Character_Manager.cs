@@ -37,6 +37,7 @@ public class Character_Manager : MonoBehaviour {
         }
         player_GObj = pool.GetObjectForType("COURIER", true, Vector2.down);
         player_GObj.GetComponent<Courier_Controller>().Initialize(playerCharacter);
+        player_GObj.GetComponent<CharacterMovement>().Initialize(TileManager.instance.minWalkablePos, TileManager.instance.maxWalkablePos);
         Camera_Controller.instance.SetVCamTarget(player_GObj.transform);
     }
     public void HidePlayer(){

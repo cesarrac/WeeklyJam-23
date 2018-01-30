@@ -5,8 +5,8 @@ using UnityEngine;
 public enum Direction { Left, Right}
 public class CharacterMovement : MonoBehaviour {
 
-	int minX, maxX;
-	int minY, maxY;
+	float minX, maxX;
+	float minY, maxY;
 	Vector2 moveVector, inputVector;
 	Animator animator;
 	public SpriteRenderer[] spriteRenderers;
@@ -33,6 +33,13 @@ public class CharacterMovement : MonoBehaviour {
 		curSpeed = normalSpeed;
 		runSpeed = curSpeed * 3;
 		crawlSpeed = curSpeed * 0.5f;
+	}
+
+	public void Initialize(Vector2 minWalkPos, Vector2 maxWalkPos){
+		minX = minWalkPos.x;
+		minY = minWalkPos.y;
+		maxX = maxWalkPos.x;
+		maxY = maxWalkPos.y;
 	}
 
 	void Update(){

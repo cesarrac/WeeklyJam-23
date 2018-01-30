@@ -17,6 +17,8 @@ public class TileManager : MonoBehaviour {
 	public Area currentArea {get; protected set;}
 	Buildable_Manager buildable_Manager;
 	ObjectPool pool;
+	public Vector2 minWalkablePos {get; protected set;}
+	public Vector2 maxWalkablePos {get; protected set;}
 	void Awake(){
 		instance = this;
 
@@ -114,16 +116,27 @@ public class TileManager : MonoBehaviour {
 			return;
 		}
 		tileData_Grid = new Tile_Data[map_width, map_height];
+		minWalkablePos = maxWalkablePos = Vector2.zero;
+		Vector2 lastFloorPos = Vector2.zero;
 		for(int x = 0; x <map_width; x++){
 			for(int y = 0; y <map_height; y++){
 
-				Vector3Int nextTilePosition = new Vector3Int(startingX + x, startingY + y, 0);
+				Vector3Int nextTileWorldPos = new Vector3Int(startingX + x, startingY + y, 0);
 
-				if (currentArea.tilemap.HasTile(nextTilePosition) == false){
+				if (currentArea.tilemap.HasTile(nextTileWorldPos) == false){
 					continue;
 				}
-				if (currentArea.tilemap.GetSprite(nextTilePosition).name == "Floor"){
-					tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Floor);
+				if (currentArea.tilemap.GetSprite(nextTileWorldPos).name == "Floor"){
+					// Tile is Floor
+					tileData_Grid[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Floor);
+					if (minWalkablePos == Vector2.zero){
+						minWalkablePos = new Vector2(nextTileWorldPos.x, nextTileWorldPos.y);
+					}
+					else{
+						if (nextTileWorldPos.x >= lastFloorPos.x && nextTileWorldPos.y > lastFloorPos.y){
+							maxWalkablePos = new Vector2(nextTileWorldPos.x, nextTileWorldPos.y);
+						}
+					}
 
 					// If this is a ship, process dirty tiles
 					if (currentArea.id == AreaID.Player_Ship)
@@ -131,7 +144,7 @@ public class TileManager : MonoBehaviour {
 
 					continue;
 				}
-				tileData_Grid[x, y] = new Tile_Data(x, y, nextTilePosition, TileType.Wall);
+				tileData_Grid[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Wall);
 				
 			}
 		}

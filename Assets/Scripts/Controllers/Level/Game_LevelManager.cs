@@ -7,6 +7,7 @@ public class Game_LevelManager : MonoBehaviour {
 	public StackFSM stateMachine {get;protected set;}
 	State currentState;
 	State[] LevelStates;
+	public AreaID areaToLoad;
 	void Awake(){
 		instance = this;
 		LevelStates = new State[]{
@@ -26,7 +27,7 @@ public class Game_LevelManager : MonoBehaviour {
 	}
 	void Start(){
 		InitGameData();
-		StartOnShip();
+		LoadArea();
 	}
 
 	void InitGameData(){
@@ -34,10 +35,10 @@ public class Game_LevelManager : MonoBehaviour {
 		Buildable_Manager.instance.Initialize();
 		Station_Manager.instance.Initialize();
 	}
-	void StartOnShip(){
-		
-		TileManager.instance.LoadArea(AreaID.Centrum_Plaza);
-		
+	
+	public void LoadArea(){
+		TileManager.instance.LoadArea(areaToLoad);
+
 		Character_Manager.instance.StartNewPlayer("Tipo");
 		
 		//Item_Manager.instance.SpawnStartingItems();
