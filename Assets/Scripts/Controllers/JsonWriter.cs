@@ -4,10 +4,10 @@ using UnityEngine;
 using System.IO;
 public class JsonWriter  {
 
-	public static void WriteToJson(SavedTiles tiles){
+	public static void WriteToJson(SavedTiles tiles, AreaID areaID){
 		
 		string content = JsonUtility.ToJson(tiles);
-		string filePath = Application.streamingAssetsPath + ("/SavedTiles.json");
+		string filePath = Application.streamingAssetsPath + ("/SavedTiles_" + areaID.ToString() + ".json");
 		File.WriteAllText(filePath, content);
 		Debug.Log("Tiles saved to " + filePath);
 	}

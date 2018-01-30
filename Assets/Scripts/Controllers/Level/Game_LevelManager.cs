@@ -37,13 +37,23 @@ public class Game_LevelManager : MonoBehaviour {
 	}
 	
 	public void LoadArea(){
-		TileManager.instance.LoadArea(areaToLoad);
+		TileManager.instance.EnterArea(areaToLoad);
 
 		Character_Manager.instance.StartNewPlayer("Tipo");
 		
-		//Item_Manager.instance.SpawnStartingItems();
+	//	Item_Manager.instance.SpawnStartingItems();
 	
 		stateMachine.Push(LevelStates[0]);
+	}
+	public void ChangeArea(AreaID newAreaID){
+		if (newAreaID == AreaID.NULL)
+			return;
+		// Change Tiles
+		TileManager.instance.EnterArea(newAreaID);
+		// Pool any items
+		Item_Manager.instance.PoolItems();
+		// Pool any buildables
+		Buildable_Manager.instance.PoolBuildables();
 	}
 
 	public void ReplaceStateWith(StateType stateType){

@@ -27,8 +27,11 @@ public class JsonLoader {
         return Load<ProducerPrototype>(filePaths);
     }
     
-    public SavedTiles LoadSavedTiles(){
-        path =  Application.streamingAssetsPath + ("/SavedTiles.json");
+    public SavedTiles LoadSavedTiles(AreaID areaID){
+        path =  Application.streamingAssetsPath + ("/SavedTiles_" + areaID.ToString() + ".json");
+        if (File.Exists(path) == false)
+            return new SavedTiles();
+
         return LoadFromJason<SavedTiles>(path);
     }
     public static List<T> Load<T>(string[] filePaths){
@@ -46,7 +49,7 @@ public class JsonLoader {
     }
     static T LoadFromJason<T>(string filePath){
         string jsonString = File.ReadAllText(filePath);
-
+        
         return JsonUtility.FromJson<T>(jsonString);
     }
 

@@ -115,13 +115,24 @@ public class Item_Manager : MonoBehaviour {
 			return;
 		Spawn(itemInstance, position);
 	}
-
+	public void PoolItems(){
+		if (itemsInWorld.Count <= 0)
+			return;
+		foreach (Item item in itemsInWorld.Keys)
+		{
+			if (itemsInWorld[item].transform.parent != null)
+			itemsInWorld[item].transform.SetParent(null);
+			itemsInWorld[item].name = "Item";
+			pool.PoolObject(itemsInWorld[item]);
+		}
+		itemsInWorld.Clear();
+	}
 	public void PoolItem(Item item){
 		if (itemsInWorld.ContainsKey(item) == false)
 			return;
 		if (itemsInWorld[item].transform.parent != null)
 			itemsInWorld[item].transform.SetParent(null);
-			
+		itemsInWorld[item].name = "Item";
 		pool.PoolObject(itemsInWorld[item]);
 		itemsInWorld.Remove(item);
 	}

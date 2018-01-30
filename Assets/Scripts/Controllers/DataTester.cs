@@ -51,6 +51,6 @@ public class DataTester : MonoBehaviour {
 		}
 
 		
-		JsonWriter.WriteToJson(tiles);
+		JsonWriter.WriteToJson(tiles, AreaID.Player_Ship);
 	}
 }

@@ -10,8 +10,8 @@ public class TileManager : MonoBehaviour {
 	int startingY;
 	int map_width;
 	int map_height;
-	Tile_Data[,] tileData_Grid;
-	Dictionary<AreaID, Tile_Data[,]> TileDataMap;
+	Tile_Data[,] grid_data;
+	Dictionary<AreaID, Tile_Data[,]> AreaToGridDataMap;
 	Dictionary<Tile_Data, GameObject> dirtyTilesGObjMap;
 	public Area[] tile_areas;
 	public Area currentArea {get; protected set;}
@@ -19,36 +19,41 @@ public class TileManager : MonoBehaviour {
 	ObjectPool pool;
 	public Vector2 minWalkablePos {get; protected set;}
 	public Vector2 maxWalkablePos {get; protected set;}
+	SavedTiles savedAreaTiles;
 	void Awake(){
 		instance = this;
 
 		dirtyTilesGObjMap = new Dictionary<Tile_Data, GameObject>();
-		TileDataMap = new Dictionary<AreaID, Tile_Data[,]>();
+		AreaToGridDataMap = new Dictionary<AreaID, Tile_Data[,]>();
 	}
 	void Start(){
 		buildable_Manager = Buildable_Manager.instance;
 		pool = ObjectPool.instance;
 	}
-	public void LoadArea(AreaID areaID){
-		if (tileData_Grid != null && currentArea.tilemap != null){
-			// Save the current data in map, keyed to area id
-			if (TileDataMap.ContainsKey(currentArea.id) == true){
-				// replace old data
-				TileDataMap[currentArea.id] = tileData_Grid;
-			}else{
-				// new data
-				TileDataMap.Add(currentArea.id, tileData_Grid);
-			}
-			ClearCurrentTiles();
-		}
-		SetAreaTileMap(areaID);
-		SetGridToTileMap();
-		GenerateTileData();
-
+	public void EnterArea(AreaID areaID){
+		ExitArea();
+		
 		// Load background, if any
-		BGVisuals_Manager.instance.LoadBgForArea(currentArea.id);
+		BGVisuals_Manager.instance.LoadBgForArea(areaID);
+
+		// Load from Saved Tiles, if any
+		LoadSavedTiles(areaID);
+		if (savedAreaTiles.savedTiles != null && savedAreaTiles.savedTiles.Length > 0){
+			LoadSavedTiles();
+			return;
+		}
+		// Generate new Tile Data
+		SetCurrentArea(areaID);
+		SetupGrid();
+		SetGridFromTileMap();
 	}
-	void SetAreaTileMap(AreaID areaID){
+	void ExitArea(){
+		if (grid_data == null || currentArea.tilemap == null)
+			return;
+		SaveTileData();
+		ClearCurrentTiles();
+	}
+	void SetCurrentArea(AreaID areaID){
 		foreach (Area area in tile_areas)
 		{
 			if (area.id == areaID){
@@ -58,7 +63,7 @@ public class TileManager : MonoBehaviour {
 		}
 		currentArea.tilemap.gameObject.SetActive(true);
 	}
-	void SetGridToTileMap(){
+	void SetupGrid(){
 		if (currentArea.tilemap == null)
 		return;
 		startingX = currentArea.tilemap.origin.x;
@@ -66,58 +71,59 @@ public class TileManager : MonoBehaviour {
 		map_width = currentArea.tilemap.size.x;
 		map_height = currentArea.tilemap.size.y;
 	}
-
+	public void LoadSavedTiles(AreaID areaID){
+		savedAreaTiles = JsonLoader.instance.LoadSavedTiles(areaID);
+	}
 	public void LoadSavedTiles(){
-		SavedTiles sTiles = JsonLoader.instance.LoadSavedTiles();
+		buildable_Manager = Buildable_Manager.instance;
 		Item_Manager item_Manager = Item_Manager.instance;
-		if (sTiles.savedTiles.Length > 0){
-			// TODO: Take care of the current displayed tilemap, save its data, and clear
-			//		or pool the tilemap gameobject
-			// TODO: Instantiate the tilemap gameobject that needs to be displayed
-			//		and set both tilemap and Area id in the dictionary
-			foreach (Area area in tile_areas)
-			{
-				if (area.id == sTiles.areaID){
-					currentArea = area;
-					break;
-				}
+		if (savedAreaTiles.savedTiles == null)
+			return;
+		if (savedAreaTiles.savedTiles.Length <= 0)
+			return;
+		// TODO: Take care of the current displayed tilemap, save its data, and clear
+		//		or pool the tilemap gameobject
+		// TODO: Instantiate the tilemap gameobject that needs to be displayed
+		//		and set both tilemap and Area id in the dictionary
+		if (grid_data != null){
+			ClearCurrentTiles();
+		}
+		
+		SetCurrentArea(savedAreaTiles.areaID);
+		SetupGrid();
+		SetGridFromTileMap();
+		foreach (STile sTile in savedAreaTiles.savedTiles)
+		{
+			if (sTile.hasMachine == true){
+				MachinePrototype proto = buildable_Manager.GetMachinePrototype(sTile.machineName);
+				proto.machineCondition = sTile.machineCondition;
+				Item machineItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
+				ShipManager.instance.PlaceMachine(machineItem, proto, new Vector2(sTile.world_x, sTile.world_y));
 			}
-			SetGridToTileMap();
-			GenerateTileData();
-			foreach (STile sTile in sTiles.savedTiles)
-			{
-				if (sTile.hasMachine == true){
-					MachinePrototype proto = buildable_Manager.GetMachinePrototype(sTile.machineName);
-					proto.machineCondition = sTile.machineCondition;
-					Item machineItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
-					ShipManager.instance.PlaceMachine(machineItem, proto, new Vector2(sTile.world_x, sTile.world_y));
-				}
-				else if (sTile.hasProducer == true){
-					ProducerPrototype proto = buildable_Manager.GetProducerPrototype(sTile.producerName);
-					proto.machineCondition = sTile.machineCondition;
-					proto.curProductionName = sTile.itemProduced;
-					proto.productionStage = sTile.productionStage;
-					Item prodItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
-					Producer producer = buildable_Manager.CreateProducerInstance(proto);
-					GameObject prodGObj = buildable_Manager.SpawnProducer(producer, new Vector2(sTile.world_x, sTile.world_y));
-					if (prodGObj == null)
-						return;
-					prodGObj.GetComponent<Producer_Controller>().Init(prodItem, producer, tileData_Grid[sTile.grid_x, sTile.grid_y]);
-				}
+			else if (sTile.hasProducer == true){
+				ProducerPrototype proto = buildable_Manager.GetProducerPrototype(sTile.producerName);
+				proto.machineCondition = sTile.machineCondition;
+				proto.curProductionName = sTile.itemProduced;
+				proto.productionStage = sTile.productionStage;
+				Item prodItem = item_Manager.CreateInstance(item_Manager.GetPrototype(proto.name));
+				Producer producer = buildable_Manager.CreateProducerInstance(proto);
+				GameObject prodGObj = buildable_Manager.SpawnProducer(producer, new Vector2(sTile.world_x, sTile.world_y));
+				if (prodGObj == null)
+					return;
+				prodGObj.GetComponent<Producer_Controller>().Init(prodItem, producer, grid_data[sTile.grid_x, sTile.grid_y]);
 			}
 		}
 	}
 
-	void GenerateTileData(){
+	void SetGridFromTileMap(){
 		// Verify that we don't alreay have the tile data
-		if (TileDataMap.ContainsKey(currentArea.id) == true){
+		if (AreaToGridDataMap.ContainsKey(currentArea.id) == true){
 			// Load it if we got it
-			tileData_Grid = TileDataMap[currentArea.id];
+			grid_data = AreaToGridDataMap[currentArea.id];
+			SetWalkableClamps();
 			return;
 		}
-		tileData_Grid = new Tile_Data[map_width, map_height];
-		minWalkablePos = maxWalkablePos = Vector2.zero;
-		Vector2 lastFloorPos = Vector2.zero;
+		grid_data = new Tile_Data[map_width, map_height];
 		for(int x = 0; x <map_width; x++){
 			for(int y = 0; y <map_height; y++){
 
@@ -128,24 +134,35 @@ public class TileManager : MonoBehaviour {
 				}
 				if (currentArea.tilemap.GetSprite(nextTileWorldPos).name == "Floor"){
 					// Tile is Floor
-					tileData_Grid[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Floor);
-					if (minWalkablePos == Vector2.zero){
-						minWalkablePos = new Vector2(nextTileWorldPos.x, nextTileWorldPos.y);
-					}
-					else{
-						if (nextTileWorldPos.x >= lastFloorPos.x && nextTileWorldPos.y > lastFloorPos.y){
-							maxWalkablePos = new Vector2(nextTileWorldPos.x, nextTileWorldPos.y);
-						}
-					}
+					grid_data[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Floor);
 
 					// If this is a ship, process dirty tiles
 					if (currentArea.id == AreaID.Player_Ship)
-						tileData_Grid[x, y].RegisterOnDirtCB(OnTileDirty);
+						grid_data[x, y].RegisterOnDirtCB(OnTileDirty);
 
 					continue;
 				}
-				tileData_Grid[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Wall);
+				grid_data[x, y] = new Tile_Data(x, y, nextTileWorldPos, TileType.Wall);
 				
+			}
+		}
+		AreaToGridDataMap.Add(currentArea.id, grid_data);
+		SetWalkableClamps();
+	}
+	void SetWalkableClamps(){
+		minWalkablePos = maxWalkablePos = Vector2.zero;
+		foreach (Tile_Data tile in grid_data)
+		{
+			if (tile == null)
+				continue;
+
+			if (tile.tileType == TileType.Floor){
+				if (minWalkablePos == Vector2.zero){
+					minWalkablePos = new Vector2(tile.worldPos.x, tile.worldPos.y);
+				}
+				else{
+					maxWalkablePos = new Vector2(tile.worldPos.x, tile.worldPos.y);
+				}
 			}
 		}
 	}
@@ -163,13 +180,13 @@ public class TileManager : MonoBehaviour {
 		int gridY = Mathf.Abs(worldY - startingY);
 		//Debug.Log("World position: " + worldPosition + " is grid position: " + gridX + ", " + gridY);
 		if (IsInGridBounds(gridX, gridY) == true){
-			return tileData_Grid[gridX, gridY];
+			return grid_data[gridX, gridY];
 		}
 		return null;
 	}
 	public Tile_Data GetTile(int x, int y){
 		if (IsInGridBounds(x, y) == true){
-			return tileData_Grid[x, y];
+			return grid_data[x, y];
 		}
 		return null;
 	}
@@ -227,7 +244,7 @@ public class TileManager : MonoBehaviour {
 	}
 
 	public void SaveTileData(){
-		if (tileData_Grid == null)
+		if (grid_data == null)
 			return;
 		SavedTiles tiles = new SavedTiles();
 		List<STile> saved = new List<STile>();
@@ -235,7 +252,7 @@ public class TileManager : MonoBehaviour {
 		{
 			for (int y = 0; y < map_height; y++)
 			{
-				Tile_Data tile = tileData_Grid[x, y];
+				Tile_Data tile = grid_data[x, y];
 				if (tile == null)
 					continue;
 
@@ -270,7 +287,7 @@ public class TileManager : MonoBehaviour {
 		}
 		tiles.areaID = currentArea.id;
 		tiles.savedTiles = saved.ToArray();
-		JsonWriter.WriteToJson(tiles);
+		JsonWriter.WriteToJson(tiles, currentArea.id);
 	}
 }
 

@@ -94,12 +94,26 @@ public class Buildable_Manager : MonoBehaviour
 		buildablesInWorld.Add(producer, prodGObj);
 		return prodGObj;
 	}
+	public void PoolBuildables(){
+		if (buildablesInWorld.Count <= 0)
+			return;
+		foreach (Buildable buildable in buildablesInWorld.Keys)
+		{
+			if (buildablesInWorld.ContainsKey(buildable) == false)
+			return;
+			if (buildablesInWorld[buildable].transform.parent != null)
+				buildablesInWorld[buildable].transform.SetParent(null);
+			buildablesInWorld[buildable].name = buildable.buildableType.ToString();
+			pool.PoolObject(buildablesInWorld[buildable]);
+		}
+		buildablesInWorld.Clear();
+	}
 	public void PoolBuildable(Buildable buildable){
 		if (buildablesInWorld.ContainsKey(buildable) == false)
 			return;
 		if (buildablesInWorld[buildable].transform.parent != null)
 			buildablesInWorld[buildable].transform.SetParent(null);
-			
+		buildablesInWorld[buildable].name = buildable.buildableType.ToString();
 		pool.PoolObject(buildablesInWorld[buildable]);
 		buildablesInWorld.Remove(buildable);
 	}
