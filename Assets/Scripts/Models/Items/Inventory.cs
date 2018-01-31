@@ -5,7 +5,8 @@ using UnityEngine;
 public class Inventory{
    
     public InventoryItem[] inventory_items;
-    int maxSpaces = 10, spacesFilled;
+    public int maxSpaces {get; protected set;}
+    int spacesFilled;
     public delegate void OnInventoryChanged();
     public event OnInventoryChanged onInventoryChanged; 
 

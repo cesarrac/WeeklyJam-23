@@ -19,6 +19,8 @@ public class Producer_Controller : Machine_Controller {
 		if (_baseTile.AddProducer(producer) == false){
 			return;
 		}
+		
+		
 		base.InitMachine(producerAsItem, producer, _baseTile, ShipManager.instance);
 		
 		// The machine controller sets the list of Neighbor tiles,

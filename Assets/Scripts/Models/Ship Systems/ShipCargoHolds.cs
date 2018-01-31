@@ -15,16 +15,6 @@ public class ShipCargoHolds : ShipSystem {
 		//secondary_holds = new List<Machine_Controller>();
 		//active_inventories = new Dictionary<Machine_Controller, Inventory>();
 	}
-	public override bool AddMachine(Machine_Controller newMachine){
-		// Set base cargo hold as currMachine
-		if (currMachine == null){
-			currMachine = newMachine;
-			
-			return true;
-		}
-		//secondary_holds.Add(newMachine);
-		return false;
-	}
 	public override void UseSystem(){
 		// Instead of starting systems it checks the cargo holds to see if
 		// they are putting the items in them at risk of being damaged
@@ -32,10 +22,37 @@ public class ShipCargoHolds : ShipSystem {
 	public void InitCargo(int maxSpacesInNewCargo){
 		if (currMachine == null)
 			return;
-		if (active_inventory != null)
+		if (active_inventory != null){
+			// If the new inventory does not match the old, it needs to re-init
+			// and place any items in active inventory into the new inventory
+			if (maxSpacesInNewCargo != active_inventory.maxSpaces){
+				ReInitInventory(maxSpacesInNewCargo);
+			}
 			return;
+		}
+			
 		active_inventory = new Inventory(maxSpacesInNewCargo);
 		inventoryUI.Initialize(active_inventory, UI_Manager.instance.shipInventoryPanel);
+	}
+	public void ReInitInventory(int maxSpacesInNewCargo){
+		List<InventoryItem> curInventory = new List<InventoryItem>();
+		if (active_inventory.IsEmpty() == false){
+			foreach (InventoryItem invItem in active_inventory.inventory_items)
+			{
+				if (invItem.item == null)
+					continue;
+				if (invItem.count <= 0)
+					continue;
+				curInventory.Add(invItem);
+			}
+		}
+		active_inventory = new Inventory(maxSpacesInNewCargo);
+		if (curInventory.Count <= 0)
+			return;
+		foreach (InventoryItem invItem in curInventory)
+		{
+			active_inventory.AddItem(invItem.item, invItem.count);
+		}
 	}
 	
 	public override bool Interact(GameObject user){

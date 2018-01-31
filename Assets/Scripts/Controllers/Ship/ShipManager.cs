@@ -115,12 +115,13 @@ public class ShipManager : MonoBehaviour {
 		Machine machine = Buildable_Manager.instance.CreateMachineInstance(prototype);
 		if (machine == null)
 			return false;
+		Debug.Log("Adding " + machine.name);
 		GameObject machineGObj = Buildable_Manager.instance.SpawnMachine(machine, machinePosition);
 		if (machineGObj == null)
 			return false;
 		
 		Machine_Controller mController = machineGObj.GetComponent<Machine_Controller>();
-		mController.InitMachine(machineItem, machine, TileManager.instance.GetTile(machineGObj.transform.position), this);
+		mController.InitMachine(machineItem, machine, TileManager.instance.GetTile(machinePosition), this);
 		if (AddMachine(mController, machine) == true){
 			//machine.InitSystems(this);
 			return true;
@@ -139,6 +140,10 @@ public class ShipManager : MonoBehaviour {
 
 	public bool AddMachine(Machine_Controller newMachine, Machine machine){
 		bool canAdd = false;
+		if (newMachine == null)
+			return false;
+		if (machine == null)
+			return false;
 		switch(machine.systemControlled){
 			case ShipSystemType.CargoHold:
 					canAdd = shipCargo.AddMachine(newMachine);

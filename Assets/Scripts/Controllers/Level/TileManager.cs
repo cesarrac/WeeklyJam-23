@@ -37,9 +37,10 @@ public class TileManager : MonoBehaviour {
 		BGVisuals_Manager.instance.LoadBgForArea(areaID);
 
 		// Load from Saved Tiles, if any
-		LoadSavedTiles(areaID);
+		SetSavedTiles(areaID);
 		if (savedAreaTiles.savedTiles != null && savedAreaTiles.savedTiles.Length > 0){
 			LoadSavedTiles();
+			Debug.Log("Loading tiles from saved file...");
 			return;
 		}
 		// Generate new Tile Data
@@ -65,13 +66,14 @@ public class TileManager : MonoBehaviour {
 	}
 	void SetupGrid(){
 		if (currentArea.tilemap == null)
-		return;
+			return;
+
 		startingX = currentArea.tilemap.origin.x;
 		startingY = currentArea.tilemap.origin.y;
 		map_width = currentArea.tilemap.size.x;
 		map_height = currentArea.tilemap.size.y;
 	}
-	public void LoadSavedTiles(AreaID areaID){
+	public void SetSavedTiles(AreaID areaID){
 		savedAreaTiles = JsonLoader.instance.LoadSavedTiles(areaID);
 	}
 	public void LoadSavedTiles(){
@@ -81,15 +83,8 @@ public class TileManager : MonoBehaviour {
 			return;
 		if (savedAreaTiles.savedTiles.Length <= 0)
 			return;
-		// TODO: Take care of the current displayed tilemap, save its data, and clear
-		//		or pool the tilemap gameobject
-		// TODO: Instantiate the tilemap gameobject that needs to be displayed
-		//		and set both tilemap and Area id in the dictionary
-		if (grid_data != null){
-			ClearCurrentTiles();
-		}
 		
-		SetCurrentArea(savedAreaTiles.areaID);
+		SetCurrentArea((AreaID)savedAreaTiles.areaID);
 		SetupGrid();
 		SetGridFromTileMap();
 		foreach (STile sTile in savedAreaTiles.savedTiles)
@@ -117,12 +112,12 @@ public class TileManager : MonoBehaviour {
 
 	void SetGridFromTileMap(){
 		// Verify that we don't alreay have the tile data
-		if (AreaToGridDataMap.ContainsKey(currentArea.id) == true){
+		/* if (AreaToGridDataMap.ContainsKey(currentArea.id) == true){
 			// Load it if we got it
 			grid_data = AreaToGridDataMap[currentArea.id];
 			SetWalkableClamps();
 			return;
-		}
+		} */
 		grid_data = new Tile_Data[map_width, map_height];
 		for(int x = 0; x <map_width; x++){
 			for(int y = 0; y <map_height; y++){
@@ -146,7 +141,7 @@ public class TileManager : MonoBehaviour {
 				
 			}
 		}
-		AreaToGridDataMap.Add(currentArea.id, grid_data);
+		//AreaToGridDataMap.Add(currentArea.id, grid_data);
 		SetWalkableClamps();
 	}
 	void SetWalkableClamps(){
@@ -167,10 +162,25 @@ public class TileManager : MonoBehaviour {
 		}
 	}
 	void ClearCurrentTiles(){
+		if (grid_data == null)
+			return;
+
 		if (currentArea.tilemap == null)
 			return;
+	
 		currentArea.tilemap.gameObject.SetActive(false);
 		
+		// Pool any items
+		Item_Manager.instance.PoolItems();
+		// Pool any buildables
+		Buildable_Manager.instance.PoolBuildables();
+		
+		// Save grid data to the map by Area ID
+		if (AreaToGridDataMap.ContainsKey(currentArea.id) == true){
+			AreaToGridDataMap[currentArea.id] = grid_data;
+		}else{
+			AreaToGridDataMap.Add(currentArea.id, grid_data);
+		}
 		currentArea = new Area();
 	}
 	public Tile_Data GetTile(Vector3 worldPosition){

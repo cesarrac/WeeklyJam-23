@@ -47,19 +47,33 @@ public class Machine_Controller : MonoBehaviour {
                         }
                     }
             }
-
+            InitVisuals();
         
         } 
-           mainSpriteR.sprite = machine.sprite;
-           animator.runtimeAnimatorController = machine.animatorController;
+          
+    }
+    public void ReInit(Item _machineItem, Machine _machine, ShipManager ship, Tile_Data tile, List<Tile_Data> neighbors){
+         // Store the machine as Item that can be placed into an inventory
+        machineItem = _machineItem;
+        machine = _machine;
+        gameObject.name = machine.name;
+        baseTile = tile;
+        worldPosition = tile.worldPos;
+        shipManager = ship;
+        neighborTiles = neighbors;
+        InitVisuals();
+    }
+    void InitVisuals(){
+        mainSpriteR.sprite = machine.sprite;
+        animator.runtimeAnimatorController = machine.animatorController;
 
-           collidable.offset = new Vector2(machine.tileWidth > 1 ? 1 : 0.5f, 0.5f);
-           collidable.size  = new Vector2(machine.tileWidth, 1);
-           /* interactable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, tileHeight > 1 ? 1 : 0.5f);
-           interactable.size  = new Vector2(tileWidth, tileHeight); */
-           shadowRenderer.size = new Vector2(machine.tileWidth, 1);
+        collidable.offset = new Vector2(machine.tileWidth > 1 ? 1 : 0.5f, 0.5f);
+        collidable.size  = new Vector2(machine.tileWidth, 1);
+        /* interactable.offset = new Vector2(tileWidth > 1 ? 1 : 0.5f, tileHeight > 1 ? 1 : 0.5f);
+        interactable.size  = new Vector2(tileWidth, tileHeight); */
+        shadowRenderer.size = new Vector2(machine.tileWidth, 1);
 
-           damageFX.GetComponent<SpriteRenderer>().size = new Vector2(machine.tileWidth,2);
+        damageFX.GetComponent<SpriteRenderer>().size = new Vector2(machine.tileWidth,2);
     }
     public bool CanUse(){
         if ((int)machine.machineCondition < 2){

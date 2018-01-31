@@ -48,12 +48,10 @@ public class Game_LevelManager : MonoBehaviour {
 	public void ChangeArea(AreaID newAreaID){
 		if (newAreaID == AreaID.NULL)
 			return;
+			
 		// Change Tiles
 		TileManager.instance.EnterArea(newAreaID);
-		// Pool any items
-		Item_Manager.instance.PoolItems();
-		// Pool any buildables
-		Buildable_Manager.instance.PoolBuildables();
+		Character_Manager.instance.EnterNewArea();
 	}
 
 	public void ReplaceStateWith(StateType stateType){

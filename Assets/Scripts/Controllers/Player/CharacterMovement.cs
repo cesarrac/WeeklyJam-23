@@ -35,7 +35,7 @@ public class CharacterMovement : MonoBehaviour {
 		crawlSpeed = curSpeed * 0.5f;
 	}
 
-	public void Initialize(Vector2 minWalkPos, Vector2 maxWalkPos){
+	public void EnterNewArea(Vector2 minWalkPos, Vector2 maxWalkPos){
 		minX = minWalkPos.x;
 		minY = minWalkPos.y;
 		maxX = maxWalkPos.x;
