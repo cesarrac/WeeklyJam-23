@@ -30,6 +30,9 @@ public class ShipCargoHolds : ShipSystem {
 			}
 			return;
 		}
+		else{
+			// Check if there's a saved inventory and LOAD it from there
+		}
 			
 		active_inventory = new Inventory(maxSpacesInNewCargo);
 		inventoryUI.Initialize(active_inventory, UI_Manager.instance.shipInventoryPanel);
@@ -52,6 +55,10 @@ public class ShipCargoHolds : ShipSystem {
 		foreach (InventoryItem invItem in curInventory)
 		{
 			active_inventory.AddItem(invItem.item, invItem.count);
+			// ** TODO ** :
+			// 	Code in case old inventory's items do not fit into
+			// 	the new inventory. The extra cargo should go into the
+			//	station's cargo.
 		}
 	}
 	

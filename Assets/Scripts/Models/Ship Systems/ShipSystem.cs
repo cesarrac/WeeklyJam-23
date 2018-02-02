@@ -69,6 +69,12 @@ public class ShipSystem  {
 		Debug.Log(user.name + " interacting with system " + shipSystemType);
 		return true;
 	}
+	public virtual bool RemoveMachine(){
+		if (currMachine == null)
+			return false;
+		currMachine = null;
+		return true;
+	}
 	public void RegisterCB(Action<int> cb){
 		OnShipChangedCB += cb;
 	}

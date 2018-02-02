@@ -166,7 +166,7 @@ public class ShipManager : MonoBehaviour {
 		}
 		return canAdd;
 	}
-	public bool RemoveMachine(Machine_Controller oldMachine){
+	/* public bool RemoveMachine(Machine_Controller oldMachine){
 		bool canAdd = false;
 		switch(oldMachine.machine.systemControlled){
 			case ShipSystemType.CargoHold:
@@ -187,7 +187,7 @@ public class ShipManager : MonoBehaviour {
 			
 		}
 		return canAdd;
-	}
+	} */
 
 	public bool SystemInteract(ShipSystemType sType, GameObject user){
 		foreach(ShipSystem system in coreSystems){

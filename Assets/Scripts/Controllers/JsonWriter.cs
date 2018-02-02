@@ -33,3 +33,9 @@ public struct SavedTiles{
 	public AreaID areaID;
 	public STile[] savedTiles;
 }
+[System.Serializable]
+public struct SavedInventory{
+	public int maxSpace;
+	public ItemReference[] items;
+	
+}

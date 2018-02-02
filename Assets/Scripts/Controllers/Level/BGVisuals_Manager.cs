@@ -12,11 +12,14 @@ public class BGVisuals_Manager : MonoBehaviour {
 	public int totalAsteroidAnimations = 2;
 	public int asteroidCount = 10;
 	List<GameObject> pixelStars_active, asteroids_active, bgFX_GameObjs;
-	GameObject bgHolder, asteroidsHolder, pixelStarHolder;
+	GameObject bgHolder, asteroidsHolder, mainStarHolder, starsOne, starsTwo;
 	public Transform vCamTransform;
 	public Cinemachine.CinemachineVirtualCamera bgVCam;
 	float maxY, maxX, minX, minY;
-	Sequence asteroid_sequence;
+
+	float minAsterDuration = 40, maxAsterDuration = 100;
+	float starMoveDuration = 200;
+	Sequence asteroid_sequence, star_sequence;
 
 	AreaID curAreaID;
 	private void Awake() {
@@ -32,6 +35,7 @@ public class BGVisuals_Manager : MonoBehaviour {
 		bgHolder.name = "BACKGROUND EFFECTS";
 
 		asteroid_sequence = DOTween.Sequence();
+		star_sequence = DOTween.Sequence();
 	}
 	private void Start() {
 		pool = ObjectPool.instance;
@@ -51,10 +55,10 @@ public class BGVisuals_Manager : MonoBehaviour {
 	}
 	void GeneratePixelStars(){
 	
-		if (pixelStarHolder == null){
-			pixelStarHolder = new GameObject();
-			pixelStarHolder.name = "PIXEL STARS";
-			pixelStarHolder.transform.SetParent(bgHolder.transform);
+		if (mainStarHolder == null){
+			mainStarHolder = new GameObject();
+			mainStarHolder.name = "PIXEL STARS";
+			mainStarHolder.transform.SetParent(bgHolder.transform);
 			//pixelStarHolder.transform.position = new Vector3(0,0,2);
 			//bgVCam.Follow = pixelStarHolder.transform;
 			/* Parallax_Controller parallax = pixelStarHolder.AddComponent<Parallax_Controller>();
@@ -68,15 +72,15 @@ public class BGVisuals_Manager : MonoBehaviour {
 			GameObject starGobj = SpawnEffect("Pixel Star",Random.Range(minX, maxX), Random.Range(minY, maxY));
 			if (starGobj == null)
 				return;
-			starGobj.transform.SetParent(pixelStarHolder.transform);
+			starGobj.transform.SetParent(mainStarHolder.transform);
 			starGobj.GetComponentInChildren<Animator>().Play("Pixel_stars" + animSelection.ToString());
 			Color starColor = new Color32(255, 255, 255, (byte)Random.Range(50, 255));
 			starGobj.GetComponentInChildren<SpriteRenderer>().color = starColor;
 			bgFX_GameObjs.Add(starGobj);
 		}
 
-		float shipMaxX = TileManager.instance.GetMaxX();
-		float shipMaxY = TileManager.instance.GetMaxY();
+		float shipMaxX = TileManager.instance == null ? 10 : TileManager.instance.GetMaxX();
+		float shipMaxY = TileManager.instance == null ? 10 : TileManager.instance.GetMaxY();
 		foreach (GameObject star in pixelStars_active)
 		{
 			if (star.transform.position.x >= 0 && star.transform.position.x <= shipMaxX &&
@@ -86,6 +90,15 @@ public class BGVisuals_Manager : MonoBehaviour {
 					star.transform.position = new Vector2(newX, newY);
 				}
 		}
+
+		MoveStarsUp();
+
+	}
+	void MoveStarsUp(){
+		star_sequence.Append(mainStarHolder.transform.DOMoveY(mainStarHolder.transform.position.y + 10, starMoveDuration)).SetLoops(10, LoopType.Yoyo); //.OnComplete(() => MoveStarsDown());
+	}
+	void MoveStarsDown(){
+		star_sequence.Append(mainStarHolder.transform.DOMoveY(mainStarHolder.transform.position.y - 10, starMoveDuration)).OnComplete(() => MoveStarsUp());
 	}
 	GameObject SpawnEffect(string effectName, float x, float y){
 			Vector2 randomPos = new Vector2(x,y);
@@ -122,7 +135,7 @@ public class BGVisuals_Manager : MonoBehaviour {
 				
 				int animSelection = Random.Range(1, totalAsteroidAnimations + 1);
 				asteroid.GetComponentInChildren<Animator>().Play("Asteroid" + animSelection.ToString());
-				asteroid_sequence.Append(asteroid.transform.DOMoveY(maxY + 10, Random.Range(40, 100)).OnComplete(() => PoolAsteroid(asteroid)));
+				asteroid_sequence.Append(asteroid.transform.DOMoveY(maxY + 10, Random.Range(minAsterDuration, maxAsterDuration)).OnComplete(() => PoolAsteroid(asteroid)));
 				bgFX_GameObjs.Add(asteroid);
 				yield return null;
 			}
