@@ -6,8 +6,9 @@ public class ShipCargoHolds : ShipSystem {
 
 	// This system controls the main cargo (currMachine) and the other special cargos added
 	//public List<Machine_Controller> secondary_holds;
-	public Inventory active_inventory {get; protected set;}
+//	public Inventory active_inventory {get; protected set;}
 	InventoryUI inventoryUI;
+	public Inventory_Controller inventory_Controller {get; protected set;}
 	public ShipCargoHolds(InventoryUI _inventoryUI){
 		shipSystemType = ShipSystemType.CargoHold;
 		inventoryUI = _inventoryUI;
@@ -22,7 +23,15 @@ public class ShipCargoHolds : ShipSystem {
 	public void InitCargo(int maxSpacesInNewCargo){
 		if (currMachine == null)
 			return;
-		if (active_inventory != null){
+		inventory_Controller = currMachine.gameObject.GetComponentInChildren<Inventory_Controller>();
+		if (inventory_Controller == null){
+			Debug.LogError(currMachine.machine.name + " does not have the required Inventory Controller as a child! Did Buildable Manager not add it?");
+			return;
+		}
+		inventory_Controller.Initialize(ID_Generator.instance.GetMachineID(currMachine), maxSpacesInNewCargo);
+		inventoryUI.Initialize(inventory_Controller.inventory, UI_Manager.instance.shipInventoryPanel);
+
+	/* 	if (active_inventory != null){
 			// If the new inventory does not match the old, it needs to re-init
 			// and place any items in active inventory into the new inventory
 			if (maxSpacesInNewCargo != active_inventory.maxSpaces){
@@ -32,12 +41,18 @@ public class ShipCargoHolds : ShipSystem {
 		}
 		else{
 			// Check if there's a saved inventory and LOAD it from there
-		}
-			
-		active_inventory = new Inventory(maxSpacesInNewCargo);
-		inventoryUI.Initialize(active_inventory, UI_Manager.instance.shipInventoryPanel);
+			Inventory savedInventory = Inventory_Manager.instance.LoadInventory(ID_Generator.instance.GetMachineID(currMachine));
+			if (savedInventory != null){
+				active_inventory = savedInventory;
+			}
+			else{
+				// Make a new one
+				active_inventory = new Inventory(maxSpacesInNewCargo);
+			}
+		} */
+		//inventoryUI.Initialize(active_inventory, UI_Manager.instance.shipInventoryPanel);
 	}
-	public void ReInitInventory(int maxSpacesInNewCargo){
+/* 	public void ReInitInventory(int maxSpacesInNewCargo){
 		List<InventoryItem> curInventory = new List<InventoryItem>();
 		if (active_inventory.IsEmpty() == false){
 			foreach (InventoryItem invItem in active_inventory.inventory_items)
@@ -60,7 +75,7 @@ public class ShipCargoHolds : ShipSystem {
 			// 	the new inventory. The extra cargo should go into the
 			//	station's cargo.
 		}
-	}
+	} */
 	
 	public override bool Interact(GameObject user){
 		if (base.Interact(user) == false)
@@ -70,7 +85,7 @@ public class ShipCargoHolds : ShipSystem {
 			return false;
 		if (user.GetComponent<Courier_Controller>().RemoveItem(newItem.name, 1) == false)
 			return false;
-		if (active_inventory.AddItem(newItem) == false){
+		if (inventory_Controller.inventory.AddItem(newItem) == false){
 			Debug.Log("Could NOT add item " + newItem.name + " to cargo hold inventory!");
 			return false;
 		}
@@ -79,11 +94,11 @@ public class ShipCargoHolds : ShipSystem {
 	}
 
 	void OnItemSelected(int itemIndex){
-		if (active_inventory.inventory_items[itemIndex].item == null)
+		if (inventory_Controller.inventory.inventory_items[itemIndex].item == null)
 			return;
 		currMachine.AnimateOn();
-		Item item = active_inventory.inventory_items[itemIndex].item;
-		if (active_inventory.RemoveItem(item.name, 1) == false)
+		Item item = inventory_Controller.inventory.inventory_items[itemIndex].item;
+		if (inventory_Controller.inventory.RemoveItem(item.name, 1) == false)
 			return;
 		Item_Manager.instance.SpawnItem(item, currMachine.transform.position + Vector3.down);
 	}

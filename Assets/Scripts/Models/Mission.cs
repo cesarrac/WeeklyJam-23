@@ -54,7 +54,7 @@ public class Mission  {
 				continue;
 			if (mItem.count <= 0)
 				continue;
-			if(cargo.active_inventory.ContainsItem(mItem.itemName, mItem.count) == false)
+			if(cargo.inventory_Controller.inventory.ContainsItem(mItem.itemName, mItem.count) == false)
 				return false;
 		}
 		

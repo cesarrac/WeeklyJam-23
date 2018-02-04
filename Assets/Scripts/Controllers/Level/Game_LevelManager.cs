@@ -24,6 +24,8 @@ public class Game_LevelManager : MonoBehaviour {
 		new JsonLoader();
 		// and Writer
 		new JsonWriter();
+		// and ID Generator
+		new ID_Generator();
 	}
 	void Start(){
 		InitGameData();

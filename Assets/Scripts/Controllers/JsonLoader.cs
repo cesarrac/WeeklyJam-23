@@ -28,11 +28,17 @@ public class JsonLoader {
     }
     
     public SavedTiles LoadSavedTiles(AreaID areaID){
-        path =  Application.streamingAssetsPath + ("/SavedTiles_" + areaID.ToString() + ".json");
+        path =  Application.streamingAssetsPath + ("/Saved/Tiles/SavedTiles_" + areaID.ToString() + ".json");
         if (File.Exists(path) == false)
             return new SavedTiles();
 
         return LoadFromJason<SavedTiles>(path);
+    }
+    public SavedInventory LoadSavedInventory(string ownerID){
+        path = Application.streamingAssetsPath + ("/Saved/Inventory/Inv_" + ownerID + ".json");
+        if (File.Exists(path) == false)
+            return new SavedInventory();
+        return LoadFromJason<SavedInventory>(path);
     }
     public static List<T> Load<T>(string[] filePaths){
          if (filePaths.Length <= 0)

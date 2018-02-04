@@ -44,7 +44,8 @@ public class ShipSystem  {
 			
 			currMachine.UseMachine();	
 			isSystemOn = true;
-			// Start ship movement
+			
+			// Ship changed to ON (1)
 			if (OnShipChangedCB != null){
 				OnShipChangedCB(1);
 			}
@@ -57,6 +58,8 @@ public class ShipSystem  {
 	}
 	public virtual void StopSystem(){
 		isSystemOn = false;
+
+		// Ship changed to OFF (0)
 		if (OnShipChangedCB != null){
 			OnShipChangedCB(0);
 		}

@@ -68,6 +68,13 @@ public class Buildable_Manager : MonoBehaviour
 		if (gObj == null)
 			return null;
 		gObj.transform.SetParent(ShipManager.instance.transform);
+		// Does this buildable require an Inventory Controller?
+		Buildable b = buildable as Buildable;
+		if (b != null && b.GetStat(StatType.Storage) != null){
+			GameObject invController = pool.GetObjectForType("Inventory Controller", true, position);
+			invController.transform.SetParent(gObj.transform);
+			//invController.GetComponent<Inventory_Controller>().Initialize(b.name, b.GetStat(StatType.Storage).GetValue());
+		}
 		return gObj;
 	}
 	public Machine CreateMachineInstance(MachinePrototype prototype){
@@ -99,23 +106,26 @@ public class Buildable_Manager : MonoBehaviour
 			return;
 		foreach (Buildable buildable in buildablesInWorld.Keys)
 		{
-			if (buildablesInWorld.ContainsKey(buildable) == false)
-			return;
-			if (buildablesInWorld[buildable].transform.parent != null)
-				buildablesInWorld[buildable].transform.SetParent(null);
-			buildablesInWorld[buildable].name = buildable.buildableType.ToString();
-			pool.PoolObject(buildablesInWorld[buildable]);
+			PoolBuildable(buildable, false);
 		}
 		buildablesInWorld.Clear();
 	}
-	public void PoolBuildable(Buildable buildable){
+	public void PoolBuildable(Buildable buildable, bool removeFromList = true){
 		if (buildablesInWorld.ContainsKey(buildable) == false)
 			return;
 		if (buildablesInWorld[buildable].transform.parent != null)
 			buildablesInWorld[buildable].transform.SetParent(null);
 		buildablesInWorld[buildable].name = buildable.buildableType.ToString();
+		// Verify if added components need to be removed & pooled
+		if (buildablesInWorld[buildable].gameObject.GetComponentInChildren<Inventory_Controller>() != null){
+			GameObject invController = buildablesInWorld[buildable].gameObject.GetComponentInChildren<Inventory_Controller>().gameObject;
+			invController.transform.SetParent(null);
+			pool.PoolObject(invController);
+		}
 		pool.PoolObject(buildablesInWorld[buildable]);
-		buildablesInWorld.Remove(buildable);
+		if (removeFromList == true){
+			buildablesInWorld.Remove(buildable);
+		}
 	}
 	public void HideBuildables(){
 		if (buildablesInWorld.Count <= 0)

@@ -31,6 +31,11 @@ public class InventoryUI : MonoBehaviour {
 			uiSlots[i].ChangeCount(0);
 		}
 		inventory.onInventoryChanged += OnInventoryChanged;
+		// If this inventory is not empty, call inventory changed
+		// to add the visuals
+		if (inventory.IsEmpty() == false){
+			OnInventoryChanged();
+		}
 	}
 	void OnInventoryChanged(){
 		Debug.Log("Oninventorychanged");

@@ -4,12 +4,23 @@ using UnityEngine;
 using System.IO;
 public class JsonWriter  {
 
-	public static void WriteToJson(SavedTiles tiles, AreaID areaID){
+	public static void WriteTilesToJson(SavedTiles tiles, AreaID areaID){
 		
 		string content = JsonUtility.ToJson(tiles);
-		string filePath = Application.streamingAssetsPath + ("/SavedTiles_" + areaID.ToString() + ".json");
+		string filePath = Application.streamingAssetsPath + ("/Saved/Tiles/SavedTiles_" + areaID.ToString() + ".json");
 		File.WriteAllText(filePath, content);
 		Debug.Log("Tiles saved to " + filePath);
+	}
+	public static void WriteInventoryToJson(SavedInventory inventory, string uniqueID){
+		string content = JsonUtility.ToJson(inventory);
+		string filePath = Application.streamingAssetsPath + ("/Saved/Inventory/Inv_" + uniqueID + ".json");
+		if (File.Exists(filePath) == false){
+			//FileStream file = new FileStream(filePath, FileMode.Create);
+			StreamWriter writer = File.CreateText(filePath);
+			writer.Close();
+		}
+		File.WriteAllText(filePath, content);
+		Debug.Log("Inventory saved to " + filePath);
 	}
 }
 

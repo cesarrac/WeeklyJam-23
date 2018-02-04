@@ -40,7 +40,6 @@ public class TileManager : MonoBehaviour {
 		SetSavedTiles(areaID);
 		if (savedAreaTiles.savedTiles != null && savedAreaTiles.savedTiles.Length > 0){
 			LoadSavedTiles();
-			Debug.Log("Loading tiles from saved file...");
 			return;
 		}
 		// Generate new Tile Data
@@ -297,7 +296,7 @@ public class TileManager : MonoBehaviour {
 		}
 		tiles.areaID = currentArea.id;
 		tiles.savedTiles = saved.ToArray();
-		JsonWriter.WriteToJson(tiles, currentArea.id);
+		JsonWriter.WriteTilesToJson(tiles, currentArea.id);
 	}
 }
 
