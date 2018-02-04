@@ -14,11 +14,6 @@ public class JsonWriter  {
 	public static void WriteInventoryToJson(SavedInventory inventory, string uniqueID){
 		string content = JsonUtility.ToJson(inventory);
 		string filePath = Application.streamingAssetsPath + ("/Saved/Inventory/Inv_" + uniqueID + ".json");
-		if (File.Exists(filePath) == false){
-			//FileStream file = new FileStream(filePath, FileMode.Create);
-			StreamWriter writer = File.CreateText(filePath);
-			writer.Close();
-		}
 		File.WriteAllText(filePath, content);
 		Debug.Log("Inventory saved to " + filePath);
 	}
