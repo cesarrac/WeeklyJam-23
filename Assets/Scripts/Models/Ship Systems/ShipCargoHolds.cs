@@ -9,6 +9,7 @@ public class ShipCargoHolds : ShipSystem {
 //	public Inventory active_inventory {get; protected set;}
 	InventoryUI inventoryUI;
 	public Inventory_Controller inventory_Controller {get; protected set;}
+	Courier_Controller playerInventoryControl;
 	public ShipCargoHolds(InventoryUI _inventoryUI){
 		shipSystemType = ShipSystemType.CargoHold;
 		inventoryUI = _inventoryUI;
@@ -97,10 +98,20 @@ public class ShipCargoHolds : ShipSystem {
 		if (inventory_Controller.inventory.inventory_items[itemIndex].item == null)
 			return;
 		currMachine.AnimateOn();
+		if (playerInventoryControl == null)
+			playerInventoryControl = Character_Manager.instance.player_GObj.GetComponent<Courier_Controller>();
+		
+		Inventory playerInventory = playerInventoryControl.characterData.characterInventory;
+		if (playerInventory.IsFull() == true)
+			return;
+
 		Item item = inventory_Controller.inventory.inventory_items[itemIndex].item;
+		if (playerInventory.AddItem(item) == false)
+			return;
 		if (inventory_Controller.inventory.RemoveItem(item.name, 1) == false)
 			return;
-		Item_Manager.instance.SpawnItem(item, currMachine.transform.position + Vector3.down);
+			// Instead of spawning item, give it to player directly
+		//Item_Manager.instance.SpawnItem(item, currMachine.transform.position + Vector3.down);
 	}
 
 	

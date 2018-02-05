@@ -10,7 +10,8 @@ public class Producer_Controller : Machine_Controller {
 	Item_Manager item_Manager;
 	float timeToCreate;
 	CountdownHelper timer;
-	Inventory storage_inventory;
+	//Inventory storage_inventory;
+	Inventory_Controller inventory_Controller;
 	bool isProducing;
 	public SpriteRenderer growth_visuals;
 	
@@ -19,7 +20,6 @@ public class Producer_Controller : Machine_Controller {
 		if (_baseTile.AddProducer(producer) == false){
 			return;
 		}
-		
 		
 		base.InitMachine(producerAsItem, producer, _baseTile, ShipManager.instance);
 		
@@ -31,7 +31,10 @@ public class Producer_Controller : Machine_Controller {
 		}
 		item_Manager = Item_Manager.instance;
 		timer = new CountdownHelper(0);
-		storage_inventory = new Inventory(1);
+		//storage_inventory = new Inventory(1);
+		inventory_Controller = GetComponentInChildren<Inventory_Controller>();
+		inventory_Controller.Initialize(ID_Generator.instance.GetMachineID(this), 1);
+
 		// Position the growth visuals X correctly according to the machine's tile width
 		if (growth_visuals != null){
 			growth_visuals.transform.localPosition = new Vector2(producer.tileWidth > 1 ? 0.5f : 0,0.5f);
@@ -39,21 +42,25 @@ public class Producer_Controller : Machine_Controller {
 		Debug.Log("Initialized a producer with a blueprint for " + producer.current_Blueprint.itemProduced.itemName);
 		// This runs when a producer has already started producing before
 		if (producer.current_Blueprint.itemProduced.count > 0 && producer.productionStage >= 0){
+			if (producer.productionStage >= 3){
+				itemInProduction = item_Manager.CreateInstance(item_Manager.GetPrototype(producer.current_Blueprint.itemProduced.itemName));
+				SetGrowthVisuals();
+				CompleteProduction();
+				return;
+			}
 			StartProduction(true);
 			return;
 		}
-
 		SetProductionStage(0);
-
-	
-
 	//	Debug.Log("Producer INITIALIZED: " + " key ingredient = " + producer.productionBlueprints[0].keyIngredient.count + " " + producer.productionBlueprints[0].keyIngredient.itemName + 
 		//		 " secondary ingredient " + producer.productionBlueprints[0].secondaryIngredients[0].count + " " + producer.productionBlueprints[0].secondaryIngredients[0].itemName);
 	}
 	public override void Interact(GameObject user){
 		Debug.Log("Interacting with " + producer.name);
-		if (isProducing == true)
+		if (isProducing == true){
+			Debug.Log("Producer already producing!");
 			return;
+		}
 
 		Courier_Controller controller = user.GetComponent<Courier_Controller>();
 		if (controller == null)
@@ -67,7 +74,7 @@ public class Producer_Controller : Machine_Controller {
 		}
 	}
 	bool CanStart(Courier_Controller controller){
-		if (storage_inventory.IsFull())
+		if (inventory_Controller.inventory.IsFull())
 			return false;
 
 		if (controller.iteminHand == null)
@@ -133,12 +140,18 @@ public class Producer_Controller : Machine_Controller {
 		}
 	}
 	void CompleteProduction(){
+		if (itemInProduction == null){
+			Debug.LogError(machine.name + " is trying to Complete Production and its 'itemInProduction' is NULL! Was this loaded incorrectly from Save file?");
+			return;
+		}
 		// Add the item to this producer's storage
-		if(storage_inventory.AddItem(itemInProduction, producer.current_Blueprint.itemProduced.count)){
+		if(inventory_Controller.inventory.AddItem(itemInProduction, producer.current_Blueprint.itemProduced.count)){
 			Notification_Manager.instance.AddNotification(machine.name + " finished " + itemInProduction.name);
+		}else{
+			Notification_Manager.instance.AddNotification(machine.name + " has a full storage!");
 		}
 		// Reset
-		producer.ResetCurrentBlueprint();
+		//producer.ResetCurrentBlueprint();
 		itemInProduction = null;
 		isProducing = false;
 		AnimateOff();
@@ -189,17 +202,18 @@ public class Producer_Controller : Machine_Controller {
 		if (isProducing == false)
 			AnimateOn();
 		
-		if (storage_inventory.IsEmpty())
+		if (inventory_Controller.inventory.IsEmpty())
 			return;
 		Inventory playerInventory = Character_Manager.instance.player_GObj.GetComponent<Courier_Controller>().characterData.characterInventory;
-		if (playerInventory.HasSpaceFor(storage_inventory.inventory_items[0].count) == false)
+		if (playerInventory.HasSpaceFor(inventory_Controller.inventory.inventory_items[0].count) == false)
 			return;
-		Item item = storage_inventory.inventory_items[0].item;
+		Item item = inventory_Controller.inventory.inventory_items[0].item;
 		if (item == null)
 			return;
-		if (storage_inventory.RemoveItem(item.name) == false)
+		if (inventory_Controller.inventory.RemoveItem(item.name) == false)
 			return;
 		playerInventory.AddItem(item);
+		producer.ResetCurrentBlueprint();
 		SetProductionStage(0);
 	}
 
