@@ -132,9 +132,6 @@ public class ShipManager : MonoBehaviour {
 			pool.PoolObject(machine); */
 			return false;
 		}
-
-		// TODO: Add machines that are not linked to ship systems,
-		// 		like machines that produce goods
 	}
 
 
